@@ -136,6 +136,8 @@ class EmulationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         NativeLibrary.initMultiplayer()
 
+        NativeLibrary.initMultiplayer()
+
         secondaryDisplayManager = SecondaryDisplay(this)
         secondaryDisplayManager.updateDisplay()
 
