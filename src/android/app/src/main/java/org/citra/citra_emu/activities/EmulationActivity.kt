@@ -77,7 +77,7 @@ class EmulationActivity : AppCompatActivity() {
     lateinit var secondaryDisplayManager: SecondaryDisplay
 
     private val onShutdown = Runnable {
-        if (intent.getBooleanExtra("launched_from_shortcut", false)) {
+        if (intent.getBooleanExtra("launchedFromShortcut", false)) {
             finishAffinity()
         } else {
             this.finish()
