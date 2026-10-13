@@ -1090,4 +1090,9 @@ Se esperan fallos gráficos temporales cuando ésta esté activado.</string>
     <string name="mmj_force_linear_mag_filter_description">En 5 IDs de juego, usa filtrado lineal al ampliar texturas en lugar del más cercano. Más suave y con un aspecto algo distinto.</string>
     <string name="mmj_skip_redundant_y2r">Omitir conversiones YUV redundantes</string>
     <string name="mmj_skip_redundant_y2r_description">En 2 IDs de juego (Danball Senki), omite conversiones YUV a RGB ya realizadas. Reduce los tirones.</string>
+
+    <!-- Créditos del fork / aviso de IA -->
+    <string name="mmj_credits">Créditos y aviso de IA</string>
+    <string name="mmj_credits_description">Este es un fork no oficial hecho con IA. Toca para ver quién lo hizo posible.</string>
+    <string name="mmj_credits_full">Este es un fork no oficial y experimental hecho con IA: sus cambios fueron escritos con Claude (Anthropic) bajo la dirección del propietario del repositorio. No está afiliado ni respaldado por Azahar, AzaharPlus, Citra, Lime3DS, Citra MMJ ni Nintendo. Al estar escrito por una IA puede contener errores.\n\nCréditos:\n• Azahar Emulator Project y sus desarrolladores (la base de todo)\n• AzaharPlus y su equipo (base directa de este fork)\n• Citra Emulator Project y sus colaboradores\n• Lime3DS y sus colaboradores\n• weihuoya, autor de Citra MMJ (2019–2022): los hacks e investigación por juego que este fork adapta\n• zhangwei, mantenedor de Citra MMJ (2023–2025)\n• Autores de las bibliotecas incluidas (Dynarmic, libzip y otras)\n\nCódigo y detalles: github.com/axelconde7w7-gif/azahar-mmj</string>
 </resources>

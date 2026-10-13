@@ -6,6 +6,11 @@
 >
 > *English summary at the [bottom](#english-summary).*
 
+> [!IMPORTANT]
+> **🤖 Este es un fork hecho con IA.** Todo el código y la documentación de los cambios de este fork fueron escritos con
+> **Claude (Anthropic)** bajo la dirección del propietario del repositorio. Puede contener errores; no es un proyecto oficial. Los
+> créditos completos están en la sección [Créditos](#créditos) y **dentro de la app** en *Acerca de → Créditos y aviso de IA*.
+
 > [!WARNING]
 > **Estado: experimental.** El APK de esta rama compila en GitHub Actions y fue **probado en un solo dispositivo** (POCO F7 Pro) con
 > unos pocos juegos, sin comparar cada hack por separado: ver [`docs/MMJ_PORT.md`](docs/MMJ_PORT.md#pruebas-reportadas). No hay
@@ -111,6 +116,8 @@ Casi todo lo valioso aquí es trabajo de otras personas:
   pruebas con juegos reales.
 - **zhangwei**, que mantuvo Citra MMJ de 2023 a 2025 (23 commits, incluido el último) y cuya versión de `config-games.ini` es la
   fuente de datos usada aquí.
+- **Claude (Anthropic)**, la IA que escribió el código y la documentación de los cambios de este fork, y **[axelconde7w7-gif](https://github.com/axelconde7w7-gif)**, quien dirige el proyecto, decide qué se hace y prueba los resultados en dispositivo.
+- Los autores de los *cheats* de 60 fps de [Reshiban/60FPS-AR-CHEATS-3DS](https://github.com/Reshiban/60FPS-AR-CHEATS-3DS) (Hazerou, lucky, NanashiFinal13 y colaboradores): aún **no** están integrados; cuando lo estén (descarga dentro de la app, sin redistribuir sus archivos) se acreditarán aquí y en la app.
 - Los autores de las bibliotecas externas incluidas (Dynarmic, libzip y otras), con sus propias licencias.
 
 Si eres autor de alguno de estos proyectos y quieres que se corrija o retire algo, abre un issue en este repositorio.
@@ -146,7 +153,7 @@ emulator) that ports the per-game compatibility hacks accumulated in **[Citra MM
 - **Status:** the APK of this branch builds on GitHub Actions and was **tested on one device only** (POCO F7 Pro) with a few games,
   without A/B comparisons per hack; see [`docs/MMJ_PORT.md`](docs/MMJ_PORT.md#pruebas-reportadas). No per-game results yet. No binaries are published; not affiliated with any of the
   projects credited above or with Nintendo.
-- **AI disclosure:** the changes were written with Claude (Anthropic) under the owner's direction. Azahar's
+- **Made with AI:** this is an AI-made fork (see the in-app *About → Credits and AI notice*). The changes were written with Claude (Anthropic) under the owner's direction. Azahar's
   [AI policy](https://github.com/azahar-emu/azahar/blob/master/AI-POLICY.md) forbids submitting substantially AI-written code, so
   **this fork is not intended as a pull request to Azahar or AzaharPlus**.
 - **Credits:** Azahar Emulator Project, AzaharPlus, Citra, Lime3DS, and above all **weihuoya and zhangwei (Citra MMJ)**, whose

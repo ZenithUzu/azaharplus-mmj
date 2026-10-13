@@ -22,6 +22,7 @@ import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialSharedAxis
 import org.citra.citra_emu.BuildConfig
 import org.citra.citra_emu.R
@@ -58,6 +59,13 @@ class AboutFragment : Fragment() {
             binding.root.findNavController().popBackStack()
         }
 
+        binding.buttonMmjCredits.setOnClickListener {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.mmj_credits)
+                .setMessage(R.string.mmj_credits_full)
+                .setPositiveButton(android.R.string.ok, null)
+                .show()
+        }
         binding.buttonContributors.setOnClickListener {
             openLink(
                 getString(R.string.contributors_link)
