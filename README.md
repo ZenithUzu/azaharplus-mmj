@@ -14,6 +14,9 @@
 > **Dónde está cada cosa.** La rama `master` contiene Azahar **más** los cambios de este port (todo el código y la
 > documentación). La rama [`mmj-hacks-port`](https://github.com/axelconde7w7-gif/azahar-mmj/tree/mmj-hacks-port) conserva
 > el mismo trabajo como historial aparte, para poder compararlo con Azahar oficial.
+>
+> **Novedad:** la rama [`azaharplus-mmj`](https://github.com/axelconde7w7-gif/azahar-mmj/tree/azaharplus-mmj) lleva el mismo
+> port sobre **AzaharPlus**, con un menú para activar o desactivar cada hack (Ajustes → Ajustes de Citra MMJ).
 
 ## Qué buscamos
 
