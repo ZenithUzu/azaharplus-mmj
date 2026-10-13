@@ -1,6 +1,6 @@
-# AzaharPlus + hacks de Citra MMJ
+# Azahar+ mmj
 
-> **Fork no oficial y experimental de [AzaharPlus](https://github.com/AzaharPlus/AzaharPlus)**, que a su vez es un fork de
+> **Azahar+ mmj** es un fork no oficial y experimental de [AzaharPlus](https://github.com/AzaharPlus/AzaharPlus), que a su vez es un fork de
 > [Azahar](https://github.com/azahar-emu/azahar). Añade los arreglos por juego que acumuló **Citra MMJ**, con un menú para
 > activarlos o desactivarlos uno por uno.
 >
@@ -50,9 +50,9 @@ son **independientes y reversibles**; y se dice con honestidad qué está verifi
 
 ## Cheats de 60 fps (descarga dentro de la app)
 
-En la pantalla de **Cheats** de un juego aparece, en el menú de tres puntos, **«Descargar cheats de 60 FPS»**, pero **solo si el
-ID de título del juego tiene un archivo** en [Reshiban/60FPS-AR-CHEATS-3DS](https://github.com/Reshiban/60FPS-AR-CHEATS-3DS)
-(241 IDs en el índice; para cualquier otro juego la opción ni se muestra). La app **no incluye ni redistribuye** esos cheats: solo
+En la pantalla de **Cheats** de un juego hay, arriba de la lista, un apartado de **cheats de 60 FPS** que siempre se ve y muestra el ID
+del juego. El botón **«Descargar cheats de 60 FPS»** aparece **solo si el ID de título del juego tiene un archivo** en [Reshiban/60FPS-AR-CHEATS-3DS](https://github.com/Reshiban/60FPS-AR-CHEATS-3DS)
+(241 IDs en el índice; para cualquier otro juego solo se muestra un aviso con su ID y no hay botón). La app **no incluye ni redistribuye** esos cheats: solo
 lleva un índice de IDs y nombres de carpeta, y descarga el archivo de ese juego desde GitHub, de un commit fijo
 ([`041cfa0`](https://github.com/Reshiban/60FPS-AR-CHEATS-3DS/commit/041cfa08a864565e3026896a2f3287579e6b9195)). Ese repositorio
 no declara licencia, por eso no se copian sus archivos aquí.
@@ -61,6 +61,17 @@ no declara licencia, por eso no se copian sus archivos aquí.
 - Se añaden **desactivados**, sin tocar los que ya tengas, y se omiten los que usan opcodes que el emulador no soporta (4 de 1330 en el commit fijo).
 - Son códigos hechos por terceros para consolas reales: **no están verificados** aquí y algunos (Pokémon) hacen que el juego vaya más rápido.
 - Créditos: base de datos de Reshiban; códigos de Hazerou, lucky, NanashiFinal13 y otros que cada cheat nombra en sus notas.
+
+## Otras mejoras de este fork
+
+- **Base de trucos integrada:** se validó la base de AzaharPlus (696 juegos, 12 617 cheats, 74 141 líneas): el formato es correcto (0 líneas
+  inválidas). Se corrigió un defecto del cargador: 198 cheats que repetían nombre con **código distinto** se descartaban en silencio;
+  ahora se conservan como «Nombre (2)». Los 511 repetidos exactos se siguen omitiendo. No se corrigió: 105 cheats usan el opcode `DF`, que el motor
+  no implementa y que simplemente se ignora.
+- **Compartir diagnóstico MMJ** (Ajustes de la pantalla de inicio): comparte un resumen corto del último log (cabecera, hacks activos y
+  estadísticas de tirones de shaders/pipelines) en lugar del log completo.
+- **Nombre:** la app ahora se llama **Azahar+ mmj**; los enlaces de «Soporte», «Sitio web» y «GitHub» de Acerca de apuntan a este
+  repositorio, no a AzaharPlus.
 
 ## Menú «Ajustes de Citra MMJ» (Android)
 
@@ -169,7 +180,7 @@ copias de juegos que hayas obtenido legalmente de tu propia consola. Nintendo y 
 
 ## English summary
 
-**Unofficial, experimental fork of [AzaharPlus](https://github.com/AzaharPlus/AzaharPlus)** (itself a fork of Azahar, a Nintendo 3DS
+**Azahar+ mmj: unofficial, experimental fork of [AzaharPlus](https://github.com/AzaharPlus/AzaharPlus)** (itself a fork of Azahar, a Nintendo 3DS
 emulator) that ports the per-game compatibility hacks accumulated in **[Citra MMJ](https://github.com/weihuoya/citra)**
 (maintained by *weihuoya* until 2022 and by *zhangwei* from 2023 to 2025) onto the current `HackManager`.
 

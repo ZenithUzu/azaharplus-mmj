@@ -47,10 +47,20 @@ object Fps60Cheats {
 
     private fun idString(titleId: Long) = String.format("%016X", titleId)
 
+    /** Patches (0004000E...) and DLC (0004008C...) share the low half of the base game's ID. */
+    private fun baseId(titleId: Long): Long {
+        val high = titleId ushr 32
+        return if (high == 0x0004000EL || high == 0x0004008CL) {
+            (0x00040000L shl 32) or (titleId and 0xFFFFFFFFL)
+        } else {
+            titleId
+        }
+    }
+
     /** Folders of the cheat repository that hold a file for this exact title ID (empty if none). */
     fun foldersFor(context: Context, titleId: Long): List<String> {
         val games = index(context)?.optJSONObject("games") ?: return emptyList()
-        val arr = games.optJSONArray(idString(titleId)) ?: return emptyList()
+        val arr = games.optJSONArray(idString(baseId(titleId))) ?: return emptyList()
         return List(arr.length()) { arr.getString(it) }
     }
 
@@ -73,7 +83,7 @@ object Fps60Cheats {
             val path = URLEncoder.encode(folder, "UTF-8").replace("+", "%20")
             val url = URL(
                 "https://raw.githubusercontent.com/$REPO/$commit/Cheats/$path/" +
-                    "${idString(titleId)}.txt"
+                    "${idString(baseId(titleId))}.txt"
             )
             val conn = url.openConnection() as HttpURLConnection
             try {

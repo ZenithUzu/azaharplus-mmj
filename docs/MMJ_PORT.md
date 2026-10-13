@@ -1,4 +1,4 @@
-# Port de hacks de Citra MMJ a AzaharPlus
+# Azahar+ mmj: port de hacks de Citra MMJ a AzaharPlus
 
 Base: AzaharPlus rama `AzaharPlus` @ `cf90688` (2026-10-08). Origen: weihuoya/citra (MMJ) @ `302b0c3` (2025-11-14).
 El mismo port se hizo antes sobre Azahar oficial en un fork aparte (`axelconde7w7-gif/azahar-mmj`); aqui se reaplico

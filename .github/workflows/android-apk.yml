@@ -52,6 +52,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v7
         with:
-          name: azaharplus-mmj-arm64-${{ github.sha }}
+          name: azahar-plus-mmj-arm64-${{ github.sha }}
           path: src/android/app/build/outputs/apk/vanilla/release/*.apk
           if-no-files-found: error

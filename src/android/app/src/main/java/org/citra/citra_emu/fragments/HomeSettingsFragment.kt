@@ -21,6 +21,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
@@ -30,6 +31,9 @@ import com.google.android.material.transition.MaterialSharedAxis
 import org.citra.citra_emu.CitraApplication
 import org.citra.citra_emu.HomeNavigationDirections
 import org.citra.citra_emu.NativeLibrary
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.citra.citra_emu.R
 import org.citra.citra_emu.adapters.HomeSettingAdapter
 import org.citra.citra_emu.databinding.DialogSoftwareKeyboardBinding
@@ -45,6 +49,7 @@ import org.citra.citra_emu.utils.FileUtil
 import org.citra.citra_emu.utils.GameHelper
 import org.citra.citra_emu.utils.GpuDriverHelper
 import org.citra.citra_emu.utils.Log
+import org.citra.citra_emu.utils.MmjDiagnostics
 import org.citra.citra_emu.utils.PermissionsHandler
 import org.citra.citra_emu.viewmodel.DriverViewModel
 import org.citra.citra_emu.viewmodel.HomeViewModel
@@ -185,6 +190,12 @@ class HomeSettingsFragment : Fragment() {
                 { shareLog() }
             ),
             HomeSetting(
+                R.string.mmj_share_diagnostics,
+                R.string.mmj_share_diagnostics_description,
+                R.drawable.ic_share,
+                { shareMmjDiagnostics() }
+            ),
+            HomeSetting(
                 R.string.gpu_driver_manager,
                 R.string.install_gpu_driver_description,
                 R.drawable.ic_install_driver,
@@ -291,6 +302,47 @@ class HomeSettingsFragment : Fragment() {
 
             homeViewModel.setGamesDir(requireActivity(), result.path!!)
         }
+
+    /**
+     * Shares a short text built from the emulator log: the log header, the per-game hacks that were
+     * active and a summary of the shader/pipeline stalls, instead of the whole (large) log file.
+     */
+    private fun shareMmjDiagnostics() {
+        val context = requireContext()
+        val logDirectory = DocumentFile.fromTreeUri(
+            context,
+            PermissionsHandler.citraDirectory
+        )?.findFile("log")
+        val log = if (!Log.gameLaunched) {
+            logDirectory?.findFile("azahar_log.old.txt")
+        } else {
+            null
+        } ?: logDirectory?.findFile("azahar_log.txt")
+        if (log == null || !log.exists()) {
+            Toast.makeText(context, R.string.share_log_not_found, Toast.LENGTH_SHORT).show()
+            return
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            val report = withContext(Dispatchers.IO) {
+                try {
+                    val lines = context.contentResolver.openInputStream(log.uri)
+                        ?.bufferedReader()?.use { it.readLines() } ?: emptyList()
+                    MmjDiagnostics.build(lines)
+                } catch (e: Exception) {
+                    null
+                }
+            }
+            if (report == null) {
+                Toast.makeText(context, R.string.share_log_not_found, Toast.LENGTH_SHORT).show()
+                return@launch
+            }
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, report)
+            }
+            startActivity(Intent.createChooser(intent, getText(R.string.mmj_share_diagnostics)))
+        }
+    }
 
     private fun shareLog() {
         val logDirectory = DocumentFile.fromTreeUri(

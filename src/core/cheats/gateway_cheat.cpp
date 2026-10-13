@@ -563,9 +563,24 @@ std::vector<std::shared_ptr<CheatBase>> GatewayCheat::LoadFile(const std::string
 	if (cheats_json.contains(titleId)) {
 		nlohmann::json gameJs = cheats_json[titleId];
 		
+		// The built-in database reuses some names for different codes (e.g. one entry per game
+		// version) and repeats others verbatim. Exact repeats are dropped; entries with the same
+		// name but different code are kept as "Name (2)", "Name (3)" instead of being lost.
+		std::unordered_map<std::string, std::vector<std::string>> builtin_variants;
+
 		for(auto i : gameJs) {
 			name = i[0];
-			
+
+			auto& variants = builtin_variants[name];
+			const std::string code_key = i[1].dump();
+			if (std::find(variants.begin(), variants.end(), code_key) != variants.end()) {
+				continue;
+			}
+			variants.push_back(code_key);
+			if (variants.size() > 1) {
+				name = fmt::format("{} ({})", name, variants.size());
+			}
+
 			if(!cheatNames[name]) {
 				cheatNames[name] = true;
 				cheat_lines.clear();

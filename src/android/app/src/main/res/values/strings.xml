@@ -3,7 +3,7 @@
 <resources>
 
     <!-- General application strings -->
-    <string name="app_name" translatable="false">AzaharPlus</string>
+    <string name="app_name" translatable="false">Azahar+ mmj</string>
     <string name="app_disclaimer">This software will run applications for the Nintendo 3DS handheld game console. No game titles are included.\n\nBefore you can begin with emulating, please select a folder to store Azahar\'s user data in.\n\nWhat\'s this:\n<a href='https://web.archive.org/web/20240304193549/https://github.com/citra-emu/citra/wiki/Citra-Android-user-data-and-storage'>Wiki - Citra Android user data and storage</a></string>
     <string name="app_notification_channel_name" translatable="false">Azahar</string>
     <string name="app_notification_channel_id" translatable="false">Azahar</string>
@@ -72,9 +72,9 @@
     <string name="licenses_description">Projects used by Azahar for Android</string>
     <string name="build">Build</string>
     <string name="licenses">Licenses</string>
-    <string name="support_link" translatable="false">https://github.com/AzaharPlus/AzaharPlus/discussions</string>
-    <string name="website_link" translatable="false">https://github.com/AzaharPlus/</string>
-    <string name="github_link" translatable="false">https://github.com/AzaharPlus/AzaharPlus</string>
+    <string name="support_link" translatable="false">https://github.com/axelconde7w7-gif/azahar-mmj/issues</string>
+    <string name="website_link" translatable="false">https://github.com/axelconde7w7-gif/azahar-mmj</string>
+    <string name="github_link" translatable="false">https://github.com/axelconde7w7-gif/azahar-mmj</string>
 
     <!-- Setup strings -->
     <string name="welcome">Welcome!</string>
@@ -1204,7 +1204,7 @@
     <string name="mmj_display_transfer_remap_description">In 4 title IDs (Tales of the Abyss, Pac-Man Party 3D), moves a few fixed display-transfer destination addresses, as Citra MMJ does.</string>
     <string name="mmj_display_transfer_remap_warning">Why it is off: the addresses are hard-coded values copied from Citra MMJ and nobody has checked them against these games here. MMJ added it together with a crash workaround that Azahar later fixed, so it may no longer be needed and could break the picture. Turn it on only for those games and turn it off if the screen looks wrong. Takes effect when a game starts.</string>
     <string name="mmj_notice_title">Unofficial fork made with AI</string>
-    <string name="mmj_notice_message">This emulator is an unofficial fork of AzaharPlus, built on Azahar, that adds per-game ideas from Citra MMJ. Its changes were written with the help of AI (Claude, by Anthropic), so it may contain mistakes. It is not affiliated with the Azahar, AzaharPlus, Citra or Citra MMJ teams. Please do not report its problems to them.</string>
+    <string name="mmj_notice_message">Azahar+ mmj is an unofficial fork of AzaharPlus, built on Azahar, that adds per-game ideas from Citra MMJ. Its changes were written with the help of AI (Claude, by Anthropic), so it may contain mistakes. It is not affiliated with the Azahar, AzaharPlus, Citra or Citra MMJ teams. Please do not report its problems to them.</string>
     <string name="mmj_notice_credits">Credits</string>
     <string name="mmj_notice_hide">Don\'t show again</string>
     <string name="fps60_download">Download 60 FPS cheats</string>
@@ -1213,4 +1213,8 @@
     <string name="fps60_failed">Could not download the cheats. Check your internet connection and try again.</string>
     <string name="fps60_confirm">This downloads the community 60 FPS cheats for this exact game from github.com/%1$s, from a fixed version of that repository. They were made by other people (Hazerou, lucky, NanashiFinal13, Reshiban and others named in each cheat\'s notes) for real consoles, and they are not bundled with this app. They are added switched off. Most are unverified and some may not work, may glitch, or may make the game run faster than normal (Pokémon). Turn on one at a time.</string>
     <string name="fps60_result">Added: %1$d\nAlready in your list: %2$d\nSkipped (not supported by this emulator): %3$d</string>
+    <string name="fps60_available">60 FPS cheats are available for this game (ID %1$s). They are downloaded from GitHub, not included in the app.</string>
+    <string name="fps60_unavailable">There are no downloadable 60 FPS cheats for this game (ID %1$s).</string>
+    <string name="mmj_share_diagnostics">Share MMJ diagnostics</string>
+    <string name="mmj_share_diagnostics_description">Shares a short report from the last log: active hacks and shader or pipeline stalls. Handy for bug reports.</string>
 </resources>

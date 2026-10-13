@@ -121,25 +121,26 @@ class CheatListFragment : Fragment() {
             }
         }
 
-        setupFps60Menu()
+        setupFps60Banner()
         setInsets()
     }
 
-    /** "Download 60 FPS cheats": only offered when the title has a file in the repository. */
-    private fun setupFps60Menu() {
+    /**
+     * The 60 FPS section: always visible so the user can tell what is going on. The button only
+     * appears when the title ID has a file in the cheat repository.
+     */
+    private fun setupFps60Banner() {
         val context = requireContext()
         val titleId = cheatsViewModel.currentTitleId
-        binding.toolbarCheatList.inflateMenu(R.menu.menu_cheat_list)
-        val item = binding.toolbarCheatList.menu.findItem(R.id.menu_download_fps60)
-        item.isVisible = Fps60Cheats.isAvailable(context, titleId)
-        binding.toolbarCheatList.setOnMenuItemClickListener {
-            if (it.itemId == R.id.menu_download_fps60) {
-                confirmFps60Download(titleId)
-                true
-            } else {
-                false
-            }
+        val idText = String.format("%016X", titleId)
+        val available = Fps60Cheats.isAvailable(context, titleId)
+        binding.fps60Text.text = if (available) {
+            getString(R.string.fps60_available, idText)
+        } else {
+            getString(R.string.fps60_unavailable, idText)
         }
+        binding.fps60Button.visibility = if (available) View.VISIBLE else View.GONE
+        binding.fps60Button.setOnClickListener { confirmFps60Download(titleId) }
     }
 
     private fun confirmFps60Download(titleId: Long) {

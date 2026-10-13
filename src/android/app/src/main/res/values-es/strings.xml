@@ -1108,7 +1108,7 @@ Se esperan fallos gráficos temporales cuando ésta esté activado.</string>
     <string name="mmj_display_transfer_remap_description">En 4 IDs (Tales of the Abyss, Pac-Man Party 3D), mueve algunas direcciones fijas de destino de la transferencia de pantalla, como hace Citra MMJ.</string>
     <string name="mmj_display_transfer_remap_warning">Por qué está apagado: las direcciones son valores fijos copiados de Citra MMJ y nadie los ha comprobado con estos juegos aquí. MMJ lo añadió junto con un arreglo para un cierre inesperado que Azahar corrigió después, así que puede que ya no haga falta y podría dañar la imagen. Actívalo solo en esos juegos y apágalo si la pantalla se ve mal. Se aplica al iniciar un juego.</string>
     <string name="mmj_notice_title">Fork no oficial hecho con IA</string>
-    <string name="mmj_notice_message">Este emulador es un fork no oficial de AzaharPlus, basado en Azahar, que añade ideas por juego de Citra MMJ. Sus cambios se escribieron con ayuda de IA (Claude, de Anthropic), así que puede tener errores. No está afiliado a los equipos de Azahar, AzaharPlus, Citra ni Citra MMJ. Por favor no les reportes sus fallos.</string>
+    <string name="mmj_notice_message">Azahar+ mmj es un fork no oficial de AzaharPlus, basado en Azahar, que añade ideas por juego de Citra MMJ. Sus cambios se escribieron con ayuda de IA (Claude, de Anthropic), así que puede tener errores. No está afiliado a los equipos de Azahar, AzaharPlus, Citra ni Citra MMJ. Por favor no les reportes sus fallos.</string>
     <string name="mmj_notice_credits">Créditos</string>
     <string name="mmj_notice_hide">No volver a mostrar</string>
     <string name="fps60_download">Descargar cheats de 60 FPS</string>
@@ -1117,4 +1117,8 @@ Se esperan fallos gráficos temporales cuando ésta esté activado.</string>
     <string name="fps60_failed">No se pudieron descargar los cheats. Revisa tu conexión a internet e inténtalo de nuevo.</string>
     <string name="fps60_confirm">Esto descarga de github.com/%1$s los cheats de 60 FPS de la comunidad para este juego exacto, desde una versión fija de ese repositorio. Los hicieron otras personas (Hazerou, lucky, NanashiFinal13, Reshiban y otros que aparecen en las notas de cada cheat) para consolas reales y no vienen incluidos en la app. Se añaden desactivados. La mayoría no están verificados y algunos pueden no funcionar, causar fallos o hacer que el juego vaya más rápido de lo normal (Pokémon). Actívalos de uno en uno.</string>
     <string name="fps60_result">Añadidos: %1$d\nYa estaban en tu lista: %2$d\nOmitidos (no compatibles con este emulador): %3$d</string>
+    <string name="fps60_available">Hay cheats de 60 FPS para este juego (ID %1$s). Se descargan de GitHub; no vienen incluidos en la app.</string>
+    <string name="fps60_unavailable">No hay cheats de 60 FPS descargables para este juego (ID %1$s).</string>
+    <string name="mmj_share_diagnostics">Compartir diagnóstico MMJ</string>
+    <string name="mmj_share_diagnostics_description">Comparte un resumen corto del último log: hacks activos y tirones de shaders o pipelines. Útil para reportar fallos.</string>
 </resources>
