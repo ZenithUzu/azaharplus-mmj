@@ -1,7 +1,7 @@
 #!/bin/bash -ex
 
 if [ "$GITHUB_REF_TYPE" == "tag" ]; then
-	export EXTRA_CMAKE_FLAGS=(-DENABLE_QT_UPDATE_CHECKER=ON)
+	export EXTRA_CMAKE_FLAGS=(-DENABLE_QT_UPDATE_CHECKER=OFF)
 fi
 
 mkdir build

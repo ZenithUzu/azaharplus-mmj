@@ -288,8 +288,8 @@ class SettingsFragmentPresenter(private val fragmentView: SettingsFragmentView) 
                     IntSetting.TURBO_LIMIT.defaultValue.toFloat()
                 )
             )
-            if (!BuildUtil.isGooglePlayBuild
-                && false) {
+            if (!BuildUtil.isGooglePlayBuild) {
+                // Azahar+ mmj only looks at the releases of its own repository (no channels).
                 add(
                     SwitchSetting(
                         BooleanSetting.CHECK_FOR_UPDATES,
@@ -298,18 +298,6 @@ class SettingsFragmentPresenter(private val fragmentView: SettingsFragmentView) 
                         BooleanSetting.CHECK_FOR_UPDATES.key,
                         BooleanSetting.CHECK_FOR_UPDATES.defaultValue,
                         isEnabled = !BuildConfig.DEBUG
-                    )
-                )
-                add(
-                    SingleChoiceSetting(
-                        IntSetting.UPDATE_CHECK_CHANNEL,
-                        R.string.update_check_channel,
-                        R.string.update_check_channel_description,
-                        R.array.updateCheckChannels,
-                        R.array.updateCheckChannelsValues,
-                        IntSetting.UPDATE_CHECK_CHANNEL.key,
-                        IntSetting.UPDATE_CHECK_CHANNEL.defaultValue,
-                        isEnabled = (!BuildConfig.DEBUG && BooleanSetting.CHECK_FOR_UPDATES.boolean)
                     )
                 )
             }

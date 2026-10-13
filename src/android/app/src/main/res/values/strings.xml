@@ -1158,12 +1158,10 @@
     <string name="compress_decompress_installed_app">Already installed applications cannot be compressed or decompressed.</string>
 
     <!-- Update Checker -->
-    <string name="stable_channel_update_link" translatable="false">https://azahar-emu.org/pages/download/</string>
-    <string name="prerelease_channel_update_link" translatable="false">https://github.com/azahar-emu/azahar/releases</string>
     <string name="update_available">Update Available</string>
-    <string name="update_available_description">A newer version of Azahar is available (version %1$s).\nWould you like to download it?</string>
+    <string name="update_available_description">A newer version of Azahar+ mmj is available: %1$s.\nWould you like to download it? If Android refuses to install it over your current version, the signing key changed: uninstall the old app first (back up your data folder).</string>
     <string name="check_for_updates">Check For Updates</string>
-    <string name="check_for_updates_description">Display an in-app notification when an update is available for Azahar.</string>
+    <string name="check_for_updates_description">Show a notification when a newer Azahar+ mmj build is published in this fork\'s GitHub releases.</string>
     <string name="update_check_channel">Update Channel</string>
     <string name="update_check_channel_description">Which update channel to use when checking for updates.</string>
     <string name="update_check_channel_stable">Stable</string>
@@ -1217,4 +1215,6 @@
     <string name="fps60_unavailable">There are no downloadable 60 FPS cheats for this game (ID %1$s).</string>
     <string name="mmj_share_diagnostics">Share MMJ diagnostics</string>
     <string name="mmj_share_diagnostics_description">Shares a short report from the last log: active hacks and shader or pipeline stalls. Handy for bug reports.</string>
+    <string name="update_download">Download</string>
+    <string name="update_release_notes">What\'s new</string>
 </resources>

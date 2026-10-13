@@ -1065,9 +1065,9 @@ Se esperan fallos gráficos temporales cuando ésta esté activado.</string>
     <string name="no_preference">Sin Preferencia</string>
 
     <string name="update_available">Actualización Disponible</string>
-    <string name="update_available_description">Hay una nueva versión de Azahar disponible (versión %1$s).\n¿Quieres descargarla?</string>
+    <string name="update_available_description">Hay una nueva versión de Azahar+ mmj disponible: %1$s.\n¿Quieres descargarla? Si Android no deja instalarla sobre la actual, la firma cambió: desinstala antes la app anterior (haz copia de tu carpeta de datos).</string>
     <string name="check_for_updates">Buscar Actualizaciones</string>
-    <string name="check_for_updates_description">Mostrar una notificación cuando haya una actualización disponible para Azahar.</string>
+    <string name="check_for_updates_description">Mostrar una notificación cuando haya una versión nueva de Azahar+ mmj en los releases de GitHub de este fork.</string>
     <string name="update_check_channel">Canal de Actualización</string>
     <string name="update_check_channel_description">Canal a usar para comprobar actualizaciones.</string>
     <string name="update_check_channel_stable">Estable</string>
@@ -1121,4 +1121,6 @@ Se esperan fallos gráficos temporales cuando ésta esté activado.</string>
     <string name="fps60_unavailable">No hay cheats de 60 FPS descargables para este juego (ID %1$s).</string>
     <string name="mmj_share_diagnostics">Compartir diagnóstico MMJ</string>
     <string name="mmj_share_diagnostics_description">Comparte un resumen corto del último log: hacks activos y tirones de shaders o pipelines. Útil para reportar fallos.</string>
+    <string name="update_download">Descargar</string>
+    <string name="update_release_notes">Novedades</string>
 </resources>

@@ -16,13 +16,11 @@ import org.citra.citra_emu.ui.main.MainActivity
 import org.citra.citra_emu.utils.BuildUtil
 
 class UpdateAvailableNotificationFragment(
-    newVersionOverride: String,
-    checkForPrereleaseUpdatesOverride: Boolean
+    private val releaseName: String,
+    private val apkUrl: String?,
+    private val pageUrl: String
 ) : DialogFragment() {
     private lateinit var mainActivity: MainActivity
-
-    private val newVersion = newVersionOverride
-    private val checkForPrereleaseUpdates = checkForPrereleaseUpdatesOverride
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         BuildUtil.assertNotGooglePlay()
@@ -30,23 +28,15 @@ class UpdateAvailableNotificationFragment(
 
         isCancelable = false
 
-        val updateNotificationDescription =
-            getString(R.string.update_available_description, newVersion)
-
         return MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.update_available)
-            .setMessage(updateNotificationDescription)
-            .setPositiveButton(android.R.string.ok) { _: DialogInterface, _: Int ->
-                val updateLink: String = if (checkForPrereleaseUpdates) {
-                    getString(R.string.prerelease_channel_update_link)
-                } else {
-                    getString(R.string.prerelease_channel_update_link)
-                }
-                val intent = Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse(updateLink)
-                )
-                startActivity(intent)
+            .setMessage(getString(R.string.update_available_description, releaseName))
+            .setPositiveButton(R.string.update_download) { _: DialogInterface, _: Int ->
+                // Opens the APK download (or the release page when there is no APK attached).
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(apkUrl ?: pageUrl)))
+            }
+            .setNeutralButton(R.string.update_release_notes) { _: DialogInterface, _: Int ->
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(pageUrl)))
             }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
@@ -56,11 +46,12 @@ class UpdateAvailableNotificationFragment(
         const val TAG = "UpdateAvailableNotificationFragment"
 
         fun newInstance(
-            newVersion: String,
-            checkForPrereleaseUpdates: Boolean
+            releaseName: String,
+            apkUrl: String?,
+            pageUrl: String
         ): UpdateAvailableNotificationFragment {
             BuildUtil.assertNotGooglePlay()
-            return UpdateAvailableNotificationFragment(newVersion, checkForPrereleaseUpdates)
+            return UpdateAvailableNotificationFragment(releaseName, apkUrl, pageUrl)
         }
     }
 }

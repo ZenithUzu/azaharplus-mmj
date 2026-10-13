@@ -36,7 +36,6 @@ import org.citra.citra_emu.R
 import org.citra.citra_emu.adapters.GameAdapter
 import org.citra.citra_emu.databinding.FragmentGamesBinding
 import org.citra.citra_emu.features.settings.model.BooleanSetting
-import org.citra.citra_emu.features.settings.model.IntSetting
 import org.citra.citra_emu.features.settings.model.Settings
 import org.citra.citra_emu.features.updatechecker.UpdateChecker
 import org.citra.citra_emu.model.Game
@@ -237,51 +236,29 @@ class GamesFragment : Fragment() {
         setInsets()
     }
 
-    private fun getMajorVersion(version: String): Int? = version.split('.')[0].toIntOrNull()
-
-    private fun isPrereleaseBuild(): Boolean {
-        val version = BuildConfig.GIT_VERSION
-        return (
-            version.contains("alpha") ||
-                version.contains("beta") ||
-                version.contains("rc") ||
-                version.contains("test")
-            )
-    }
-
     override fun onResume() {
         super.onResume()
 
         // Perform update check
         @Suppress("SimplifyBooleanWithConstants", "RedundantSuppression")
         if (!BuildConfig.DEBUG &&
+            BuildConfig.MMJ_BUILD_NUMBER > 0 &&
             !BuildUtil.isGooglePlayBuild &&
             BooleanSetting.CHECK_FOR_UPDATES.boolean &&
             !homeViewModel.updatePromptShown
         ) {
             Thread({
-                val checkForPrereleaseUpdates =
-                    isPrereleaseBuild() || (IntSetting.UPDATE_CHECK_CHANNEL.int == 1)
-                val latestReleaseTag = UpdateChecker.getLatestRelease(checkForPrereleaseUpdates)
-
-                if (!latestReleaseTag.isNullOrEmpty() &&
-                    latestReleaseTag != BuildConfig.GIT_VERSION
-                ) {
-                    val latestMajorVersion = getMajorVersion(latestReleaseTag)
-                    val currentMajorVersion = getMajorVersion(BuildConfig.GIT_VERSION)
-                    if (latestMajorVersion != null &&
-                        currentMajorVersion != null &&
-                        currentMajorVersion <= latestMajorVersion
-                    ) {
-                        UpdateAvailableNotificationFragment.newInstance(
-                            latestReleaseTag,
-                            checkForPrereleaseUpdates
+                val latest = UpdateChecker.getLatestRelease()
+                if (latest != null && latest.buildNumber > BuildConfig.MMJ_BUILD_NUMBER) {
+                    UpdateAvailableNotificationFragment.newInstance(
+                        latest.name,
+                        latest.apkUrl,
+                        latest.pageUrl
+                    )
+                        .show(
+                            requireActivity().supportFragmentManager,
+                            UpdateAvailableNotificationFragment.TAG
                         )
-                            .show(
-                                requireActivity().supportFragmentManager,
-                                UpdateAvailableNotificationFragment.TAG
-                            )
-                    }
                 }
             }).start()
             homeViewModel.updatePromptShown = true

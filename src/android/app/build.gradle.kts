@@ -96,6 +96,9 @@ android {
         // ^ Has no suffix, unlike VERSION_NAME
         buildConfigField("String", "GIT_HASH", "\"${getGitHash()}\"")
         buildConfigField("String", "BRANCH", "\"${getBranch()}\"")
+        // Set by CI (-PmmjBuild=<run number>) so the app can tell if a newer release exists.
+        // 0 means a local build, which never checks for updates.
+        buildConfigField("int", "MMJ_BUILD_NUMBER", "${project.findProperty("mmjBuild") ?: 0}")
     }
 
     val keystoreFile = System.getenv("ANDROID_KEYSTORE_FILE")

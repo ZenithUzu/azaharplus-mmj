@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/img/azahar-plus-mmj-logo.jpg" alt="Logo de Azahar+ mmj" width="520">
+</p>
+
 # Azahar+ mmj
 
 > **Azahar+ mmj** es un fork no oficial y experimental de [AzaharPlus](https://github.com/AzaharPlus/AzaharPlus), que a su vez es un fork de
@@ -126,6 +130,20 @@ Los mensajes de MMJ son muy breves (`fx`, `cache`), así que un commit puede agr
 - Comprobar que el APK es esta versión: la resolución interna no pasa de 8x, existe el menú de Citra MMJ y el log de cada juego
   incluye una línea `Per-game hacks for <ID>: ...`.
 
+## Actualizaciones
+
+Cada compilación correcta en GitHub Actions publica automáticamente un **release** (`build-<n>`, marcado como pre-release) con el
+APK adjunto; se conservan los 10 más recientes. La app, al abrirse, consulta **solo los releases de este repositorio**
+(se puede apagar en *Ajustes → Varios → Buscar actualizaciones*) y, si hay una compilación más nueva que la instalada, ofrece
+descargarla. Se eliminaron las consultas de actualizaciones a Azahar/AzaharPlus (también en la versión de escritorio). Las
+compilaciones locales (número 0) nunca buscan actualizaciones.
+
+Para que una versión nueva se pueda instalar **encima** de la anterior, el APK debe firmarse siempre con la misma clave. Sin ella
+se usa una clave de depuración temporal y Android pedirá desinstalar antes. Para fijarla, crea tu clave y guarda en
+*Settings → Secrets and variables → Actions* los secretos `ANDROID_KEYSTORE_BASE64` (el `.jks` en base64), `ANDROID_KEYSTORE_PASS`
+(la contraseña del almacén, que debe ser también la de la clave) y `ANDROID_KEY_ALIAS`. Guarda una copia segura de la clave:
+si la pierdes, nadie podrá actualizar encima.
+
 ## Transparencia sobre el uso de IA
 
 El código y la documentación de los cambios de este fork fueron escritos con **Claude (Anthropic)**, siguiendo la dirección y
@@ -140,6 +158,7 @@ las decisiones del propietario del repositorio; los commits lo declaran con un t
 
 Casi todo lo valioso aquí es trabajo de otras personas:
 
+- **Logotipo:** la flor del logo de arriba es el logotipo de Azahar, propiedad de PabloMK7 y angyartanddraw; aquí solo identifica la base del proyecto y **no implica respaldo oficial**.
 - **[Azahar Emulator Project](https://github.com/azahar-emu/azahar)** y quienes lo desarrollan: la base de todo, incluido el
   `HackManager` que hace posible el enfoque por título. El logotipo de Azahar es propiedad de PabloMK7 y angyartanddraw (ver
   `the_azahar_logo_is_the_property_of_PabloMK7_and_angyartanddraw.txt`).

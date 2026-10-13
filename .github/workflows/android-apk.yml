@@ -1,5 +1,10 @@
-# Lean Android build (arm64-v8a, installable APK) for this fork.
-# It only runs in repositories owned by axelconde7w7-gif and uses no secrets.
+# Lean Android build (arm64-v8a, installable APK) for this fork. It only runs in repositories owned
+# by axelconde7w7-gif. Every successful build is also published as a GitHub release ("build-<n>"),
+# which is what the in-app update check looks at.
+#
+# Optional repository secrets for a FIXED signing key (needed so a new build can be installed over
+# the previous one): ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASS, ANDROID_KEY_ALIAS.
+# Without them the APK is signed with a throw-away debug key and cannot update an older install.
 name: android-apk
 
 on:
@@ -7,6 +12,9 @@ on:
   push:
     branches: [ azaharplus-mmj ]
     paths-ignore: [ '**.md', 'docs/**' ]
+
+permissions:
+  contents: write
 
 concurrency:
   group: android-apk-${{ github.ref }}
@@ -42,12 +50,29 @@ jobs:
           sudo apt-get install -y ccache
       - name: Install CMake for the Android SDK
         run: echo "y" | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager "cmake;3.30.3"
-      - name: Build (arm64-v8a, vanilla, debug-signed release)
+      - name: Prepare signing key (optional)
+        id: signing
+        env:
+          KS_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
+          KS_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          if [ -n "$KS_B64" ] && [ -n "$KS_PASS" ] && [ -n "$KS_ALIAS" ]; then
+            echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
+            echo "ANDROID_KEYSTORE_FILE=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+            echo "ANDROID_KEYSTORE_PASS=$KS_PASS" >> "$GITHUB_ENV"
+            echo "ANDROID_KEY_ALIAS=$KS_ALIAS" >> "$GITHUB_ENV"
+            echo "fixed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "fixed=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::No signing secrets: using a throw-away debug key (updates over an older install will fail)."
+          fi
+      - name: Build (arm64-v8a, vanilla)
         working-directory: src/android
         run: |
           export NDK_CCACHE=$(which ccache)
           chmod +x ./gradlew
-          JAVA_HOME=$JAVA_HOME_17_X64 ./gradlew assembleVanillaRelease -Pabi=arm64-v8a -PappIdSuffix=.mmj
+          JAVA_HOME=$JAVA_HOME_17_X64 ./gradlew assembleVanillaRelease -Pabi=arm64-v8a -PappIdSuffix=.mmj -PmmjBuild=${{ github.run_number }}
           ccache -s
       - name: Upload APK
         uses: actions/upload-artifact@v7
@@ -55,3 +80,32 @@ jobs:
           name: azahar-plus-mmj-arm64-${{ github.sha }}
           path: src/android/app/build/outputs/apk/vanilla/release/*.apk
           if-no-files-found: error
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FIXED_KEY: ${{ steps.signing.outputs.fixed }}
+        run: |
+          N=${{ github.run_number }}
+          SHORT=$(git rev-parse --short HEAD)
+          APK="azahar-plus-mmj-arm64-build${N}.apk"
+          cp src/android/app/build/outputs/apk/vanilla/release/*.apk "$APK"
+          {
+            echo "Unofficial fork made with AI. Build ${N}, commit ${SHORT}. Only arm64. Source: this repository."
+            echo
+            echo "**Changes in this build:**"
+            git log -1 --format=%B
+            echo
+            if [ "$FIXED_KEY" != "true" ]; then
+              echo "> This build is signed with a temporary key: Android will refuse to install it over a previous build (uninstall first)."
+            fi
+            echo "No games, keys or firmware are included. Not affiliated with Azahar, AzaharPlus, Citra, Citra MMJ or Nintendo."
+          } > notes.md
+          gh release create "build-${N}" "$APK" --target "$GITHUB_SHA" \
+            --title "Azahar+ mmj build ${N} (${SHORT})" --notes-file notes.md --prerelease
+      - name: Keep only the 10 newest build releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release list --limit 200 --json tagName,createdAt \
+            --jq '[.[] | select(.tagName | test("^build-[0-9]+$"))] | sort_by(.createdAt) | reverse | .[10:] | .[].tagName' |
+            while read -r tag; do gh release delete "$tag" --cleanup-tag --yes; done
