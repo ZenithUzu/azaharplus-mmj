@@ -22,7 +22,7 @@ Instala tambien el Azahar oficial y compara el mismo punto del juego en ambos.
 | SKIP_SLOW_DRAW | DQM Joker 3, New Atelier Rorona, My Hero Academia | modelos o efectos que faltan frente al oficial (esto es lo que el hack omite a proposito) |
 | FORCE_LINEAR_MAG_FILTER | Attack on Titan | texturas ampliadas suavizadas en vez de pixeladas |
 | SKIP_REDUNDANT_Y2R_CONVERSION | Danball Senki | videos/cinematicas sin congelarse ni parpadear |
-| ACCURATE_MULTIPLICATION (ampliada) | Zelda OoT 3D, Kid Icarus | sin cambios con ajustes por defecto; solo cambia si desactivas "accurate multiplication" |
+| ACCURATE_MULTIPLICATION (ampliada) | Zelda OoT 3D, Kid Icarus | en Android esa opcion viene desactivada por defecto, asi que aqui se fuerza en estos juegos: mira geometria o sombreado roto que desaparece |
 
 Si un juego se ve peor con la rama que con el oficial, quita su ID de `src/common/hacks/hack_list.cpp`
 (la lista del hack correspondiente) y reconstruye: cada hack es independiente.

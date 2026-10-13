@@ -21,7 +21,7 @@ La primera version del port solo uso (1). Ahora las listas se regeneran desde (2
 | disable_clip_coef | DISABLE_CLIP_COEF | 9 | Star Fox 64, Picross 2, Art of Balance |
 | use_linear_filter | FORCE_LINEAR_MAG_FILTER | 5 | Attack on Titan 1 / 1 CHAIN / 2 |
 | y2r_perform_hack | SKIP_REDUNDANT_Y2R_CONVERSION | 2 | Danball Senki (solo en LoadOverrides) |
-| accurate_mul_fast | ACCURATE_MULTIPLICATION (ampliada) | 57 en total | incluye Zelda OoT 3D, Majora's Mask 3D, A Link Between Worlds, Super Mario 3D Land, Kid Icarus: Uprising, Ever Oasis. No-op con ajustes por defecto (shaders_accurate_mul = true) |
+| accurate_mul_fast | ACCURATE_MULTIPLICATION (ampliada) | 57 en total | incluye Zelda OoT 3D, Majora's Mask 3D, A Link Between Worlds, Super Mario 3D Land, Kid Icarus: Uprising, Ever Oasis. En Android `shaders_accurate_mul` viene **desactivado** por defecto (`config.cpp`), asi que alli este hack si tiene efecto; en escritorio el valor por defecto ya es true |
 
 ## Notas de fidelidad
 - disable_clip_coef: en el vertex shader normal el efecto es identico al de MMJ. En el camino de geometry shader
