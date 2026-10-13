@@ -72,9 +72,9 @@
     <string name="licenses_description">Projects used by Azahar for Android</string>
     <string name="build">Build</string>
     <string name="licenses">Licenses</string>
-    <string name="support_link" translatable="false">https://github.com/axelconde7w7-gif/azahar-mmj/issues</string>
-    <string name="website_link" translatable="false">https://github.com/axelconde7w7-gif/azahar-mmj</string>
-    <string name="github_link" translatable="false">https://github.com/axelconde7w7-gif/azahar-mmj</string>
+    <string name="support_link" translatable="false">https://github.com/axelconde7w7-gif/azaharplus-mmj/issues</string>
+    <string name="website_link" translatable="false">https://github.com/axelconde7w7-gif/azaharplus-mmj</string>
+    <string name="github_link" translatable="false">https://github.com/axelconde7w7-gif/azaharplus-mmj</string>
 
     <!-- Setup strings -->
     <string name="welcome">Welcome!</string>
@@ -1190,7 +1190,7 @@
     <!-- Fork credits / AI disclosure -->
     <string name="mmj_credits">Credits and AI notice</string>
     <string name="mmj_credits_description">This is an unofficial fork made with AI. Tap to see who made it possible.</string>
-    <string name="mmj_credits_full">This is an unofficial, experimental fork made with AI: its changes were written with Claude (Anthropic) under the direction of the repository owner. It is not affiliated with or endorsed by Azahar, AzaharPlus, Citra, Lime3DS, Citra MMJ or Nintendo. Because it was written by an AI it may contain mistakes.\n\nCredits:\n• Azahar Emulator Project and its developers (base of everything)\n• AzaharPlus and its team (direct base of this fork)\n• Citra Emulator Project and its contributors\n• Lime3DS and its contributors\n• weihuoya, author of Citra MMJ (2019–2022): the per-game hacks and research this fork adapts\n• zhangwei, maintainer of Citra MMJ (2023–2025)\n• Reshiban (repository 60FPS-AR-CHEATS-3DS) and the authors of the 60 FPS cheats you can download in the cheats screen: Hazerou, lucky, NanashiFinal13 and others named in each cheat. They are not bundled; they are downloaded from their repository\n• AzaharPlus authors of the built-in cheat database\n• Authors of the bundled libraries (Dynarmic, libzip and others)\n\nSource and details: github.com/axelconde7w7-gif/azahar-mmj</string>
+    <string name="mmj_credits_full">This is an unofficial, experimental fork made with AI: its changes were written with Claude (Anthropic) under the direction of the repository owner. It is not affiliated with or endorsed by Azahar, AzaharPlus, Citra, Lime3DS, Citra MMJ or Nintendo. Because it was written by an AI it may contain mistakes.\n\nCredits:\n• Azahar Emulator Project and its developers (base of everything)\n• AzaharPlus and its team (direct base of this fork)\n• Citra Emulator Project and its contributors\n• Lime3DS and its contributors\n• weihuoya, author of Citra MMJ (2019–2022): the per-game hacks and research this fork adapts\n• zhangwei, maintainer of Citra MMJ (2023–2025)\n• Reshiban (repository 60FPS-AR-CHEATS-3DS) and the authors of the 60 FPS cheats you can download in the cheats screen: Hazerou, lucky, NanashiFinal13 and others named in each cheat. They are not bundled; they are downloaded from their repository\n• AzaharPlus authors of the built-in cheat database\n• Authors of the bundled libraries (Dynarmic, libzip and others)\n\nSource and details: github.com/axelconde7w7-gif/azaharplus-mmj</string>
     <string name="mmj_unstable_header">Experimental hacks (off by default). They were not tested in this fork; you get a warning before turning each one on.</string>
     <string name="mmj_enable_warning_title">Turn on an untested hack?</string>
     <string name="mmj_enable_anyway">Turn on anyway</string>

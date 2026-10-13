@@ -5,7 +5,7 @@
 - ~15 GB libres. Primera compilacion de la parte nativa: larga (decenas de minutos en un portatil).
 
 ## Pasos
-1. `git clone --recurse-submodules -b azaharplus-mmj https://github.com/axelconde7w7-gif/azahar-mmj.git` (ruta corta en Windows, p. ej. `C:\dev`; antes `git config --global core.longpaths true`)
+1. `git clone --recurse-submodules -b azaharplus-mmj https://github.com/axelconde7w7-gif/azaharplus-mmj.git` (ruta corta en Windows, p. ej. `C:\dev`; antes `git config --global core.longpaths true`)
    (si ya clonaste sin submodulos: `git submodule update --init --recursive`)
 2. Abrir **`src/android`** (no la raiz) en Android Studio y esperar el Gradle sync.
 3. Para compilar solo lo que usa un telefono, anade `-Pabi=arm64-v8a` en Settings > Build > Gradle (Command-line Options), o al comando de Gradle.
