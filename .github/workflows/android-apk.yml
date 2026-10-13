@@ -90,8 +90,7 @@ jobs:
           {
             echo "Unofficial fork made with AI. Build ${N}, commit ${SHORT}. Only arm64. Source: this repository."
             echo
-            echo "**Changes in this build:**"
-            git log -1 --format=%B
+            echo "See the README for what this fork changes and which hacks are on or off by default."
             echo
             if [ "$FIXED_KEY" != "true" ]; then
               echo "> This build is signed with a temporary key: Android will refuse to install it over a previous build (uninstall first)."
