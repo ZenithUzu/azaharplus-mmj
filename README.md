@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/img/azahar-plus-mmj-logo.jpg" alt="Azahar+ mmj logo" width="520">
+  <img src="docs/img/azahar-plus-mmj-logo.png" alt="Azahar+ mmj logo" width="520">
 </p>
 
 # Azahar+ mmj
