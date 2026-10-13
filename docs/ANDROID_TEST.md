@@ -41,3 +41,14 @@ En local, el mismo build es `cd src/android && ./gradlew assembleVanillaRelease 
 arm64-v8a y x86_64). Requiere JDK 17, Android SDK 35, NDK 27.3.13750724 y CMake 3.30.3 (Android Studio los descarga).
 Nota: este codigo **no se ha compilado completo todavia**; si el workflow falla, el log de Actions es la primera
 fuente para corregirlo.
+
+## Comprobar que los hacks estan activos
+
+Al iniciar cada juego, el log incluye una linea como:
+
+    Per-game hacks for 00040000XXXXXXXX: accurate_mul=true skip_slow_draw=false skip_texture_copy=true disable_clip_coef=false force_linear_mag_filter=false
+
+Si el juego esta en alguna lista de `src/common/hacks/hack_list.cpp`, el valor correspondiente sale en `true`; para
+cualquier otro juego salen los valores normales de Azahar. En Android el log esta en la carpeta de datos de la app
+(`log/`) y en Ajustes puedes compartirlo o activar el nivel de detalle. Ademas, la resolucion interna ya no ofrece
+mas de 8x: es la comprobacion mas rapida de que el APK es esta version.

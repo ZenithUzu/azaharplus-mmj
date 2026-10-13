@@ -394,14 +394,27 @@ void GPU::ApplyPerProgramSettings(u64 program_ID) {
     }
     impl->rasterizer->SetAccurateMul(use_accurate_mul);
 
-    impl->pica.skip_slow_draw = Common::Hacks::hack_manager.OverrideBooleanSetting(
-        Common::Hacks::HackType::SKIP_SLOW_DRAW, program_ID, false);
-    impl->rasterizer->SetSkipTextureCopy(Common::Hacks::hack_manager.OverrideBooleanSetting(
-        Common::Hacks::HackType::SKIP_TEXTURE_COPY, program_ID, false));
-    impl->rasterizer->SetDisableClipCoef(Common::Hacks::hack_manager.OverrideBooleanSetting(
-        Common::Hacks::HackType::DISABLE_CLIP_COEF, program_ID, false));
-    impl->rasterizer->SetForceLinearMagFilter(Common::Hacks::hack_manager.OverrideBooleanSetting(
-        Common::Hacks::HackType::FORCE_LINEAR_MAG_FILTER, program_ID, false));
+    auto& hacks = Common::Hacks::hack_manager;
+    using Common::Hacks::HackType;
+    const bool skip_slow_draw =
+        hacks.OverrideBooleanSetting(HackType::SKIP_SLOW_DRAW, program_ID, false);
+    const bool skip_texture_copy =
+        hacks.OverrideBooleanSetting(HackType::SKIP_TEXTURE_COPY, program_ID, false);
+    const bool disable_clip_coef =
+        hacks.OverrideBooleanSetting(HackType::DISABLE_CLIP_COEF, program_ID, false);
+    const bool force_linear_mag_filter =
+        hacks.OverrideBooleanSetting(HackType::FORCE_LINEAR_MAG_FILTER, program_ID, false);
+    impl->pica.skip_slow_draw = skip_slow_draw;
+    impl->rasterizer->SetSkipTextureCopy(skip_texture_copy);
+    impl->rasterizer->SetDisableClipCoef(disable_clip_coef);
+    impl->rasterizer->SetForceLinearMagFilter(force_linear_mag_filter);
+
+    // One line per game start, so it is easy to check in the log which per-game hacks are active.
+    LOG_INFO(HW_GPU,
+             "Per-game hacks for {:016X}: accurate_mul={} skip_slow_draw={} skip_texture_copy={} "
+             "disable_clip_coef={} force_linear_mag_filter={}",
+             program_ID, use_accurate_mul, skip_slow_draw, skip_texture_copy, disable_clip_coef,
+             force_linear_mag_filter);
 }
 
 void GPU::SubmitCmdList(u32 index) {
