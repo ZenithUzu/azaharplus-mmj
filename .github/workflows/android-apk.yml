@@ -5,7 +5,7 @@ name: android-apk
 on:
   workflow_dispatch:
   push:
-    branches: [ AzaharPlus ]
+    branches: [ azaharplus-mmj ]
     paths-ignore: [ '**.md', 'docs/**' ]
 
 concurrency:

@@ -12,6 +12,13 @@
 > propietario del fork.) No publica binarios y **no está afiliado ni respaldado** por Azahar, AzaharPlus, Citra, Lime3DS, los
 > autores de Citra MMJ ni Nintendo.
 
+> [!NOTE]
+> **Dónde está cada cosa.** Este repositorio contiene **dos versiones** del mismo port:
+> - rama **`azaharplus-mmj`** (esta): basada en **AzaharPlus**, con el menú de interruptores;
+> - rama `master`: basada en **Azahar oficial**, sin menú de interruptores.
+>
+> (GitHub no permite una segunda copia «fork» de AzaharPlus en la misma cuenta, por eso conviven aquí como ramas.)
+
 ## Qué es esto
 
 - **Base:** AzaharPlus, rama `AzaharPlus`, commit [`cf90688`](https://github.com/AzaharPlus/AzaharPlus/commit/cf9068844820f819a6eabbeeeb6a70d546e3e85a) (2026-10-08).
