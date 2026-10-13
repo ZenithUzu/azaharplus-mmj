@@ -69,6 +69,78 @@ HackManager hack_manager = {
                      0x0004000000132700, // USA
                      0x0004000000132800, // EUR
                      0x000400000018A100, // EUR (Demo)
+
+                     // Added from Citra MMJ's accurate multiplication list (no region labels)
+                     // Attack on Titan
+                     0x00040000000DF800,
+                     0x0004000000134500,
+                     0x0004000000152000,
+                     0x00040000001AA200,
+
+                     // Super Mario 3D Land
+                     0x0004000000053F00,
+                     0x0004000000054000,
+                     0x0004000000054100,
+                     0x0004000000089E00,
+                     0x0004000000089F00,
+
+                     // Captain Toad: Treasure Tracker
+                     0x00040000001CB000,
+                     0x00040000001CB100,
+                     0x00040000001CB200,
+
+                     // The Legend of Zelda: A Link Between Worlds
+                     0x00040000000EC200,
+                     0x00040000000EC300,
+                     0x00040000000EC400,
+
+                     // New Super Mario Bros. 2
+                     0x000400000007AD00,
+                     0x000400000007AE00,
+                     0x000400000007AF00,
+                     0x00040000000B8A00,
+
+                     // Jett Rocket II
+                     0x0004000000079600,
+
+                     // Cut the Rope
+                     0x0004000000112600,
+                     0x0004000000116700,
+
+                     // Luigi's Mansion: Dark Moon
+                     0x0004000000055F00,
+                     0x0004000000076400,
+                     0x0004000000076500,
+                     0x00040000000D0000,
+
+                     // Digimon World Re:Digitize Decode
+                     0x00040000000AFC00,
+
+                     // The Legend of Zelda: Majoras Mask 3D
+                     0x00040000000D6E00,
+                     0x0004000000125500,
+                     0x0004000000125600,
+
+                     // Lego City Undercover
+                     0x00040000000AD500,
+                     0x00040000000AD600,
+                     0x0004000000154700,
+
+                     // Luigi's Mansion
+                     0x00040000001D1800,
+                     0x00040000001D1900,
+                     0x00040000001D1A00,
+
+                     // Added from Citra MMJ config-games.ini [accurate_mul_fast] (no region labels)
+                     // Kid Icarus: Uprising
+                     0x0004000000030000,
+                     0x0004000000030100,
+                     0x0004000000030200,
+
+                     // Ever Oasis
+                     0x0004000000164A00,
+                     0x00040000001A4800,
+                     0x00040000001A4900,
                  },
              // clang-format on
          }},
@@ -211,6 +283,144 @@ HackManager hack_manager = {
                      0x0004000000053F00, // EUR
                      0x0004000000089E00, // CHN
                      0x0004000000089D00, // KOR
+                 },
+             // clang-format on
+         }},
+
+        // Ported from Citra MMJ (skip_slow_draw): these games crash or stall when a draw cannot
+        // be hardware accelerated and falls back to the software vertex path, so the draw is
+        // skipped instead.
+        // NOTE: MMJ also listed Tales of the Abyss / Pac-Man Party 3D here to avoid a crash in
+        // the geometry pipeline reconfiguration. That was fixed at the root in Azahar (#7381),
+        // so those titles are intentionally not included.
+        {HackType::SKIP_SLOW_DRAW,
+         HackEntry{
+             .mode = HackAllowMode::FORCE,
+             // clang-format off
+             .affected_title_ids =
+                 {
+                     // New Atelier Rorona
+                     0x000400000015CB00,
+
+                     // My Hero Academia
+                     0x000400000018E900,
+
+                     // Dragon Quest Monsters Joker 3
+                     0x000400000016AD00,
+
+                     // Dragon Quest Monsters Joker 3 Professional
+                     0x00040000001ACB00,
+                 },
+             // clang-format on
+         }},
+
+        // Ported from Citra MMJ (skip_texture_copy): when the source of a texture copy is not
+        // present in the GPU surface cache, skip the (slow) software copy entirely.
+        {HackType::SKIP_TEXTURE_COPY,
+         HackEntry{
+             .mode = HackAllowMode::FORCE,
+             // clang-format off
+             .affected_title_ids =
+                 {
+                     // Kid Icarus: Uprising
+                     0x0004000000030000,
+                     0x0004000000030100,
+                     0x0004000000030200,
+
+                     // Metroid Prime: Federation Force
+                     0x000400000016CE00,
+                     0x000400000016E300,
+                     0x0004000000175200,
+
+                     // Batman: Arkham Origins Blackgate
+                     0x00040000000D6B00,
+                     0x00040000000D7000,
+
+                     // Mario Kart 7
+                     0x0004000000030600,
+                     0x0004000000030700,
+                     0x0004000000030800,
+                     0x000400000008B400,
+
+                     // Luigi's Mansion: Dark Moon
+                     0x0004000000055F00,
+                     0x0004000000076400,
+                     0x0004000000076500,
+                     0x00040000000D0000,
+
+                     // Professor Layton and the Miracle Mask
+                     0x0004000000031F00,
+                     0x00040000000A8500,
+
+                     // Professor Layton and the Miracle Mask Plus
+                     0x00040000000C9200,
+                 },
+             // clang-format on
+         }},
+
+        // Ported from Citra MMJ (disable_clip_coef): these games render incorrectly when the
+        // user clip plane (clip_coef) is applied, so the second clip plane is disabled.
+        {HackType::DISABLE_CLIP_COEF,
+         HackEntry{
+             .mode = HackAllowMode::FORCE,
+             // clang-format off
+             .affected_title_ids =
+                 {
+                     // Star Fox 64
+                     0x0004000000030400,
+                     0x0004000000049000,
+                     0x0004000000049100,
+
+                     // Picross 2
+                     0x0004000000169A00,
+                     0x0004000000187D00,
+                     0x0004000000187E00,
+
+                     // Art of Balance
+                     0x000400000008F000,
+                     0x000400000008FF00,
+                     0x00040000000E8900,
+                 },
+             // clang-format on
+         }},
+
+        // Ported from Citra MMJ (y2r_perform_hack): these games start a new Y2R conversion while
+        // the completion event of the previous one is still signaled. The redundant conversion
+        // is skipped.
+        {HackType::SKIP_REDUNDANT_Y2R_CONVERSION,
+         HackEntry{
+             .mode = HackAllowMode::FORCE,
+             // clang-format off
+             .affected_title_ids =
+                 {
+                     // Danball Senki W Chou Custom (as labeled in Citra MMJ)
+                     0x00040000000DCA00,
+
+                     // Danball Senki WARS (as labeled in Citra MMJ)
+                     0x00040000000F4000,
+                 },
+             // clang-format on
+         }},
+
+        // Ported from Citra MMJ (use_linear_filter): these games request nearest magnification
+        // filtering but look better with linear filtering. Only the magnification filter is
+        // promoted to linear, as in Citra MMJ.
+        {HackType::FORCE_LINEAR_MAG_FILTER,
+         HackEntry{
+             .mode = HackAllowMode::FORCE,
+             // clang-format off
+             .affected_title_ids =
+                 {
+                     // Attack On Titan 2
+                     0x00040000001AA200,
+
+                     // Attack On Titan 1 CHAIN
+                     0x0004000000131E00,
+                     0x0004000000134500,
+                     0x0004000000152000,
+
+                     // Attack On Titan 1
+                     0x00040000000DF800,
                  },
              // clang-format on
          }},

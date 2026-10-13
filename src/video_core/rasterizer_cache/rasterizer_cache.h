@@ -182,7 +182,8 @@ void RasterizerCache<T>::RemoveTextureCubeFace(SurfaceId surface_id) {
 }
 
 template <class T>
-bool RasterizerCache<T>::AccelerateTextureCopy(const Pica::DisplayTransferConfig& config) {
+bool RasterizerCache<T>::AccelerateTextureCopy(const Pica::DisplayTransferConfig& config,
+                                               bool skip_if_no_source) {
     const DebugScope scope{runtime, Common::Vec4f{0.f, 0.f, 1.f, 1.f},
                            "RasterizerCache::AccelerateTextureCopy ({})", config.DebugName()};
 
@@ -228,7 +229,8 @@ bool RasterizerCache<T>::AccelerateTextureCopy(const Pica::DisplayTransferConfig
 
     const auto [src_surface_id, src_rect] = GetTexCopySurface(src_params);
     if (!src_surface_id) {
-        return false;
+        // Returning true marks the copy as handled, so the software fallback is skipped.
+        return skip_if_no_source;
     }
 
     const SurfaceParams src_info = slot_surfaces[src_surface_id];
@@ -396,7 +398,7 @@ typename T::Sampler& RasterizerCache<T>::GetSampler(SamplerId sampler_id) {
 
 template <class T>
 typename T::Sampler& RasterizerCache<T>::GetSampler(
-    const Pica::TexturingRegs::TextureConfig& config) {
+    const Pica::TexturingRegs::TextureConfig& config, bool force_linear_mag_filter) {
     using TextureFilter = Pica::TexturingRegs::TextureConfig::TextureFilter;
 
     const auto get_filter = [](TextureFilter filter) {
@@ -412,8 +414,14 @@ typename T::Sampler& RasterizerCache<T>::GetSampler(
         }
     };
 
+    TextureFilter mag_filter = get_filter(config.mag_filter);
+    // Per-title hack (ported from Citra MMJ): promote nearest magnification to linear.
+    if (force_linear_mag_filter && mag_filter == TextureFilter::Nearest) {
+        mag_filter = TextureFilter::Linear;
+    }
+
     const SamplerParams params = {
-        .mag_filter = get_filter(config.mag_filter),
+        .mag_filter = mag_filter,
         .min_filter = get_filter(config.min_filter),
         .mip_filter = get_filter(config.mip_filter),
         .wrap_s = config.wrap_s,

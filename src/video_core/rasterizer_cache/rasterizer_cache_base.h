@@ -85,7 +85,8 @@ public:
     void TickFrame();
 
     /// Perform hardware accelerated texture copy according to the provided configuration
-    bool AccelerateTextureCopy(const Pica::DisplayTransferConfig& config);
+    bool AccelerateTextureCopy(const Pica::DisplayTransferConfig& config,
+                               bool skip_if_no_source = false);
 
     /// Perform hardware accelerated display transfer according to the provided configuration
     bool AccelerateDisplayTransfer(const Pica::DisplayTransferConfig& config);
@@ -97,7 +98,8 @@ public:
     Surface& GetSurface(SurfaceId surface_id);
 
     /// Returns a reference to the sampler object matching the provided configuration
-    Sampler& GetSampler(const Pica::TexturingRegs::TextureConfig& config);
+    Sampler& GetSampler(const Pica::TexturingRegs::TextureConfig& config,
+                        bool force_linear_mag_filter = false);
     Sampler& GetSampler(SamplerId sampler_id);
 
     /// Copy one surface's region to another
