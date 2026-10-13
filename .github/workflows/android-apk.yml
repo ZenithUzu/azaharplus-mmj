@@ -1,6 +1,5 @@
-# Lean Android build (arm64-v8a, installable APK) for this fork. It only runs in repositories owned
-# by axelconde7w7-gif. Every successful build is also published as a GitHub release ("build-<n>"),
-# which is what the in-app update check looks at.
+# Lean Android build (arm64-v8a, installable APK) for this fork. Every successful build is also
+# published as a GitHub release ("build-<n>"), which is what the in-app update check looks at.
 #
 # Optional repository secrets for a FIXED signing key (needed so a new build can be installed over
 # the previous one): ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASS, ANDROID_KEY_ALIAS.
@@ -22,7 +21,6 @@ concurrency:
 
 jobs:
   apk:
-    if: ${{ github.repository_owner == 'axelconde7w7-gif' }}
     runs-on: ubuntu-latest
     timeout-minutes: 120
     env:

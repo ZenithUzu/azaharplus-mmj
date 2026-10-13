@@ -4,8 +4,6 @@
 
 # Azahar+ mmj
 
-**English** · [Español](README.es.md)
-
 Azahar+ mmj is an unofficial Nintendo 3DS emulator for Android (the desktop sources are still in the tree). It is a fork of
 [AzaharPlus](https://github.com/AzaharPlus/AzaharPlus), which is a fork of [Azahar](https://github.com/azahar-emu/azahar). The
 fork exists to carry over the per-game fixes that [Citra MMJ](https://github.com/weihuoya/citra) collected over the years, and to
@@ -28,10 +26,9 @@ It is not affiliated with, or endorsed by, Azahar, AzaharPlus, Citra, Lime3DS, t
 
 ## Status
 
-Experimental. The APK from the `azaharplus-mmj` branch builds on GitHub Actions and has been run on one device (POCO F7 Pro,
-Snapdragon 8 Gen 3) with a handful of games. There are no per-hack A/B measurements and no game-by-game results yet; what has and
-has not been checked is written down in [`docs/MMJ_PORT.md`](docs/MMJ_PORT.md). Several things below were only compiled, not
-run, and are marked as such.
+Experimental. The APK from the `azaharplus-mmj` branch builds on GitHub Actions and has been run on a single Android device with a
+handful of games. There are no per-hack A/B measurements and no game-by-game results yet; what has and has not been checked is
+written down in [`docs/MMJ_PORT.md`](docs/MMJ_PORT.md). Several things below were only compiled, not run, and are marked as such.
 
 This repository has two lines of the same port:
 
@@ -40,7 +37,7 @@ This repository has two lines of the same port:
 | `azaharplus-mmj` | AzaharPlus (`cf90688`, 2026-10-08) | This one. Has the settings menu, update checker, 60 FPS cheat download. |
 | `master` | Azahar | Older, no settings menu. |
 
-GitHub only allows one fork of a given repository per account, which is why both live here as branches.
+Both live here as branches because GitHub only allows one fork of a given repository per account.
 
 ## Why this fork exists
 
@@ -81,7 +78,7 @@ re-verified here):
 
 ## MMJ hacks
 
-Menu path on Android: *Settings → Citra MMJ hacks* (Spanish: *Ajustes de Citra MMJ*). Switches in the first table are on by
+Menu path on Android: *Settings → Citra MMJ hacks*. Switches in the first table are on by
 default. Turning a switch off leaves those games exactly as AzaharPlus treats them without the port.
 
 | Switch | Hack | Title IDs | Example games |
@@ -131,7 +128,7 @@ game the section only shows the ID.
 
 Every successful build on GitHub Actions publishes a release named `build-<n>`, marked as pre-release, with the APK attached.
 The 10 most recent are kept. Download the APK from the
-[Releases page](https://github.com/axelconde7w7-gif/azaharplus-mmj/releases) and install it.
+[Releases page](../../releases) and install it.
 
 The APK uses the `.mmj` suffix in its application ID, so it installs next to Azahar or AzaharPlus rather than replacing them.
 
@@ -157,7 +154,7 @@ Keep a safe copy of the keystore. If it is lost, nobody can update over existing
 ## Building
 
 Full instructions (Android Studio, GitHub Actions, what to look at in each game) are in
-[`docs/ANDROID_TEST.md`](docs/ANDROID_TEST.md), currently in Spanish. In short: open `src/android` in Android Studio, or let the
+[`docs/ANDROID_TEST.md`](docs/ANDROID_TEST.md). In short: open `src/android` in Android Studio, or let the
 workflow in `.github/workflows/android-apk.yml` build an arm64 APK. To check that a build is this fork: internal resolution
 stops at 8x, the Citra MMJ menu exists and each game's log has a `Per-game hacks for <ID>` line.
 
@@ -180,9 +177,8 @@ first appears. To browse the full history locally: `git remote add mmj https://g
 
 ## Authorship and AI use
 
-The code and documentation for this fork's changes were written with Claude (Anthropic), following the direction and decisions of
-the repository owner. Commits carry a `Co-Authored-By` trailer, and the app says so at first launch and under *About → Credits and
-AI notice*.
+The code and documentation for this fork's changes were written with Claude (Anthropic). Commits carry a `Co-Authored-By` trailer,
+and the app says so at first launch and under *About → Credits and AI notice*.
 
 Two practical consequences:
 
@@ -209,8 +205,7 @@ Most of what is useful here is other people's work.
   repository: Hazerou (GBAtemp thread), lucky, NanashiFinal13, Spooky and others named in each cheat. They are downloaded on
   demand, not redistributed.
 - The authors of the bundled libraries (Dynarmic, libzip and others), under their own licenses.
-- Claude (Anthropic) wrote the code and documentation of this fork's changes, and
-  [axelconde7w7-gif](https://github.com/axelconde7w7-gif) directs the project, decides what gets done and tests it on a device.
+- Claude (Anthropic) wrote the code and documentation of this fork's changes.
 - Logo: the flower is Azahar's logo, property of PabloMK7 and angyartanddraw (see
   `the_azahar_logo_is_the_property_of_PabloMK7_and_angyartanddraw.txt`). It is used here to identify the base of the project and
   does not imply official endorsement.

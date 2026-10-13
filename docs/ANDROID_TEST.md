@@ -5,7 +5,7 @@
 - ~15 GB libres. Primera compilacion de la parte nativa: larga (decenas de minutos en un portatil).
 
 ## Pasos
-1. `git clone --recurse-submodules -b azaharplus-mmj https://github.com/axelconde7w7-gif/azaharplus-mmj.git` (ruta corta en Windows, p. ej. `C:\dev`; antes `git config --global core.longpaths true`)
+1. `git clone --recurse-submodules -b azaharplus-mmj <URL del repositorio>` (ruta corta en Windows, p. ej. `C:\dev`; antes `git config --global core.longpaths true`)
    (si ya clonaste sin submodulos: `git submodule update --init --recursive`)
 2. Abrir **`src/android`** (no la raiz) en Android Studio y esperar el Gradle sync.
 3. Para compilar solo lo que usa un telefono, anade `-Pabi=arm64-v8a` en Settings > Build > Gradle (Command-line Options), o al comando de Gradle.
@@ -30,7 +30,7 @@ Si un juego va peor con un hack, apaga su interruptor. Si quieres quitarlo del t
 ## Compilar el APK en GitHub Actions (sin Android Studio)
 
 El repositorio incluye `.github/workflows/android-apk.yml`, que compila un APK de **arm64-v8a** con el sufijo `.mmj` (se
-instala junto a otras versiones) y solo se ejecuta en repositorios de la cuenta `axelconde7w7-gif`. No usa secretos; el APK
+instala junto a otras versiones). Los secretos de firma son opcionales (ver el README); sin ellos el APK
 queda firmado con la clave de depuracion de Gradle.
 
 1. En el repositorio, abre la pestana **Actions** y, si GitHub lo pide, activa los workflows.
