@@ -2,6 +2,8 @@
 // Licensed under GPLv2 or any later version
 // Refer to the misc/licenses/gplv2.txt file included.
 
+#include <chrono>
+
 #include <boost/container/static_vector.hpp>
 
 #include "common/common_paths.h"
@@ -371,8 +373,20 @@ bool PipelineCache::BindPipeline(PipelineInfo& info, bool wait_built) {
     }
 
     GraphicsPipeline* const pipeline = curr_disk_cache->GetPipeline(info);
-    if (!pipeline->IsDone() && !pipeline->TryBuild(wait_built)) {
-        return false;
+    if (!pipeline->IsDone()) {
+        // MMJ diagnostics: report how long the draw thread waits on a pipeline build.
+        const auto t0 = std::chrono::steady_clock::now();
+        const bool built = pipeline->TryBuild(wait_built);
+        const double ms =
+            std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0)
+                .count();
+        if (ms >= 4.0) {
+            LOG_WARNING(Render_Vulkan, "Pipeline stall: waited {:.1f}ms (wait_built={}, built={})",
+                        ms, wait_built, built);
+        }
+        if (!built) {
+            return false;
+        }
     }
 
     const bool is_dirty = scheduler.IsStateDirty(StateFlags::Pipeline);
