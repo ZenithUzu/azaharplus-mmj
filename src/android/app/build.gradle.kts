@@ -21,7 +21,9 @@ plugins {
  * next 680 years.
  */
 val autoVersion = (((System.currentTimeMillis() / 1000) - 1451606400) / 10).toInt()
-val abiFilter = listOf("arm64-v8a", "x86_64")
+// Pass -Pabi=arm64-v8a (comma separated for several) to build fewer ABIs, e.g. for quick CI builds.
+val abiFilter = (project.findProperty("abi") as String?)?.split(",")?.map { it.trim() }
+    ?: listOf("arm64-v8a", "x86_64")
 
 val downloadedJniLibsPath = "${layout.buildDirectory.get().asFile.path}/downloadedJniLibs"
 
