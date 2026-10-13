@@ -85,12 +85,18 @@ jobs:
         run: |
           N=${{ github.run_number }}
           SHORT=$(git rev-parse --short HEAD)
+          BASE="2126.2-A" # AzaharPlus release this fork is based on
           APK="azahar-plus-mmj-arm64-build${N}.apk"
           cp src/android/app/build/outputs/apk/vanilla/release/*.apk "$APK"
           {
-            echo "Unofficial fork made with AI. Build ${N}, commit ${SHORT}. Only arm64. Source: this repository."
+            echo "Azahar+ mmj ${BASE} build ${N} is AzaharPlus ${BASE} with the Citra MMJ per-game hacks, plus the changes listed below."
+            echo "Unofficial fork made with AI. Only arm64. Commit ${SHORT}."
             echo
-            echo "See the README for what this fork changes and which hacks are on or off by default."
+            echo "**Changes in this version**"
+            echo
+            echo "This page only lists what changed in this version. The README has the full feature list."
+            echo
+            cat docs/RELEASE_NOTES.md
             echo
             if [ "$FIXED_KEY" != "true" ]; then
               echo "> This build is signed with a temporary key: Android will refuse to install it over a previous build (uninstall first)."
@@ -98,7 +104,7 @@ jobs:
             echo "No games, keys or firmware are included. Not affiliated with Azahar, AzaharPlus, Citra, Citra MMJ or Nintendo."
           } > notes.md
           gh release create "build-${N}" "$APK" --target "$GITHUB_SHA" \
-            --title "Azahar+ mmj build ${N} (${SHORT})" --notes-file notes.md --prerelease
+            --title "Azahar+ mmj ${BASE} build ${N}" --notes-file notes.md --prerelease
       - name: Keep only the 10 newest build releases
         env:
           GH_TOKEN: ${{ github.token }}
