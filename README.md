@@ -145,8 +145,9 @@ Most of what is useful here is other people's work.
   downloaded on demand, not redistributed.
 - The authors of the bundled libraries (Dynarmic, libzip and others), under their own licenses.
 - Claude (Anthropic) wrote the code and documentation of this project's changes.
-- Logo: the flower is Azahar's logo, property of PabloMK7 and angyartanddraw. It is used here to identify the base of the project
-  and does not imply official endorsement.
+- Logo: the flower is Azahar's logo, property of PabloMK7 and angyartanddraw. The logo of the maintained line is a mix of the
+  Azahar and Citra MMJ logos made with AI; the author holds no rights over it and it is subject to change. It is used here to
+  identify the base of the project and does not imply official endorsement.
 
 If you wrote any of these projects and want something corrected or removed, open an issue here.
 
