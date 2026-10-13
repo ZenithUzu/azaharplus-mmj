@@ -89,6 +89,13 @@ class HomeSettingsFragment : Fragment() {
 
         val optionsList = listOf(
             HomeSetting(
+                R.string.update_section_title,
+                R.string.update_section_description,
+                R.drawable.ic_system_update,
+                { checkForUpdates() },
+                details = MutableStateFlow(installedBuildText())
+            ),
+            HomeSetting(
                 R.string.grid_menu_core_settings,
                 R.string.settings_description,
                 R.drawable.ic_settings,
@@ -186,13 +193,6 @@ class HomeSettingsFragment : Fragment() {
                             .show()
                     }
                 }
-            ),
-            HomeSetting(
-                R.string.update_section_title,
-                R.string.update_section_description,
-                R.drawable.ic_system_update,
-                { checkForUpdates() },
-                details = MutableStateFlow(installedBuildText())
             ),
             HomeSetting(
                 R.string.share_log,
