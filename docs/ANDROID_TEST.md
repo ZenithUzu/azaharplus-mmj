@@ -26,3 +26,18 @@ Instala tambien el Azahar oficial y compara el mismo punto del juego en ambos.
 
 Si un juego se ve peor con la rama que con el oficial, quita su ID de `src/common/hacks/hack_list.cpp`
 (la lista del hack correspondiente) y reconstruye: cada hack es independiente.
+
+## Compilar el APK en GitHub Actions (sin Android Studio)
+
+El fork incluye `.github/workflows/android-apk.yml`, que compila un APK de **arm64-v8a** (el de teléfonos) y solo se
+ejecuta en `axelconde7w7-gif/azahar-mmj`. No usa secretos; el APK queda firmado con la clave de depuración de Gradle,
+asi que se puede instalar directamente.
+
+1. En el fork, abre la pestaña **Actions** y, si GitHub lo pide, pulsa *I understand my workflows, enable them*.
+2. Elige **android-apk** → **Run workflow** (tambien corre solo al subir a `master` o `mmj-hacks-port`).
+3. Al terminar (la primera vez puede tardar bastante), descarga el artefacto `azahar-mmj-arm64-<commit>` y descomprime el `.apk`.
+
+En local, el mismo build es `cd src/android && ./gradlew assembleVanillaRelease -Pabi=arm64-v8a` (sin `-Pabi` compila
+arm64-v8a y x86_64). Requiere JDK 17, Android SDK 35, NDK 27.3.13750724 y CMake 3.30.3 (Android Studio los descarga).
+Nota: este codigo **no se ha compilado completo todavia**; si el workflow falla, el log de Actions es la primera
+fuente para corregirlo.
