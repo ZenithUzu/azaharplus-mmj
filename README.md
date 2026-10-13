@@ -126,9 +126,9 @@ game the section only shows the ID.
 
 ## Installing and updating
 
-Every successful build on GitHub Actions publishes a release named `build-<n>`, marked as pre-release, with the APK attached.
-The 10 most recent are kept. Download the APK from the
-[Releases page](../../releases) and install it.
+Every successful build on GitHub Actions publishes a release tagged `build<n>` (the first one is `build1`), shown in the app as
+version `v1.<n>`, with the APK attached. Only the newest release is kept; older ones and their tags are removed automatically.
+Download the APK from the [Releases page](../../releases) and install it.
 
 The APK uses the `.mmj` suffix in its application ID, so it installs next to Azahar or AzaharPlus rather than replacing them.
 
@@ -136,13 +136,14 @@ Inside the app:
 
 - On launch it checks this repository's Releases and offers the download if there is a newer build. This can be turned off in
   *Settings → General → Check for updates*.
-- *Updates* at the top of the home *Options* tab shows the installed build number and checks immediately, even when the automatic
-  check is off.
+- *Updates* at the bottom of the home *Options* tab shows the installed version (for example `v1.3`) and checks immediately,
+  even when the automatic check is off.
 - Local builds (build number 0) never check for updates.
 - Nothing is installed automatically. Android asks for confirmation each time.
 
 To install a new build over the old one, the APK has to be signed with the same key every time. Without one, CI signs with a
-temporary debug key, the signature changes on every build and Android refuses the update, so you would have to uninstall first.
+temporary debug key, the signature changes on every build and Android refuses the update with a "package conflicts" or "app not
+installed" message. When that happens, uninstall the old app first (back up your data folder); the update dialog says the same.
 To fix a key, create a keystore and add these repository secrets under *Settings → Secrets and variables → Actions*:
 
 - `ANDROID_KEYSTORE_BASE64`: the `.jks` file encoded in base64
@@ -207,8 +208,9 @@ Most of what is useful here is other people's work.
 - The authors of the bundled libraries (Dynarmic, libzip and others), under their own licenses.
 - Claude (Anthropic) wrote the code and documentation of this fork's changes.
 - Logo: the flower is Azahar's logo, property of PabloMK7 and angyartanddraw (see
-  `the_azahar_logo_is_the_property_of_PabloMK7_and_angyartanddraw.txt`). It is used here to identify the base of the project and
-  does not imply official endorsement.
+  `the_azahar_logo_is_the_property_of_PabloMK7_and_angyartanddraw.txt`). The app logo is a mix of the Azahar and Citra MMJ logos
+  made with AI; the author of this fork holds no rights over it and it is subject to change. It is used here to identify the
+  base of the project and does not imply official endorsement.
 
 If you wrote any of these projects and want something corrected or removed, open an issue here.
 

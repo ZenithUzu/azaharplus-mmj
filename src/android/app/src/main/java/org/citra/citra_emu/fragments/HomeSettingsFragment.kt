@@ -89,13 +89,6 @@ class HomeSettingsFragment : Fragment() {
 
         val optionsList = listOf(
             HomeSetting(
-                R.string.update_section_title,
-                R.string.update_section_description,
-                R.drawable.ic_system_update,
-                { checkForUpdates() },
-                details = MutableStateFlow(installedBuildText())
-            ),
-            HomeSetting(
                 R.string.grid_menu_core_settings,
                 R.string.settings_description,
                 R.drawable.ic_settings,
@@ -258,6 +251,13 @@ class HomeSettingsFragment : Fragment() {
                     parentFragmentManager.primaryNavigationFragment?.findNavController()
                         ?.navigate(R.id.action_homeSettingsFragment_to_aboutFragment)
                 }
+            ),
+            HomeSetting(
+                R.string.update_section_title,
+                R.string.update_section_description,
+                R.drawable.ic_system_update,
+                { checkForUpdates() },
+                details = MutableStateFlow(installedVersionText())
             )
         )
 
@@ -355,9 +355,10 @@ class HomeSettingsFragment : Fragment() {
         }
     }
 
-    private fun installedBuildText(): String =
+    /** Small version label such as "v1.3" (release build N is shown as 1.N). */
+    private fun installedVersionText(): String =
         if (BuildConfig.MMJ_BUILD_NUMBER > 0) {
-            getString(R.string.update_installed_build, BuildConfig.MMJ_BUILD_NUMBER)
+            "v1.${BuildConfig.MMJ_BUILD_NUMBER}"
         } else {
             getString(R.string.update_installed_local)
         }

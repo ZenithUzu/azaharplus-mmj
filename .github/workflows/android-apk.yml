@@ -1,5 +1,6 @@
 # Lean Android build (arm64-v8a, installable APK) for this fork. Every successful build is also
-# published as a GitHub release ("build-<n>"), which is what the in-app update check looks at.
+# published as the only GitHub release ("build<n>", counting from 1), which is what the in-app
+# update check looks at. Older releases and their tags are removed after each publish.
 #
 # Optional repository secrets for a FIXED signing key (needed so a new build can be installed over
 # the previous one): ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASS, ANDROID_KEY_ALIAS.
@@ -32,6 +33,25 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0
+      - name: Decide build number
+        id: ver
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Next number = newest existing release + 1 (1 when there is none).
+          LAST=$(gh api "repos/${{ github.repository }}/releases?per_page=100" --paginate \
+            --jq '.[].tag_name' | sed -nE 's/^build-?([0-9]+)$/\1/p' | sort -n | tail -1)
+          N=$(( ${LAST:-0} + 1 ))
+          echo "n=$N" >> "$GITHUB_OUTPUT"
+          echo "Build number: $N"
+          # Drop leftover tags without a release (they would be reused by the release step).
+          RELTAGS=$(gh api "repos/${{ github.repository }}/releases?per_page=100" --paginate --jq '.[].tag_name')
+          git ls-remote --tags origin | sed -nE 's#.*refs/tags/(build-?[0-9]+)$#\1#p' | while read -r tag; do
+            if ! echo "$RELTAGS" | grep -qx "$tag"; then
+              echo "Deleting orphan tag $tag"
+              git push origin ":refs/tags/$tag" || true
+            fi
+          done
       - name: Cache
         uses: actions/cache@v5
         with:
@@ -70,7 +90,7 @@ jobs:
         run: |
           export NDK_CCACHE=$(which ccache)
           chmod +x ./gradlew
-          JAVA_HOME=$JAVA_HOME_17_X64 ./gradlew assembleVanillaRelease -Pabi=arm64-v8a -PappIdSuffix=.mmj -PmmjBuild=${{ github.run_number }}
+          JAVA_HOME=$JAVA_HOME_17_X64 ./gradlew assembleVanillaRelease -Pabi=arm64-v8a -PappIdSuffix=.mmj -PmmjBuild=${{ steps.ver.outputs.n }}
           ccache -s
       - name: Upload APK
         uses: actions/upload-artifact@v7
@@ -83,13 +103,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           FIXED_KEY: ${{ steps.signing.outputs.fixed }}
         run: |
-          N=${{ github.run_number }}
+          N=${{ steps.ver.outputs.n }}
           SHORT=$(git rev-parse --short HEAD)
           BASE="2126.2-A" # AzaharPlus release this fork is based on
           APK="azahar-plus-mmj-arm64-build${N}.apk"
           cp src/android/app/build/outputs/apk/vanilla/release/*.apk "$APK"
           {
-            echo "Azahar+ mmj ${BASE} build ${N} is AzaharPlus ${BASE} with the Citra MMJ per-game hacks, plus the changes listed below."
+            echo "Azahar+ mmj ${BASE} build ${N} (app version v1.${N}) is AzaharPlus ${BASE} with the Citra MMJ per-game hacks, plus the changes listed below."
             echo "Unofficial fork made with AI. Only arm64. Commit ${SHORT}."
             echo
             echo "**Changes in this version**"
@@ -99,16 +119,16 @@ jobs:
             cat docs/RELEASE_NOTES.md
             echo
             if [ "$FIXED_KEY" != "true" ]; then
-              echo "> This build is signed with a temporary key: Android will refuse to install it over a previous build (uninstall first)."
+              echo "> This build is signed with a temporary key. If Android reports a package conflict or refuses to install it over an older copy, uninstall the old app first (back up your data folder)."
             fi
             echo "No games, keys or firmware are included. Not affiliated with Azahar, AzaharPlus, Citra, Citra MMJ or Nintendo."
           } > notes.md
-          gh release create "build-${N}" "$APK" --target "$GITHUB_SHA" \
-            --title "Azahar+ mmj ${BASE} build ${N}" --notes-file notes.md --prerelease
-      - name: Keep only the 10 newest build releases
+          gh release create "build${N}" "$APK" --target "$GITHUB_SHA" \
+            --title "Azahar+ mmj ${BASE} build ${N}" --notes-file notes.md --latest
+      - name: Keep only the newest build release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release list --limit 200 --json tagName,createdAt \
-            --jq '[.[] | select(.tagName | test("^build-[0-9]+$"))] | sort_by(.createdAt) | reverse | .[10:] | .[].tagName' |
+            --jq '[.[] | select(.tagName | test("^build-?[0-9]+$"))] | sort_by(.createdAt) | reverse | .[1:] | .[].tagName' |
             while read -r tag; do gh release delete "$tag" --cleanup-tag --yes; done

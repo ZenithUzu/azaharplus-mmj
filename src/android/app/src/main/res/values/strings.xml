@@ -38,6 +38,7 @@
     <string name="clear_streetpass_config">Clear StreetPass Configuration</string>
     <string name="citra_description">An open-source 3DS emulator\nLicensed under GPLv3 or any later version</string>
     <string name="about_description">Build version, credits, and more</string>
+    <string name="about_logo_note">The app logo is a mix of the Azahar and Citra MMJ logos, combined with AI. The author of this fork holds no rights over it, and it is subject to change. The original logos belong to their respective owners.</string>
     <string name="clear_streetpass_config_description">In case something went wrong with ZipPass</string>
     <string name="games_dir_selected">Application directory selected</string>
     <string name="select_citra_user_folder_home_description">Changes the files that Azahar uses to load applications</string>
@@ -1159,7 +1160,7 @@
 
     <!-- Update Checker -->
     <string name="update_available">Update Available</string>
-    <string name="update_available_description">A newer version of Azahar+ mmj is available: %1$s.\nWould you like to download it? If Android refuses to install it over your current version, the signing key changed: uninstall the old app first (back up your data folder).</string>
+    <string name="update_available_description">A newer version of Azahar+ mmj is available: %1$s.\n\nIf Android says the app could not be installed or that the package conflicts with an existing one, the signing key of the installed copy is different. Uninstall the current app first (back up your data folder, then Settings > Apps > Azahar+ mmj > Uninstall) and install the new APK. Updates install over the old copy only when both were signed with the same key.\n\nDownload it now?</string>
     <string name="check_for_updates">Check For Updates</string>
     <string name="check_for_updates_description">Show a notification when a newer Azahar+ mmj build is published in this fork\'s GitHub releases.</string>
     <string name="update_check_channel">Update Channel</string>
@@ -1224,9 +1225,8 @@
     <string name="update_download">Download</string>
     <string name="update_release_notes">What\'s new</string>
     <string name="update_section_title">Updates</string>
-    <string name="update_section_description">Check the Releases of the Azahar+ mmj repository for a newer version and download it.</string>
-    <string name="update_installed_build">Installed build: %1$d</string>
-    <string name="update_installed_local">Installed build: local (not from Releases)</string>
+    <string name="update_section_description">Check for a newer version</string>
+    <string name="update_installed_local">Local build</string>
     <string name="update_checking">Checking for updates…</string>
     <string name="update_check_failed">Could not reach GitHub. Check your connection and try again.</string>
     <string name="update_up_to_date">You already have the latest version (%1$s).</string>

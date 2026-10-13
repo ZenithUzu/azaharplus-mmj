@@ -52,12 +52,13 @@
                 android:layout_marginTop="28dp" />
 
 			<com.google.android.material.textview.MaterialTextView
-				style="@style/TextAppearance.Material3.TitleMedium"
+				style="@style/TextAppearance.Material3.BodyMedium"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_marginHorizontal="24dp"
+				android:layout_marginTop="12dp"
 				android:textAlignment="viewStart"
-				android:text="The Azahar logo is the property of PabloMK7 and angyartanddraw" />
+				android:text="@string/about_logo_note" />
 					
             <com.google.android.material.divider.MaterialDivider
                 android:layout_width="match_parent"

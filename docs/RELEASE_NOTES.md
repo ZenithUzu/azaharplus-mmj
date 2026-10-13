@@ -1,1 +1,11 @@
-- No functional changes since the previous build.
+- Citra MMJ per-game hacks ported to the current code: accurate shader multiplication, skipping slow draws, skipping texture copies, extra clip plane, linear magnification filter and redundant YUV conversions. They only act on the games in their own list, on both OpenGL and Vulkan.
+- Settings menu (Settings > Citra MMJ hacks) with one switch per hack.
+- Five experimental hacks, off by default, with a warning before turning them on: CPU usage limit, skipping invalidation on CPU writes, display transfer remap, minimum CPU ticks per flush (FMV hack) and disable shadow rendering.
+- 60 FPS cheat download in the cheats screen, only for games whose title ID has a file in Reshiban/60FPS-AR-CHEATS-3DS.
+- Built-in cheat database fix: cheats that shared a name but had different codes are no longer dropped.
+- Internal resolution capped at 8x.
+- Log lists the active hacks and reports shader and pipeline stalls. "Share MMJ diagnostics" sends a short summary for bug reports.
+- In-app update check that looks only at this repository's Releases (Azahar and AzaharPlus update notices removed). "Updates" entry at the bottom of the Options tab shows the installed version and checks on demand. If Android reports a package conflict when installing, the dialog explains that the old app must be uninstalled first.
+- Fork notice at first launch, credits screen, and a logo note in About.
+- New app icon and in-app logo.
+- Renamed to Azahar+ mmj.

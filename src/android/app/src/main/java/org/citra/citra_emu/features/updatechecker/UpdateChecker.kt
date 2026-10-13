@@ -16,11 +16,11 @@ import org.citra.citra_emu.utils.Log
 /**
  * Looks for a newer build of Azahar+ mmj in the Releases of this fork only (never in the
  * Azahar or AzaharPlus repositories). CI publishes one release per build, tagged
- * "build-<number>", and passes the same number to the app as BuildConfig.MMJ_BUILD_NUMBER.
+ * "build<number>" (the older "build-<number>" is also accepted), and passes the same number to the app as BuildConfig.MMJ_BUILD_NUMBER.
  */
 object UpdateChecker {
     const val REPO = "axelconde7w7-gif/azaharplus-mmj"
-    private val TAG_REGEX = Regex("^build-(\\d+)$")
+    private val TAG_REGEX = Regex("^build-?(\\d+)$")
 
     data class Release(
         val buildNumber: Int,

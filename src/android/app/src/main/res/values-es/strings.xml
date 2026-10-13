@@ -28,6 +28,7 @@
     <string name="about">Acerca de</string>
     <string name="citra_description">Un emulador de 3DS de código abierto</string>
     <string name="about_description">Versión de compilación, créditos y más</string>
+    <string name="about_logo_note">El logo de la app es una mezcla de los logos de Azahar y Citra MMJ, combinada con IA. El autor de este fork no tiene derechos sobre él y está sujeto a cambios. Los logos originales pertenecen a sus respectivos dueños.</string>
     <string name="games_dir_selected">Directorio de aplicaciones seleccionado</string>
     <string name="select_citra_user_folder_home_description">Cambia los archivos que Azahar usa para cargar aplicaciones</string>
     <string name="theme_and_color_description">Modifica el aspecto de la app</string>
@@ -1065,7 +1066,7 @@ Se esperan fallos gráficos temporales cuando ésta esté activado.</string>
     <string name="no_preference">Sin Preferencia</string>
 
     <string name="update_available">Actualización Disponible</string>
-    <string name="update_available_description">Hay una nueva versión de Azahar+ mmj disponible: %1$s.\n¿Quieres descargarla? Si Android no deja instalarla sobre la actual, la firma cambió: desinstala antes la app anterior (haz copia de tu carpeta de datos).</string>
+    <string name="update_available_description">Hay una nueva versión de Azahar+ mmj: %1$s.\n\nSi Android indica que no se pudo instalar la app o que el paquete entra en conflicto con otro existente, la firma de la copia instalada es distinta. Desinstala primero la app actual (haz copia de tu carpeta de datos y luego Ajustes > Apps > Azahar+ mmj > Desinstalar) e instala el APK nuevo. Una actualización solo se instala sobre la anterior si ambas se firmaron con la misma clave.\n\n¿Descargarla ahora?</string>
     <string name="check_for_updates">Buscar Actualizaciones</string>
     <string name="check_for_updates_description">Mostrar una notificación cuando haya una versión nueva de Azahar+ mmj en los releases de GitHub de este fork.</string>
     <string name="update_check_channel">Canal de Actualización</string>
@@ -1130,9 +1131,8 @@ Se esperan fallos gráficos temporales cuando ésta esté activado.</string>
     <string name="update_download">Descargar</string>
     <string name="update_release_notes">Novedades</string>
     <string name="update_section_title">Actualizaciones</string>
-    <string name="update_section_description">Busca en los Releases del repositorio de Azahar+ mmj una versión más nueva y descárgala.</string>
-    <string name="update_installed_build">Build instalado: %1$d</string>
-    <string name="update_installed_local">Build instalado: local (no viene de Releases)</string>
+    <string name="update_section_description">Buscar una versión más nueva</string>
+    <string name="update_installed_local">Compilación local</string>
     <string name="update_checking">Buscando actualizaciones…</string>
     <string name="update_check_failed">No se pudo conectar con GitHub. Revisa tu conexión e inténtalo de nuevo.</string>
     <string name="update_up_to_date">Ya tienes la versión más reciente (%1$s).</string>
