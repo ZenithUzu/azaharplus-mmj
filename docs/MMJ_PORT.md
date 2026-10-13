@@ -16,7 +16,8 @@ La primera version del port solo uso (1). Ahora las listas se regeneran desde (2
   y2r_u, settings, hack_list), sin errores ni advertencias. El codigo Kotlin/Android de los interruptores no se pudo compilar en el
   entorno donde se escribio.
 - El port original sobre Azahar oficial fue compilado y ejecutado en Android por el propietario del fork, que reporta que funciona.
-- Este fork sobre AzaharPlus: sin probar en dispositivo todavia. No hay pruebas documentadas juego por juego.
+- Este fork sobre AzaharPlus: el APK compila en GitHub Actions y se probo en un dispositivo (ver "Pruebas reportadas"). No hay
+  comparativas por hack ni resultados juego por juego.
 
 ## Portado
 | Hack MMJ | HackType | IDs | Juegos |
@@ -78,6 +79,17 @@ Apagar un interruptor deja ese juego exactamente como lo trata AzaharPlus sin el
 | Super Mario 3D Land | accurate_mul_fast | ACCURATE_MULTIPLICATION_MMJ (+ DELAY_TEXTURE_COPY_COMPLETION de Azahar) |
 | Kid Icarus: Uprising | accurate_mul_fast, skip_texture_copy | ACCURATE_MULTIPLICATION_MMJ y SKIP_TEXTURE_COPY |
 | Animal Crossing, Smash, Monster Hunter, Kirby | sin entradas | sin hack |
+
+## Pruebas reportadas
+Reportadas por el propietario del fork, sin mediciones ni comparativas A/B. Dispositivo: **POCO F7 Pro**, 12 GB de RAM,
+Snapdragon 8 Gen 3. APK de la rama `azaharplus-mmj` compilado en GitHub Actions (2026-10-13).
+
+| Juego | Resultado reportado | Hack MMJ implicado |
+|---|---|---|
+| Pokemon Ruby (con el truco integrado de AzaharPlus) | 60 fps fijos con resolucion interna x4 | ninguno: MMJ no tiene hacks utiles para los Pokemon 3DS, asi que el rendimiento no es atribuible al port |
+| The Legend of Zelda: Majora's Mask 3D | 30 fps fijos con resolucion interna x4 | `ACCURATE_MULTIPLICATION_MMJ` esta activo para este juego (por defecto); no se comparo con el interruptor apagado |
+
+Pendiente: comparar con cada interruptor apagado y encendido en juegos de las listas (Mario Kart 7, Star Fox 64, etc.).
 
 ## Procedencia (commits originales de MMJ)
 

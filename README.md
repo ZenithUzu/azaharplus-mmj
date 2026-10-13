@@ -7,9 +7,9 @@
 > *English summary at the [bottom](#english-summary).*
 
 > [!WARNING]
-> **Estado: experimental.** Los archivos principales compilan sobre esta base, pero **este fork todavía no se ha probado en un
-> dispositivo ni juego por juego**. (El mismo port sobre Azahar oficial sí fue compilado y ejecutado en Android por el
-> propietario del fork.) No publica binarios y **no está afiliado ni respaldado** por Azahar, AzaharPlus, Citra, Lime3DS, los
+> **Estado: experimental.** El APK de esta rama compila en GitHub Actions y fue **probado en un solo dispositivo** (POCO F7 Pro) con
+> unos pocos juegos, sin comparar cada hack por separado: ver [`docs/MMJ_PORT.md`](docs/MMJ_PORT.md#pruebas-reportadas). No hay
+> resultados documentados juego por juego. No publica binarios y **no está afiliado ni respaldado** por Azahar, AzaharPlus, Citra, Lime3DS, los
 > autores de Citra MMJ ni Nintendo.
 
 > [!NOTE]
@@ -143,8 +143,8 @@ emulator) that ports the per-game compatibility hacks accumulated in **[Citra MM
 - **Menu:** *Settings → Citra MMJ hacks* (Android) has one switch per hack, all on by default and switchable per game. Each hack
   only affects the title IDs listed for it; any other game behaves exactly like AzaharPlus.
 - **Also:** internal resolution is capped at 8x, and the log prints which hacks are active when a game starts.
-- **Status:** the main affected source files compile on this base. **Not yet tested on a device, no per-game results.** The same port
-  on official Azahar was built and run on Android by the repository owner. No binaries are published; not affiliated with any of the
+- **Status:** the APK of this branch builds on GitHub Actions and was **tested on one device only** (POCO F7 Pro) with a few games,
+  without A/B comparisons per hack; see [`docs/MMJ_PORT.md`](docs/MMJ_PORT.md#pruebas-reportadas). No per-game results yet. No binaries are published; not affiliated with any of the
   projects credited above or with Nintendo.
 - **AI disclosure:** the changes were written with Claude (Anthropic) under the owner's direction. Azahar's
   [AI policy](https://github.com/azahar-emu/azahar/blob/master/AI-POLICY.md) forbids submitting substantially AI-written code, so
