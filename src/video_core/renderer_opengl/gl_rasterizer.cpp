@@ -554,6 +554,12 @@ bool RasterizerOpenGL::Draw(bool accelerate, bool is_indexed) {
     MICROPROFILE_SCOPE(OpenGL_Drawing);
     const DebugScope scope(runtime, Common::Vec4f{}, "RasterizerOpenGL::Draw");
 
+    // Citra MMJ disable_shadow_rendering: drop shadow draws (and any software-path batch).
+    if (skip_shadow_draw && regs.framebuffer.IsShadowRendering()) {
+        vertex_batch.clear();
+        return true;
+    }
+
     SyncDrawState();
 
     const bool shadow_rendering = regs.framebuffer.IsShadowRendering();

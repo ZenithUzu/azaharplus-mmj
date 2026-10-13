@@ -545,5 +545,48 @@ HackManager hack_manager = {
                  },
              // clang-format on
          }},
+
+        // Citra MMJ use_fmv_hack (config-games.ini): CPU backends charge a minimum number of ticks
+        // per flush. Off by default.
+        {HackType::FMV_TICKS,
+         HackEntry{
+             .mode = HackAllowMode::FORCE,
+             // clang-format off
+             .affected_title_ids =
+                 {
+                     // Mirror of Fate
+                     0x00040000000BAC00,
+                     0x000400000009E500,
+                     0x0004000000096600,
+
+                     // Luigi's Mansion: Dark Moon
+                     0x00040000000D0000,
+                     0x0004000000076400,
+                     0x0004000000055F00,
+                     0x0004000000076500,
+
+                     // Zombie Panic in Wonderland DX
+                     0x000400000012E000,
+                     0x0004000000167A00,
+                     0x00040000000F5600,
+                 },
+             // clang-format on
+         }},
+
+        // Citra MMJ disable_shadow_rendering (config-games.ini). Off by default.
+        {HackType::DISABLE_SHADOW_RENDERING,
+         HackEntry{
+             .mode = HackAllowMode::FORCE,
+             // clang-format off
+             .affected_title_ids =
+                 {
+                     // Luigi's Mansion: Dark Moon
+                     0x00040000000D0000,
+                     0x0004000000076400,
+                     0x0004000000055F00,
+                     0x0004000000076500,
+                 },
+             // clang-format on
+         }},
     }};
 }

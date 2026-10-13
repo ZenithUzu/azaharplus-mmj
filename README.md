@@ -93,7 +93,7 @@ y con opción por juego. Los cambios se aplican al iniciar un juego.
 
 ### Hacks experimentales (desactivados por defecto)
 
-Además hay tres hacks de MMJ que **no se probaron en este fork** y por eso vienen **apagados**. Al encender cada uno la app muestra
+Además hay cinco hacks de MMJ que **no se probaron en este fork** y por eso vienen **apagados**. Al encender cada uno la app muestra
 un aviso que explica por qué estaba apagado:
 
 | Interruptor | Hack | IDs de título | Por qué está apagado |
@@ -101,6 +101,8 @@ un aviso que explica por qué estaba apagado:
 | Límite de uso de CPU (MMJ) | `CPU_USAGE_LIMIT` / `CPU_USAGE_LIMIT_HEAVY` | 31 | MMJ lo diseñó sobre su propio planificador de CPU; Azahar reparte el tiempo entre núcleos de otra forma y está ajustado para porciones largas, así que el efecto aquí es desconocido |
 | Omitir invalidación por escrituras de CPU (MMJ) | `SKIP_CPU_WRITE` | 3 (Lord of Magna) | Escrito para la caché de texturas de MMJ, que Azahar reescribió; puede dejar gráficos viejos |
 | Remapeo de direcciones de display transfer (MMJ) | `DISPLAY_TRANSFER_REMAP` | 4 (Tales of the Abyss, Pac-Man Party 3D) | Direcciones fijas copiadas de MMJ, sin verificar con esos juegos; iba unido a un arreglo de cierre inesperado que Azahar corrigió después |
+| Mínimo de ticks de CPU por vaciado, «FMV hack» (MMJ) | `FMV_TICKS` | 10 (Mirror of Fate, Luigi's Mansion: Dark Moon, Zombie Panic in Wonderland DX) | MMJ no documenta qué arregla; AzaharPlus cuenta los ticks distinto en cada backend de CPU (Dynarmic, DynCom y FastInterp están cubiertos) y no se probó |
+| Desactivar sombras (MMJ) | `DISABLE_SHADOW_RENDERING` | 4 (Luigi's Mansion: Dark Moon) | Descarta los dibujos de sombra en OpenGL y Vulkan; el lector de esa lista no está en el código público de MMJ, así que se copió lo que MMJ hace sin soporte de sombras; sin probar |
 
 Apagar un interruptor deja esos juegos exactamente como los trata AzaharPlus sin el port. Detalle, notas de fidelidad, lo que **no**
 se portó y por qué: **[`docs/MMJ_PORT.md`](docs/MMJ_PORT.md)**.
@@ -213,8 +215,8 @@ emulator) that ports the per-game compatibility hacks accumulated in **[Citra MM
 - **Status:** the APK of this branch builds on GitHub Actions and was **tested on one device only** (POCO F7 Pro) with a few games,
   without A/B comparisons per hack; see [`docs/MMJ_PORT.md`](docs/MMJ_PORT.md#pruebas-reportadas). No per-game results yet. No binaries are published; not affiliated with any of the
   projects credited above or with Nintendo.
-- **Experimental hacks (off by default):** three more MMJ hacks (CPU usage limit, skip CPU-write invalidation, display-transfer remap)
-  are included but switched off, because they were not tested here; turning each one on shows a warning explaining why.
+- **Experimental hacks (off by default):** five more MMJ hacks (CPU usage limit, skip CPU-write invalidation, display-transfer remap, FMV tick minimum,
+  disable shadow rendering) are included but switched off, because they were not tested here; turning each one on shows a warning explaining why.
 - **60 FPS cheats:** the cheats screen offers an in-app download of the community 60 FPS cheats from
   [Reshiban/60FPS-AR-CHEATS-3DS](https://github.com/Reshiban/60FPS-AR-CHEATS-3DS), only for games whose title ID has a file there.
   Nothing is bundled; the file is downloaded on demand from a pinned commit and added switched off. Credits: Reshiban, Hazerou, lucky, NanashiFinal13 and others.

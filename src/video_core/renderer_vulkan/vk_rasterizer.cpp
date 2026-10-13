@@ -543,6 +543,13 @@ void RasterizerVulkan::DrawTriangles() {
 
 bool RasterizerVulkan::Draw(bool accelerate, bool is_indexed) {
     MICROPROFILE_SCOPE(Vulkan_Drawing);
+
+    // Citra MMJ disable_shadow_rendering: drop shadow draws (and any software-path batch).
+    if (skip_shadow_draw && regs.framebuffer.IsShadowRendering()) {
+        vertex_batch.clear();
+        return true;
+    }
+
     SyncDrawState();
 
     const bool shadow_rendering = regs.framebuffer.IsShadowRendering();

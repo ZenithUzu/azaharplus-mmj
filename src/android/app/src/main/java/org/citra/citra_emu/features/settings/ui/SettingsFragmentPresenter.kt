@@ -1975,6 +1975,26 @@ class SettingsFragmentPresenter(private val fragmentView: SettingsFragmentView) 
                     enableWarningId = R.string.mmj_display_transfer_remap_warning
                 )
             )
+            add(
+                SwitchSetting(
+                    BooleanSetting.MMJ_FMV_HACK,
+                    R.string.mmj_fmv_hack,
+                    R.string.mmj_fmv_hack_description,
+                    BooleanSetting.MMJ_FMV_HACK.key,
+                    BooleanSetting.MMJ_FMV_HACK.defaultValue,
+                    enableWarningId = R.string.mmj_fmv_hack_warning
+                )
+            )
+            add(
+                SwitchSetting(
+                    BooleanSetting.MMJ_DISABLE_SHADOW_RENDERING,
+                    R.string.mmj_disable_shadow_rendering,
+                    R.string.mmj_disable_shadow_rendering_description,
+                    BooleanSetting.MMJ_DISABLE_SHADOW_RENDERING.key,
+                    BooleanSetting.MMJ_DISABLE_SHADOW_RENDERING.defaultValue,
+                    enableWarningId = R.string.mmj_disable_shadow_rendering_warning
+                )
+            )
         }
     }
 

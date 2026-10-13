@@ -56,6 +56,8 @@ object SettingKeys {
     external fun mmj_cpu_usage_limit(): String
     external fun mmj_skip_cpu_write(): String
     external fun mmj_display_transfer_remap(): String
+    external fun mmj_fmv_hack(): String
+    external fun mmj_disable_shadow_rendering(): String
     external fun delay_game_render_thread_us(): String
     external fun simulate_3ds_gpu_timings(): String
     external fun layout_option(): String

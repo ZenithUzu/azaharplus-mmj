@@ -60,6 +60,8 @@ foreach(KEY IN ITEMS
     "mmj_cpu_usage_limit"
     "mmj_skip_cpu_write"
     "mmj_display_transfer_remap"
+    "mmj_fmv_hack"
+    "mmj_disable_shadow_rendering"
     "delay_game_render_thread_us"
     "simulate_3ds_gpu_timings"
     "layout_option"

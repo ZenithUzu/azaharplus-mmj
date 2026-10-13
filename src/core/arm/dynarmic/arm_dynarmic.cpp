@@ -2,6 +2,7 @@
 // Licensed under GPLv2 or any later version
 // Refer to the misc/licenses/gplv2.txt file included.
 
+#include <algorithm>
 #include <csignal>
 #include <cstring>
 #include <dynarmic/interface/A32/a32.h>
@@ -161,6 +162,7 @@ public:
     }
 
     void AddTicks(std::uint64_t ticks) override {
+        ticks = std::max<std::uint64_t>(ticks, parent.GetTimer().GetMinTicks());
         parent.GetTimer().AddTicks(ticks);
     }
     std::uint64_t GetTicksRemaining() override {

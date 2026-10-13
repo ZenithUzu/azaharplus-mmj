@@ -543,6 +543,22 @@ System::ResultStatus System::Load(Frontend::EmuWindow& emu_window, const std::st
         }
     }
 
+    // Citra MMJ "FMV hack" (off by default, see the MMJ settings menu): MMJ charges at least
+    // 16000 ticks per flush with the JIT and 0xFFFF with the interpreters.
+    if (Settings::values.mmj_fmv_hack.GetValue() &&
+        Common::Hacks::hack_manager.OverrideBooleanSetting(Common::Hacks::HackType::FMV_TICKS,
+                                                           title_id, false)) {
+#if CITRA_ARCH(x86_64) || CITRA_ARCH(arm64)
+        const u64 min_ticks = Settings::values.use_cpu_jit ? 16000 : 0xFFFF;
+#else
+        const u64 min_ticks = 0xFFFF;
+#endif
+        for (u32 i = 0; i < cpu_cores.size(); ++i) {
+            timing->GetTimer(i)->SetMinTicks(min_ticks);
+        }
+        LOG_INFO(Core, "MMJ FMV hack active for {:016X} (min ticks {})", title_id, min_ticks);
+    }
+
     perf_stats = std::make_unique<PerfStats>(title_id);
 
     if (Settings::values.dump_textures) {

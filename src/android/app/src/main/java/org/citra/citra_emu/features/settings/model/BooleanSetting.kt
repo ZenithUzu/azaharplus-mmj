@@ -27,6 +27,12 @@ enum class BooleanSetting(
     MMJ_CPU_USAGE_LIMIT(SettingKeys.mmj_cpu_usage_limit(), Settings.SECTION_MMJ, false),
     MMJ_SKIP_CPU_WRITE(SettingKeys.mmj_skip_cpu_write(), Settings.SECTION_MMJ, false),
     MMJ_DISPLAY_TRANSFER_REMAP(SettingKeys.mmj_display_transfer_remap(), Settings.SECTION_MMJ, false),
+    MMJ_FMV_HACK(SettingKeys.mmj_fmv_hack(), Settings.SECTION_MMJ, false),
+    MMJ_DISABLE_SHADOW_RENDERING(
+        SettingKeys.mmj_disable_shadow_rendering(),
+        Settings.SECTION_MMJ,
+        false
+    ),
     DISABLE_SPIRV_OPTIMIZER(SettingKeys.disable_spirv_optimizer(), Settings.SECTION_RENDERER, true),
     PLUGIN_LOADER(SettingKeys.plugin_loader(), Settings.SECTION_SYSTEM, false),
     ALLOW_PLUGIN_LOADER(SettingKeys.allow_plugin_loader(), Settings.SECTION_SYSTEM, true),
@@ -175,6 +181,8 @@ enum class BooleanSetting(
             MMJ_CPU_USAGE_LIMIT,
             MMJ_SKIP_CPU_WRITE,
             MMJ_DISPLAY_TRANSFER_REMAP,
+            MMJ_FMV_HACK,
+            MMJ_DISABLE_SHADOW_RENDERING,
             DELAY_START_LLE_MODULES,
             DETERMINISTIC_ASYNC_OPERATIONS,
             REQUIRED_ONLINE_LLE_MODULES,

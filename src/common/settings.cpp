@@ -112,6 +112,8 @@ void LogSettings() {
     log_setting("MMJ_cpu_usage_limit", values.mmj_cpu_usage_limit.GetValue());
     log_setting("MMJ_skip_cpu_write", values.mmj_skip_cpu_write.GetValue());
     log_setting("MMJ_display_transfer_remap", values.mmj_display_transfer_remap.GetValue());
+    log_setting("MMJ_fmv_hack", values.mmj_fmv_hack.GetValue());
+    log_setting("MMJ_disable_shadow_rendering", values.mmj_disable_shadow_rendering.GetValue());
     log_setting("Renderer_FrameLimit", values.frame_limit.GetValue());
     log_setting("Renderer_VSyncNew", values.use_vsync.GetValue());
     log_setting("Renderer_SkipDuplicateFrames", values.use_skip_duplicate_frames.GetValue());
@@ -238,6 +240,8 @@ void RestoreGlobalState(bool is_powered_on) {
     values.mmj_cpu_usage_limit.SetGlobal(true);
     values.mmj_skip_cpu_write.SetGlobal(true);
     values.mmj_display_transfer_remap.SetGlobal(true);
+    values.mmj_fmv_hack.SetGlobal(true);
+    values.mmj_disable_shadow_rendering.SetGlobal(true);
     values.frame_limit.SetGlobal(true);
     values.texture_filter.SetGlobal(true);
     values.texture_sampling.SetGlobal(true);

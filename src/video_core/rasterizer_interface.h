@@ -102,6 +102,11 @@ public:
         force_linear_mag_filter = force_linear_mag_filter_;
     }
 
+    /// Citra MMJ disable_shadow_rendering: draws that render shadows are dropped.
+    void SetSkipShadowDraw(bool skip_shadow_draw_) {
+        skip_shadow_draw = skip_shadow_draw_;
+    }
+
     /// Citra MMJ cache hacks (skip_cpu_write, display_transfer_hack).
     void SetMmjCacheHacks(bool skip_cpu_write_, bool display_transfer_remap_) {
         skip_cpu_write = skip_cpu_write_;
@@ -116,6 +121,7 @@ protected:
     bool force_linear_mag_filter = false;
     bool skip_cpu_write = false;
     bool display_transfer_remap = false;
+    bool skip_shadow_draw = false;
 
     virtual void OnMmjCacheHacksChanged() {}
 

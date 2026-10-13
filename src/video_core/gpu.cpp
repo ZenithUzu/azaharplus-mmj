@@ -423,14 +423,17 @@ void GPU::ApplyPerProgramSettings(u64 program_ID) {
     const bool display_transfer_remap =
         mmj(Settings::values.mmj_display_transfer_remap, HackType::DISPLAY_TRANSFER_REMAP);
     impl->rasterizer->SetMmjCacheHacks(skip_cpu_write, display_transfer_remap);
+    const bool skip_shadow_draw =
+        mmj(Settings::values.mmj_disable_shadow_rendering, HackType::DISABLE_SHADOW_RENDERING);
+    impl->rasterizer->SetSkipShadowDraw(skip_shadow_draw);
 
     // One line per game start, so it is easy to check in the log which per-game hacks are active.
     LOG_INFO(HW_GPU,
              "Per-game hacks for {:016X}: accurate_mul={} skip_slow_draw={} skip_texture_copy={} "
              "disable_clip_coef={} force_linear_mag_filter={} skip_cpu_write={} "
-             "display_transfer_remap={}",
+             "display_transfer_remap={} skip_shadow_draw={}",
              program_ID, use_accurate_mul, skip_slow_draw, skip_texture_copy, disable_clip_coef,
-             force_linear_mag_filter, skip_cpu_write, display_transfer_remap);
+             force_linear_mag_filter, skip_cpu_write, display_transfer_remap, skip_shadow_draw);
 }
 
 void GPU::SubmitCmdList(u32 index) {

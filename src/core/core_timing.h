@@ -208,6 +208,15 @@ public:
             downcount_hack = shift;
         }
 
+        /// Citra MMJ "FMV hack": CPU backends charge at least this many ticks per flush.
+        void SetMinTicks(u64 ticks) {
+            min_ticks = ticks;
+        }
+
+        u64 GetMinTicks() const {
+            return min_ticks;
+        }
+
         void ForceExceptionCheck(s64 cycles);
 
         void MoveEvents();
@@ -236,6 +245,7 @@ public:
         s64 downcount = MAX_SLICE_LENGTH;
         s64 executed_ticks = 0;
         u32 downcount_hack = 0; // runtime option, not serialized
+        u64 min_ticks = 0;      // runtime option, not serialized
         u64 idled_cycles = 0;
 
         // Stores a scaling for the internal clockspeed. Changing this number results in

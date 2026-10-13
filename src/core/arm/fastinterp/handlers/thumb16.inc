@@ -1046,7 +1046,7 @@ handle_ThumbSwi: {
     {
         u32 svc_num = inst->imm32 & 0xFF;
         executed += inst->ticks;
-        timer->AddTicks(executed);
+        timer->AddTicks(std::max<u64>(executed, timer->GetMinTicks()));
         executed = 0;
 
         svc_context_->CallSVC(svc_num);

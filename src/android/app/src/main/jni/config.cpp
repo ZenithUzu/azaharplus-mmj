@@ -164,6 +164,8 @@ void Config::ReadValues() {
     ReadSetting("MMJ", Settings::values.mmj_cpu_usage_limit);
     ReadSetting("MMJ", Settings::values.mmj_skip_cpu_write);
     ReadSetting("MMJ", Settings::values.mmj_display_transfer_remap);
+    ReadSetting("MMJ", Settings::values.mmj_fmv_hack);
+    ReadSetting("MMJ", Settings::values.mmj_disable_shadow_rendering);
     ReadSetting("Renderer", Settings::values.turbo_limit);
     // Workaround to map Android setting for enabling the frame limiter to the format Citra expects
     if (android_config->GetBoolean("Renderer", "use_frame_limit", true)) {

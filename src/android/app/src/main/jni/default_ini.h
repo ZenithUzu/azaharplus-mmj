@@ -272,6 +272,14 @@ static const char* android_config_default_file_content = (BOOST_HANA_STRING(R"(
 # 0: Off (default), 1: On
 )") DECLARE_KEY(mmj_display_transfer_remap) BOOST_HANA_STRING(R"(
 
+# Charge a minimum number of CPU ticks per time flush (listed titles only)
+# 0: Off (default), 1: On
+)") DECLARE_KEY(mmj_fmv_hack) BOOST_HANA_STRING(R"(
+
+# Skip draws that render shadows (listed titles only)
+# 0: Off (default), 1: On
+)") DECLARE_KEY(mmj_disable_shadow_rendering) BOOST_HANA_STRING(R"(
+
 [Layout]
 # Layout for the screen inside the render window, landscape mode
 # 0: Original (screens vertically aligned)

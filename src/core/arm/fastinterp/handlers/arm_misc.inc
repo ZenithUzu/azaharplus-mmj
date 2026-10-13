@@ -26,7 +26,7 @@ handle_Swi: {
         // Flush accumulated ticks to timer before kernel call so the
         // kernel sees correct time state for scheduling decisions.
         executed += inst->ticks;
-        timer->AddTicks(executed);
+        timer->AddTicks(std::max<u64>(executed, timer->GetMinTicks()));
         executed = 0;
 
         svc_context_->CallSVC(svc_num);
