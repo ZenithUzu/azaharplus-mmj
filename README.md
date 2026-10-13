@@ -6,7 +6,7 @@
 > *English summary at the [bottom](#english-summary).*
 
 > [!WARNING]
-> **Estado: compila, pero todavía no está probado en juegos.**
+> **Estado: compila y arranca en Android; faltan pruebas documentadas juego por juego.**
 > No es una versión oficial de Azahar, no publica binarios y no está afiliado ni respaldado por el equipo de
 > Azahar, por el de Citra, por el de Lime3DS, por los autores de Citra MMJ ni por Nintendo.
 
@@ -65,8 +65,8 @@ Base: Azahar `master` en `bfa768727` (2026-10-12). Resolución interna limitada 
 
 - ✅ Los 38 archivos fuente afectados compilan con la configuración real del proyecto, sin errores ni advertencias.
 - ✅ Una prueba contra el `HackManager` real comprueba que cada título recibe (o no) su hack, sin IDs duplicados.
-- ❌ **No se ha ejecutado ningún juego.** No hay ninguna garantía de que un hack mejore (o no empeore) un título.
-- ❌ No se ha compilado el proyecto completo ni el APK de Android.
+- ✅ El propietario del fork compiló el APK de Android desde este repositorio y reporta que funciona correctamente.
+- ❌ **Todavía no hay pruebas documentadas juego por juego.** No hay ninguna garantía de que un hack mejore (o no empeore) un título concreto.
 
 Detalle completo, notas de fidelidad frente a MMJ y la lista de lo que **no** se portó y por qué:
 **[`docs/MMJ_PORT.md`](https://github.com/axelconde7w7-gif/azahar-mmj/blob/mmj-hacks-port/docs/MMJ_PORT.md)**.
@@ -159,8 +159,8 @@ maintained by *weihuoya* until 2022 and by *zhangwei* from 2023 to 2025) onto Az
 
 - **Goal:** preserve MMJ's per-title knowledge before it is lost, one hack per commit, with each hack active
   *only* for its listed title IDs (all other games behave exactly like upstream Azahar) and individually revertible.
-- **Status:** the 38 affected source files compile cleanly and a data test against the real `HackManager` passes.
-  **No game has been run yet.** No binaries are published. Not affiliated with Azahar, Citra, Lime3DS, Citra MMJ's
+- **Status:** the 38 affected source files compile cleanly, a data test against the real `HackManager` passes, and the repository owner
+  built the Android APK from this repo and reports it works. **There are no documented per-game test results yet.** No binaries are published. Not affiliated with Azahar, Citra, Lime3DS, Citra MMJ's
   authors, or Nintendo.
 - **AI disclosure:** the code was written with Claude (Anthropic) under the repository owner's direction. Azahar's
   [AI policy](AI-POLICY.md) forbids submitting substantially AI-written code upstream, so **this fork is not

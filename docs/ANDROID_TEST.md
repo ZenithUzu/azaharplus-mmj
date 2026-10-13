@@ -39,8 +39,8 @@ asi que se puede instalar directamente.
 
 En local, el mismo build es `cd src/android && ./gradlew assembleVanillaRelease -Pabi=arm64-v8a` (sin `-Pabi` compila
 arm64-v8a y x86_64). Requiere JDK 17, Android SDK 35, NDK 27.3.13750724 y CMake 3.30.3 (Android Studio los descarga).
-Nota: este codigo **no se ha compilado completo todavia**; si el workflow falla, el log de Actions es la primera
-fuente para corregirlo.
+Nota: el propietario del fork ya compilo el APK desde este repositorio y reporta que funciona. Si el workflow falla,
+el log de Actions es la primera fuente para corregirlo.
 
 ## Comprobar que los hacks estan activos
 
