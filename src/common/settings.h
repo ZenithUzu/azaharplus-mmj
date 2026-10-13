@@ -547,6 +547,16 @@ struct Values {
     Setting<bool> use_shader_jit{true, Keys::use_shader_jit};
     SwitchableSetting<u32, true> resolution_factor{1, 0, 8, Keys::resolution_factor};
     SwitchableSetting<bool> use_integer_scaling{false, Keys::use_integer_scaling};
+
+    // Per-game hacks ported from Citra MMJ. Each one only acts on the titles listed for it in
+    // common/hacks/hack_list.cpp; turning it off restores stock behavior for those titles.
+    SwitchableSetting<bool> mmj_accurate_mul{true, Keys::mmj_accurate_mul};
+    SwitchableSetting<bool> mmj_skip_slow_draw{true, Keys::mmj_skip_slow_draw};
+    SwitchableSetting<bool> mmj_skip_texture_copy{true, Keys::mmj_skip_texture_copy};
+    SwitchableSetting<bool> mmj_disable_clip_coef{true, Keys::mmj_disable_clip_coef};
+    SwitchableSetting<bool> mmj_force_linear_mag_filter{true, Keys::mmj_force_linear_mag_filter};
+    SwitchableSetting<bool> mmj_skip_redundant_y2r{true, Keys::mmj_skip_redundant_y2r};
+
     SwitchableSetting<double, true> frame_limit{100, 0, 1000, Keys::frame_limit};
     SwitchableSetting<double, true> turbo_limit{200, 0, 1000, Keys::turbo_limit};
     SwitchableSetting<TextureFilter> texture_filter{TextureFilter::NoFilter, Keys::texture_filter};

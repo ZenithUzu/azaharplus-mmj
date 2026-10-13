@@ -155,6 +155,12 @@ void Config::ReadValues() {
     ReadSetting("Renderer", Settings::values.use_skip_duplicate_frames);
     ReadSetting("Renderer", Settings::values.texture_filter);
     ReadSetting("Renderer", Settings::values.texture_sampling);
+    ReadSetting("MMJ", Settings::values.mmj_accurate_mul);
+    ReadSetting("MMJ", Settings::values.mmj_skip_slow_draw);
+    ReadSetting("MMJ", Settings::values.mmj_skip_texture_copy);
+    ReadSetting("MMJ", Settings::values.mmj_disable_clip_coef);
+    ReadSetting("MMJ", Settings::values.mmj_force_linear_mag_filter);
+    ReadSetting("MMJ", Settings::values.mmj_skip_redundant_y2r);
     ReadSetting("Renderer", Settings::values.turbo_limit);
     // Workaround to map Android setting for enabling the frame limiter to the format Citra expects
     if (android_config->GetBoolean("Renderer", "use_frame_limit", true)) {

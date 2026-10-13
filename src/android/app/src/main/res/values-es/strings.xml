@@ -1073,4 +1073,21 @@ Se esperan fallos gráficos temporales cuando ésta esté activado.</string>
     <string name="update_check_channel_stable">Estable</string>
     <string name="update_check_channel_prerelease">Prelanzamiento</string>
 
+
+    <!-- Citra MMJ hacks -->
+    <string name="preferences_mmj">Ajustes de Citra MMJ</string>
+    <string name="preferences_mmj_description">Arreglos por juego portados de Citra MMJ</string>
+    <string name="mmj_hacks_info">Cada ajuste solo afecta a los juegos de su lista. Desactiva uno si un juego va peor que sin él. Los cambios se aplican al iniciar un juego.</string>
+    <string name="mmj_accurate_mul">Multiplicación precisa (lista de MMJ)</string>
+    <string name="mmj_accurate_mul_description">Fuerza la multiplicación precisa en los shaders para 42 IDs de juego que Citra MMJ indica que la necesitan, como Kid Icarus: Uprising y Super Mario 3D Land. Puede costar algo de rendimiento.</string>
+    <string name="mmj_skip_slow_draw">Omitir dibujados lentos</string>
+    <string name="mmj_skip_slow_draw_description">En 4 IDs de juego, omite las llamadas de dibujo que el renderizador por hardware no puede acelerar en lugar de dibujarlas por la vía lenta. Más rápido, pero puede faltar algo de geometría.</string>
+    <string name="mmj_skip_texture_copy">Omitir copias de texturas</string>
+    <string name="mmj_skip_texture_copy_description">En 19 IDs de juego, omite las copias de texturas cuya textura de origen no se encuentra. Más rápido, pero pueden faltar algunas texturas.</string>
+    <string name="mmj_disable_clip_coef">Desactivar plano de recorte extra</string>
+    <string name="mmj_disable_clip_coef_description">En 9 IDs de juego, desactiva el plano de recorte adicional, lo que corrige geometría cortada por error.</string>
+    <string name="mmj_force_linear_mag_filter">Filtro lineal al ampliar</string>
+    <string name="mmj_force_linear_mag_filter_description">En 5 IDs de juego, usa filtrado lineal al ampliar texturas en lugar del más cercano. Más suave y con un aspecto algo distinto.</string>
+    <string name="mmj_skip_redundant_y2r">Omitir conversiones YUV redundantes</string>
+    <string name="mmj_skip_redundant_y2r_description">En 2 IDs de juego (Danball Senki), omite conversiones YUV a RGB ya realizadas. Reduce los tirones.</string>
 </resources>

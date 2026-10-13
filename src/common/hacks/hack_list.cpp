@@ -69,7 +69,18 @@ HackManager hack_manager = {
                      0x0004000000132700, // USA
                      0x0004000000132800, // EUR
                      0x000400000018A100, // EUR (Demo)
+                 },
+             // clang-format on
+         }},
 
+        // Titles added from Citra MMJ's accurate multiplication lists. Kept separate from the
+        // upstream list above so they can be switched off from the MMJ settings menu.
+        {HackType::ACCURATE_MULTIPLICATION_MMJ,
+         HackEntry{
+             .mode = HackAllowMode::FORCE,
+             // clang-format off
+             .affected_title_ids =
+                 {
                      // Added from Citra MMJ's accurate multiplication list (no region labels)
                      // Attack on Titan
                      0x00040000000DF800,

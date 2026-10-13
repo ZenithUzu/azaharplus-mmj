@@ -113,6 +113,8 @@ class SettingsFragmentPresenter(private val fragmentView: SettingsFragmentView) 
 
             Settings.SECTION_AUDIO -> addAudioSettings(sl)
 
+            Settings.SECTION_MMJ -> addMmjSettings(sl)
+
             Settings.SECTION_DEBUG -> addDebugSettings(sl)
 
             Settings.SECTION_THEME -> addThemeSettings(sl)
@@ -214,6 +216,14 @@ class SettingsFragmentPresenter(private val fragmentView: SettingsFragmentView) 
                     0,
                     R.drawable.ic_audio,
                     Settings.SECTION_AUDIO
+                )
+            )
+            add(
+                SubmenuSetting(
+                    R.string.preferences_mmj,
+                    R.string.preferences_mmj_description,
+                    R.drawable.ic_graphics,
+                    Settings.SECTION_MMJ
                 )
             )
             add(
@@ -1883,6 +1893,67 @@ class SettingsFragmentPresenter(private val fragmentView: SettingsFragmentView) 
                     0,
                     R.array.soundOutputModes,
                     R.array.soundOutputModeValues
+                )
+            )
+        }
+    }
+
+    private fun addMmjSettings(sl: ArrayList<SettingsItem>) {
+        settingsActivity.setToolbarTitle(settingsActivity.getString(R.string.preferences_mmj))
+        sl.apply {
+            add(HeaderSetting(R.string.mmj_hacks_info))
+            add(
+                SwitchSetting(
+                    BooleanSetting.MMJ_ACCURATE_MUL,
+                    R.string.mmj_accurate_mul,
+                    R.string.mmj_accurate_mul_description,
+                    BooleanSetting.MMJ_ACCURATE_MUL.key,
+                    BooleanSetting.MMJ_ACCURATE_MUL.defaultValue
+                )
+            )
+            add(
+                SwitchSetting(
+                    BooleanSetting.MMJ_SKIP_SLOW_DRAW,
+                    R.string.mmj_skip_slow_draw,
+                    R.string.mmj_skip_slow_draw_description,
+                    BooleanSetting.MMJ_SKIP_SLOW_DRAW.key,
+                    BooleanSetting.MMJ_SKIP_SLOW_DRAW.defaultValue
+                )
+            )
+            add(
+                SwitchSetting(
+                    BooleanSetting.MMJ_SKIP_TEXTURE_COPY,
+                    R.string.mmj_skip_texture_copy,
+                    R.string.mmj_skip_texture_copy_description,
+                    BooleanSetting.MMJ_SKIP_TEXTURE_COPY.key,
+                    BooleanSetting.MMJ_SKIP_TEXTURE_COPY.defaultValue
+                )
+            )
+            add(
+                SwitchSetting(
+                    BooleanSetting.MMJ_DISABLE_CLIP_COEF,
+                    R.string.mmj_disable_clip_coef,
+                    R.string.mmj_disable_clip_coef_description,
+                    BooleanSetting.MMJ_DISABLE_CLIP_COEF.key,
+                    BooleanSetting.MMJ_DISABLE_CLIP_COEF.defaultValue
+                )
+            )
+            add(
+                SwitchSetting(
+                    BooleanSetting.MMJ_FORCE_LINEAR_MAG_FILTER,
+                    R.string.mmj_force_linear_mag_filter,
+                    R.string.mmj_force_linear_mag_filter_description,
+                    BooleanSetting.MMJ_FORCE_LINEAR_MAG_FILTER.key,
+                    BooleanSetting.MMJ_FORCE_LINEAR_MAG_FILTER.defaultValue
+                )
+            )
+            add(
+                SwitchSetting(
+                    BooleanSetting.MMJ_SKIP_REDUNDANT_Y2R,
+                    R.string.mmj_skip_redundant_y2r,
+                    R.string.mmj_skip_redundant_y2r_description,
+                    BooleanSetting.MMJ_SKIP_REDUNDANT_Y2R.key,
+                    BooleanSetting.MMJ_SKIP_REDUNDANT_Y2R.defaultValue
                 )
             )
         }

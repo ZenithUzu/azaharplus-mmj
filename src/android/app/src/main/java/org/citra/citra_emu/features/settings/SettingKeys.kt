@@ -47,6 +47,12 @@ object SettingKeys {
     external fun turbo_limit(): String
     external fun texture_filter(): String
     external fun texture_sampling(): String
+    external fun mmj_accurate_mul(): String
+    external fun mmj_skip_slow_draw(): String
+    external fun mmj_skip_texture_copy(): String
+    external fun mmj_disable_clip_coef(): String
+    external fun mmj_force_linear_mag_filter(): String
+    external fun mmj_skip_redundant_y2r(): String
     external fun delay_game_render_thread_us(): String
     external fun simulate_3ds_gpu_timings(): String
     external fun layout_option(): String

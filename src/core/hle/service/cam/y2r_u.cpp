@@ -9,6 +9,7 @@
 #include "common/hacks/hack_manager.h"
 #include "common/logging/log.h"
 #include "common/scope_exit.h"
+#include "common/settings.h"
 #include "core/core.h"
 #include "core/hle/ipc_helpers.h"
 #include "core/hle/kernel/event.h"
@@ -525,8 +526,10 @@ void Y2R_U::StartConversion(Kernel::HLERequestContext& ctx) {
     // Per-title hack (ported from Citra MMJ): skip the conversion if the completion event of a
     // previous conversion is still signaled.
     const u64 caller_tid = ctx.ClientThread()->owner_process.lock()->codeset->program_id;
-    const bool skip_redundant = Common::Hacks::hack_manager.OverrideBooleanSetting(
-        Common::Hacks::HackType::SKIP_REDUNDANT_Y2R_CONVERSION, caller_tid, false);
+    const bool skip_redundant =
+        Settings::values.mmj_skip_redundant_y2r.GetValue() &&
+        Common::Hacks::hack_manager.OverrideBooleanSetting(
+            Common::Hacks::HackType::SKIP_REDUNDANT_Y2R_CONVERSION, caller_tid, false);
     if (!skip_redundant || completion_event->ShouldWait(nullptr)) {
         HW::Y2R::PerformConversion(system.Memory(), conversion);
     }

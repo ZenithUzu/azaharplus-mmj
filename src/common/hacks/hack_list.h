@@ -22,6 +22,7 @@ enum class HackType : int {
     DISABLE_CLIP_COEF,
     SKIP_REDUNDANT_Y2R_CONVERSION,
     FORCE_LINEAR_MAG_FILTER,
+    ACCURATE_MULTIPLICATION_MMJ,
 };
 
 class UserHackData {};

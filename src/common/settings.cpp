@@ -103,6 +103,12 @@ void LogSettings() {
     log_setting("Renderer_UseShaderJit", values.use_shader_jit.GetValue());
     log_setting("Renderer_UseResolutionFactor", values.resolution_factor.GetValue());
     log_setting("Renderer_UseIntegerScaling", values.use_integer_scaling.GetValue());
+    log_setting("MMJ_accurate_mul", values.mmj_accurate_mul.GetValue());
+    log_setting("MMJ_skip_slow_draw", values.mmj_skip_slow_draw.GetValue());
+    log_setting("MMJ_skip_texture_copy", values.mmj_skip_texture_copy.GetValue());
+    log_setting("MMJ_disable_clip_coef", values.mmj_disable_clip_coef.GetValue());
+    log_setting("MMJ_force_linear_mag_filter", values.mmj_force_linear_mag_filter.GetValue());
+    log_setting("MMJ_skip_redundant_y2r", values.mmj_skip_redundant_y2r.GetValue());
     log_setting("Renderer_FrameLimit", values.frame_limit.GetValue());
     log_setting("Renderer_VSyncNew", values.use_vsync.GetValue());
     log_setting("Renderer_SkipDuplicateFrames", values.use_skip_duplicate_frames.GetValue());
@@ -220,6 +226,12 @@ void RestoreGlobalState(bool is_powered_on) {
     values.use_skip_duplicate_frames.SetGlobal(true);
     values.resolution_factor.SetGlobal(true);
     values.use_integer_scaling.SetGlobal(true);
+    values.mmj_accurate_mul.SetGlobal(true);
+    values.mmj_skip_slow_draw.SetGlobal(true);
+    values.mmj_skip_texture_copy.SetGlobal(true);
+    values.mmj_disable_clip_coef.SetGlobal(true);
+    values.mmj_force_linear_mag_filter.SetGlobal(true);
+    values.mmj_skip_redundant_y2r.SetGlobal(true);
     values.frame_limit.SetGlobal(true);
     values.texture_filter.SetGlobal(true);
     values.texture_sampling.SetGlobal(true);

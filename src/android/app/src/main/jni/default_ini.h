@@ -233,6 +233,33 @@ static const char* android_config_default_file_content = (BOOST_HANA_STRING(R"(
 # 5: MMPX
 )") DECLARE_KEY(texture_filter) BOOST_HANA_STRING(R"(
 
+[MMJ]
+# Per-game hacks ported from Citra MMJ. Each one only affects the titles listed for it in
+# the source (common/hacks/hack_list.cpp).
+# Accurate shader multiplication for the extra titles listed by Citra MMJ
+# 0: Off, 1: On (default)
+)") DECLARE_KEY(mmj_accurate_mul) BOOST_HANA_STRING(R"(
+
+# Skip draws the hardware renderer cannot accelerate (listed titles only)
+# 0: Off, 1: On (default)
+)") DECLARE_KEY(mmj_skip_slow_draw) BOOST_HANA_STRING(R"(
+
+# Skip texture copies with no matching source texture (listed titles only)
+# 0: Off, 1: On (default)
+)") DECLARE_KEY(mmj_skip_texture_copy) BOOST_HANA_STRING(R"(
+
+# Disable the extra clip plane (listed titles only)
+# 0: Off, 1: On (default)
+)") DECLARE_KEY(mmj_disable_clip_coef) BOOST_HANA_STRING(R"(
+
+# Use linear filtering when magnifying textures (listed titles only)
+# 0: Off, 1: On (default)
+)") DECLARE_KEY(mmj_force_linear_mag_filter) BOOST_HANA_STRING(R"(
+
+# Skip redundant YUV to RGB conversions (listed titles only)
+# 0: Off, 1: On (default)
+)") DECLARE_KEY(mmj_skip_redundant_y2r) BOOST_HANA_STRING(R"(
+
 [Layout]
 # Layout for the screen inside the render window, landscape mode
 # 0: Original (screens vertically aligned)

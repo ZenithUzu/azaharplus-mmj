@@ -1169,4 +1169,21 @@
     <string name="update_check_channel_stable">Stable</string>
     <string name="update_check_channel_prerelease">Prerelease</string>
 
+
+    <!-- Citra MMJ hacks -->
+    <string name="preferences_mmj">Citra MMJ hacks</string>
+    <string name="preferences_mmj_description">Per-game fixes ported from Citra MMJ</string>
+    <string name="mmj_hacks_info">Each hack only affects the games listed for it. Turn one off if a game runs worse than without it. Changes apply the next time a game starts.</string>
+    <string name="mmj_accurate_mul">Accurate multiplication (MMJ list)</string>
+    <string name="mmj_accurate_mul_description">Forces accurate shader multiplication for 42 title IDs that Citra MMJ lists as needing it, such as Kid Icarus: Uprising and Super Mario 3D Land. May cost a little performance.</string>
+    <string name="mmj_skip_slow_draw">Skip slow draws</string>
+    <string name="mmj_skip_slow_draw_description">In 4 title IDs, skips draw calls the hardware renderer cannot accelerate instead of drawing them on the slow path. Faster, but some geometry may be missing.</string>
+    <string name="mmj_skip_texture_copy">Skip texture copies</string>
+    <string name="mmj_skip_texture_copy_description">In 19 title IDs, skips texture copies whose source texture is not found. Faster, but some textures may be missing.</string>
+    <string name="mmj_disable_clip_coef">Disable extra clip plane</string>
+    <string name="mmj_disable_clip_coef_description">In 9 title IDs, disables the additional clip plane, which fixes geometry that is wrongly cut off.</string>
+    <string name="mmj_force_linear_mag_filter">Linear magnification filter</string>
+    <string name="mmj_force_linear_mag_filter_description">In 5 title IDs, uses linear filtering when textures are magnified instead of nearest. Smoother, slightly different look.</string>
+    <string name="mmj_skip_redundant_y2r">Skip redundant YUV conversions</string>
+    <string name="mmj_skip_redundant_y2r_description">In 2 title IDs (Danball Senki), skips YUV to RGB conversions that were already done. Reduces slowdowns.</string>
 </resources>

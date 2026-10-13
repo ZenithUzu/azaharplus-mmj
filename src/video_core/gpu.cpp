@@ -5,6 +5,7 @@
 #include "common/archives.h"
 #include "common/hacks/hack_manager.h"
 #include "common/microprofile.h"
+#include "common/settings.h"
 #include "core/core.h"
 #include "core/core_timing.h"
 #include "core/hle/service/gsp/gsp_gpu.h"
@@ -376,34 +377,42 @@ GraphicsDebugger& GPU::Debugger() {
 }
 
 void GPU::ApplyPerProgramSettings(u64 program_ID) {
-    auto hack = Common::Hacks::hack_manager.GetHack(
-        Common::Hacks::HackType::ACCURATE_MULTIPLICATION, program_ID);
+    auto& hacks = Common::Hacks::hack_manager;
+    using Common::Hacks::HackAllowMode;
+    using Common::Hacks::HackType;
+
+    auto hack = hacks.GetHack(HackType::ACCURATE_MULTIPLICATION, program_ID);
     bool use_accurate_mul = Settings::values.shaders_accurate_mul.GetValue();
     if (hack) {
         switch (hack->mode) {
-        case Common::Hacks::HackAllowMode::DISALLOW:
+        case HackAllowMode::DISALLOW:
             use_accurate_mul = false;
             break;
-        case Common::Hacks::HackAllowMode::FORCE:
+        case HackAllowMode::FORCE:
             use_accurate_mul = true;
             break;
-        case Common::Hacks::HackAllowMode::ALLOW:
+        case HackAllowMode::ALLOW:
         default:
             break;
         }
     }
+
+    // Citra MMJ hacks. Each can be switched off from the MMJ settings menu.
+    const auto mmj = [&](const auto& enabled, HackType type) {
+        return enabled.GetValue() && hacks.OverrideBooleanSetting(type, program_ID, false);
+    };
+    if (mmj(Settings::values.mmj_accurate_mul, HackType::ACCURATE_MULTIPLICATION_MMJ)) {
+        use_accurate_mul = true;
+    }
     impl->rasterizer->SetAccurateMul(use_accurate_mul);
 
-    auto& hacks = Common::Hacks::hack_manager;
-    using Common::Hacks::HackType;
-    const bool skip_slow_draw =
-        hacks.OverrideBooleanSetting(HackType::SKIP_SLOW_DRAW, program_ID, false);
+    const bool skip_slow_draw = mmj(Settings::values.mmj_skip_slow_draw, HackType::SKIP_SLOW_DRAW);
     const bool skip_texture_copy =
-        hacks.OverrideBooleanSetting(HackType::SKIP_TEXTURE_COPY, program_ID, false);
+        mmj(Settings::values.mmj_skip_texture_copy, HackType::SKIP_TEXTURE_COPY);
     const bool disable_clip_coef =
-        hacks.OverrideBooleanSetting(HackType::DISABLE_CLIP_COEF, program_ID, false);
+        mmj(Settings::values.mmj_disable_clip_coef, HackType::DISABLE_CLIP_COEF);
     const bool force_linear_mag_filter =
-        hacks.OverrideBooleanSetting(HackType::FORCE_LINEAR_MAG_FILTER, program_ID, false);
+        mmj(Settings::values.mmj_force_linear_mag_filter, HackType::FORCE_LINEAR_MAG_FILTER);
     impl->pica.skip_slow_draw = skip_slow_draw;
     impl->rasterizer->SetSkipTextureCopy(skip_texture_copy);
     impl->rasterizer->SetDisableClipCoef(disable_clip_coef);

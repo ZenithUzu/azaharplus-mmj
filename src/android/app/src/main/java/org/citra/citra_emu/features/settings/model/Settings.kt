@@ -107,6 +107,7 @@ class Settings {
         const val SECTION_NETWORK = "WebService"
         const val SECTION_AUDIO = "Audio"
         const val SECTION_DEBUG = "Debugging"
+        const val SECTION_MMJ = "MMJ"
         const val SECTION_THEME = "Theme"
         const val SECTION_CUSTOM_LANDSCAPE = "Custom Landscape Layout"
         const val SECTION_CUSTOM_PORTRAIT = "Custom Portrait Layout"
@@ -248,6 +249,7 @@ class Settings {
                     SECTION_NETWORK,
                     SECTION_UTILITY,
                     SECTION_AUDIO,
+                    SECTION_MMJ,
                     SECTION_DEBUG,
                     SECTION_THEME,
                     SECTION_CUSTOM_LANDSCAPE,
