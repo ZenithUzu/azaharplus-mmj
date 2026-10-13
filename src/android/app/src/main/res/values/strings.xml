@@ -1217,4 +1217,11 @@
     <string name="mmj_share_diagnostics_description">Shares a short report from the last log: active hacks and shader or pipeline stalls. Handy for bug reports.</string>
     <string name="update_download">Download</string>
     <string name="update_release_notes">What\'s new</string>
+    <string name="update_section_title">Updates</string>
+    <string name="update_section_description">Check the Releases of the Azahar+ mmj repository for a newer version and download it.</string>
+    <string name="update_installed_build">Installed build: %1$d</string>
+    <string name="update_installed_local">Installed build: local (not from Releases)</string>
+    <string name="update_checking">Checking for updates…</string>
+    <string name="update_check_failed">Could not reach GitHub. Check your connection and try again.</string>
+    <string name="update_up_to_date">You already have the latest version (%1$s).</string>
 </resources>

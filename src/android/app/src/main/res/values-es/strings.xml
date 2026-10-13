@@ -1123,4 +1123,11 @@ Se esperan fallos gráficos temporales cuando ésta esté activado.</string>
     <string name="mmj_share_diagnostics_description">Comparte un resumen corto del último log: hacks activos y tirones de shaders o pipelines. Útil para reportar fallos.</string>
     <string name="update_download">Descargar</string>
     <string name="update_release_notes">Novedades</string>
+    <string name="update_section_title">Actualizaciones</string>
+    <string name="update_section_description">Busca en los Releases del repositorio de Azahar+ mmj una versión más nueva y descárgala.</string>
+    <string name="update_installed_build">Build instalado: %1$d</string>
+    <string name="update_installed_local">Build instalado: local (no viene de Releases)</string>
+    <string name="update_checking">Buscando actualizaciones…</string>
+    <string name="update_check_failed">No se pudo conectar con GitHub. Revisa tu conexión e inténtalo de nuevo.</string>
+    <string name="update_up_to_date">Ya tienes la versión más reciente (%1$s).</string>
 </resources>

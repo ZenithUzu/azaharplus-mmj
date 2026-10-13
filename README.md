@@ -138,6 +138,10 @@ APK adjunto; se conservan los 10 más recientes. La app, al abrirse, consulta **
 descargarla. Se eliminaron las consultas de actualizaciones a Azahar/AzaharPlus (también en la versión de escritorio). Las
 compilaciones locales (número 0) nunca buscan actualizaciones.
 
+Además hay un apartado **Actualizaciones** en la pantalla de ajustes de inicio: muestra el build instalado y, al tocarlo,
+busca ahora mismo en los releases de este repositorio (funciona aunque la búsqueda automática esté apagada), te dice si ya
+tienes la última versión o te ofrece descargar el APK nuevo.
+
 Para que una versión nueva se pueda instalar **encima** de la anterior, el APK debe firmarse siempre con la misma clave. Sin ella
 se usa una clave de depuración temporal y Android pedirá desinstalar antes. Para fijarla, crea tu clave y guarda en
 *Settings → Secrets and variables → Actions* los secretos `ANDROID_KEYSTORE_BASE64` (el `.jks` en base64), `ANDROID_KEYSTORE_PASS`

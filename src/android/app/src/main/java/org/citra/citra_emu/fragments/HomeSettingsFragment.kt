@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
+import android.net.Uri
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
 import androidx.activity.result.contract.ActivityResultContracts
@@ -32,8 +33,11 @@ import org.citra.citra_emu.CitraApplication
 import org.citra.citra_emu.HomeNavigationDirections
 import org.citra.citra_emu.NativeLibrary
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.citra.citra_emu.BuildConfig
+import org.citra.citra_emu.features.updatechecker.UpdateChecker
 import org.citra.citra_emu.R
 import org.citra.citra_emu.adapters.HomeSettingAdapter
 import org.citra.citra_emu.databinding.DialogSoftwareKeyboardBinding
@@ -182,6 +186,13 @@ class HomeSettingsFragment : Fragment() {
                             .show()
                     }
                 }
+            ),
+            HomeSetting(
+                R.string.update_section_title,
+                R.string.update_section_description,
+                R.drawable.ic_system_update,
+                { checkForUpdates() },
+                details = MutableStateFlow(installedBuildText())
             ),
             HomeSetting(
                 R.string.share_log,
@@ -341,6 +352,46 @@ class HomeSettingsFragment : Fragment() {
                 putExtra(Intent.EXTRA_TEXT, report)
             }
             startActivity(Intent.createChooser(intent, getText(R.string.mmj_share_diagnostics)))
+        }
+    }
+
+    private fun installedBuildText(): String =
+        if (BuildConfig.MMJ_BUILD_NUMBER > 0) {
+            getString(R.string.update_installed_build, BuildConfig.MMJ_BUILD_NUMBER)
+        } else {
+            getString(R.string.update_installed_local)
+        }
+
+    /** Manual check against the Releases of this fork (ignores the automatic-check toggle). */
+    private fun checkForUpdates() {
+        val context = requireContext()
+        Toast.makeText(context, R.string.update_checking, Toast.LENGTH_SHORT).show()
+        viewLifecycleOwner.lifecycleScope.launch {
+            val latest = withContext(Dispatchers.IO) { UpdateChecker.getLatestRelease() }
+            when {
+                latest == null -> MaterialAlertDialogBuilder(context)
+                    .setTitle(R.string.update_section_title)
+                    .setMessage(R.string.update_check_failed)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show()
+                latest.buildNumber > BuildConfig.MMJ_BUILD_NUMBER ->
+                    UpdateAvailableNotificationFragment.newInstance(
+                        latest.name,
+                        latest.apkUrl,
+                        latest.pageUrl
+                    ).show(
+                        requireActivity().supportFragmentManager,
+                        UpdateAvailableNotificationFragment.TAG
+                    )
+                else -> MaterialAlertDialogBuilder(context)
+                    .setTitle(R.string.update_section_title)
+                    .setMessage(getString(R.string.update_up_to_date, latest.name))
+                    .setPositiveButton(android.R.string.ok, null)
+                    .setNeutralButton(R.string.update_release_notes) { _, _ ->
+                        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(latest.pageUrl)))
+                    }
+                    .show()
+            }
         }
     }
 
