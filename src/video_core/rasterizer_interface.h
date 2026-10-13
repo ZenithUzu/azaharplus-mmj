@@ -102,11 +102,22 @@ public:
         force_linear_mag_filter = force_linear_mag_filter_;
     }
 
+    /// Citra MMJ cache hacks (skip_cpu_write, display_transfer_hack).
+    void SetMmjCacheHacks(bool skip_cpu_write_, bool display_transfer_remap_) {
+        skip_cpu_write = skip_cpu_write_;
+        display_transfer_remap = display_transfer_remap_;
+        OnMmjCacheHacksChanged();
+    }
+
 protected:
     bool accurate_mul = false;
     bool skip_texture_copy = false;
     bool disable_clip_coef = false;
     bool force_linear_mag_filter = false;
+    bool skip_cpu_write = false;
+    bool display_transfer_remap = false;
+
+    virtual void OnMmjCacheHacksChanged() {}
 
     // Rasterizer gets destroyed on reboot, so make the callback
     // static until a better solution is found.

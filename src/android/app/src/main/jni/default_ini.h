@@ -260,6 +260,18 @@ static const char* android_config_default_file_content = (BOOST_HANA_STRING(R"(
 # 0: Off, 1: On (default)
 )") DECLARE_KEY(mmj_skip_redundant_y2r) BOOST_HANA_STRING(R"(
 
+# Limit CPU time slices (listed titles only)
+# 0: Off (default), 1: On
+)") DECLARE_KEY(mmj_cpu_usage_limit) BOOST_HANA_STRING(R"(
+
+# Skip cache invalidation on small CPU writes (listed titles only)
+# 0: Off (default), 1: On
+)") DECLARE_KEY(mmj_skip_cpu_write) BOOST_HANA_STRING(R"(
+
+# Remap fixed display-transfer addresses (listed titles only)
+# 0: Off (default), 1: On
+)") DECLARE_KEY(mmj_display_transfer_remap) BOOST_HANA_STRING(R"(
+
 [Layout]
 # Layout for the screen inside the render window, landscape mode
 # 0: Original (screens vertically aligned)

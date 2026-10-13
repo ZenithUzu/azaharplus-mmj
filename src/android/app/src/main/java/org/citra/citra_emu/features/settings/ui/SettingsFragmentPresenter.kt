@@ -1956,6 +1956,37 @@ class SettingsFragmentPresenter(private val fragmentView: SettingsFragmentView) 
                     BooleanSetting.MMJ_SKIP_REDUNDANT_Y2R.defaultValue
                 )
             )
+            add(HeaderSetting(R.string.mmj_unstable_header))
+            add(
+                SwitchSetting(
+                    BooleanSetting.MMJ_CPU_USAGE_LIMIT,
+                    R.string.mmj_cpu_usage_limit,
+                    R.string.mmj_cpu_usage_limit_description,
+                    BooleanSetting.MMJ_CPU_USAGE_LIMIT.key,
+                    BooleanSetting.MMJ_CPU_USAGE_LIMIT.defaultValue,
+                    enableWarningId = R.string.mmj_cpu_usage_limit_warning
+                )
+            )
+            add(
+                SwitchSetting(
+                    BooleanSetting.MMJ_SKIP_CPU_WRITE,
+                    R.string.mmj_skip_cpu_write,
+                    R.string.mmj_skip_cpu_write_description,
+                    BooleanSetting.MMJ_SKIP_CPU_WRITE.key,
+                    BooleanSetting.MMJ_SKIP_CPU_WRITE.defaultValue,
+                    enableWarningId = R.string.mmj_skip_cpu_write_warning
+                )
+            )
+            add(
+                SwitchSetting(
+                    BooleanSetting.MMJ_DISPLAY_TRANSFER_REMAP,
+                    R.string.mmj_display_transfer_remap,
+                    R.string.mmj_display_transfer_remap_description,
+                    BooleanSetting.MMJ_DISPLAY_TRANSFER_REMAP.key,
+                    BooleanSetting.MMJ_DISPLAY_TRANSFER_REMAP.defaultValue,
+                    enableWarningId = R.string.mmj_display_transfer_remap_warning
+                )
+            )
         }
     }
 

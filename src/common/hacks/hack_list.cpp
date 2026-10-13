@@ -435,5 +435,115 @@ HackManager hack_manager = {
                  },
              // clang-format on
          }},
+
+        // Citra MMJ cpu_usage_limit, time-slice shifts 1,4,2,2 per core (config-games.ini). Off by default.
+        {HackType::CPU_USAGE_LIMIT,
+         HackEntry{
+             .mode = HackAllowMode::FORCE,
+             // clang-format off
+             .affected_title_ids =
+                 {
+                     // 1001 Spikes
+                     0x000400000008FE00,
+
+                     // Lord of Magna: Maiden Heaven
+                     0x0004000000120900,
+                     0x0004000000164300,
+                     0x0004000000165500,
+
+                     // The Alliance Alive
+                     0x00040000001CCD00,
+                     0x00040000001B4500,
+
+                     // EX Troopers
+                     0x0004000000053700,
+
+                     // Mirror of Fate
+                     0x00040000000BAC00,
+                     0x000400000009E500,
+                     0x0004000000096600,
+
+                     // Mario Golf: World Tour
+                     0x00040000000DCD00,
+                     0x00040000000A5300,
+                     0x00040000000DCE00,
+
+                     // Super Street Fighter
+                     0x0004000000030500,
+                     0x0004000000032D00,
+                     0x0004000000033C00,
+
+                     // Metal Gear Solid: Snake Eater 3D
+                     0x000400000007A000,
+                     0x0004000000082400,
+                     0x0004000000081E00,
+
+                     // New Love Plus
+                     0x00040000000F4E00,
+                 },
+             // clang-format on
+         }},
+
+        // Citra MMJ cpu_usage_limit, time-slice shifts 2,4,2,2 per core (config-games.ini). Off by default.
+        {HackType::CPU_USAGE_LIMIT_HEAVY,
+         HackEntry{
+             .mode = HackAllowMode::FORCE,
+             // clang-format off
+             .affected_title_ids =
+                 {
+                     // Mario Tennis Open
+                     0x000400000007C700,
+                     0x000400000007C800,
+                     0x0004000000064D00,
+                     0x00040000000B9100,
+
+                     // Luigi's Mansion: Dark Moon
+                     0x00040000000D0000,
+                     0x0004000000076400,
+                     0x0004000000055F00,
+                     0x0004000000076500,
+
+                     // Shin Megami Tensei: Devil Survivor Overclocked
+                     0x0004000000038800,
+                     0x000400000009C000,
+
+                     // Heros of Ruin
+                     0x0004000000075100,
+                 },
+             // clang-format on
+         }},
+
+        // Citra MMJ skip_cpu_write (config-games.ini). Off by default.
+        {HackType::SKIP_CPU_WRITE,
+         HackEntry{
+             .mode = HackAllowMode::FORCE,
+             // clang-format off
+             .affected_title_ids =
+                 {
+                     // Lord of Magna: Maiden Heaven
+                     0x0004000000120900,
+                     0x0004000000164300,
+                     0x0004000000165500,
+                 },
+             // clang-format on
+         }},
+
+        // Citra MMJ display_transfer_hack (LoadOverrides in core.cpp). Off by default.
+        {HackType::DISPLAY_TRANSFER_REMAP,
+         HackEntry{
+             .mode = HackAllowMode::FORCE,
+             // clang-format off
+             .affected_title_ids =
+                 {
+                     // Tales of the Abyss
+                     0x0004000000068B00,
+                     0x0004000000061300,
+
+                     // Pac-Man Party 3D
+                     0x000400000004A700,
+                     0x000400000005D700,
+                 },
+             // clang-format on
+         }},
     }};
 }

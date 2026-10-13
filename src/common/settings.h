@@ -556,6 +556,9 @@ struct Values {
     SwitchableSetting<bool> mmj_disable_clip_coef{true, Keys::mmj_disable_clip_coef};
     SwitchableSetting<bool> mmj_force_linear_mag_filter{true, Keys::mmj_force_linear_mag_filter};
     SwitchableSetting<bool> mmj_skip_redundant_y2r{true, Keys::mmj_skip_redundant_y2r};
+    SwitchableSetting<bool> mmj_cpu_usage_limit{false, Keys::mmj_cpu_usage_limit};
+    SwitchableSetting<bool> mmj_skip_cpu_write{false, Keys::mmj_skip_cpu_write};
+    SwitchableSetting<bool> mmj_display_transfer_remap{false, Keys::mmj_display_transfer_remap};
 
     SwitchableSetting<double, true> frame_limit{100, 0, 1000, Keys::frame_limit};
     SwitchableSetting<double, true> turbo_limit{200, 0, 1000, Keys::turbo_limit};

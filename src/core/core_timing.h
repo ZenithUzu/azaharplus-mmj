@@ -203,6 +203,11 @@ public:
 
         s64 GetDowncount() const;
 
+        /// Citra MMJ "cpu usage limit": each slice only lets the core run (slice >> shift) ticks.
+        void SetDowncountHack(u32 shift) {
+            downcount_hack = shift;
+        }
+
         void ForceExceptionCheck(s64 cycles);
 
         void MoveEvents();
@@ -230,6 +235,7 @@ public:
         s64 slice_length = MAX_SLICE_LENGTH;
         s64 downcount = MAX_SLICE_LENGTH;
         s64 executed_ticks = 0;
+        u32 downcount_hack = 0; // runtime option, not serialized
         u64 idled_cycles = 0;
 
         // Stores a scaling for the internal clockspeed. Changing this number results in

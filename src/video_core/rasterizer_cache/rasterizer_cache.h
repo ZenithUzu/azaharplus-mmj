@@ -311,6 +311,29 @@ bool RasterizerCache<T>::AccelerateDisplayTransfer(const Pica::DisplayTransferCo
     dst_params.pixel_format = PixelFormatFromGPUPixelFormat(config.output_format);
     dst_params.UpdateParams();
 
+    // Citra MMJ display_transfer_hack (Tales of the Abyss / Pac-Man Party 3D): remaps a few fixed
+    // destination addresses. Only active when the hack is enabled for the running title.
+    if (mmj_display_transfer_remap) {
+        s64 delta = 0;
+        if (dst_params.height == 400) {
+            if (dst_params.addr == 0x183CE430) {
+                delta = -0xCE430;
+            } else if (dst_params.addr == 0x18387F30) {
+                delta = -0x41A30;
+            }
+        } else {
+            if (dst_params.addr == 0x180B4830) {
+                delta = -0x34830;
+            } else if (dst_params.addr == 0x1807C430) {
+                delta = 0x3BFD0;
+            }
+        }
+        if (delta != 0) {
+            dst_params.addr = static_cast<PAddr>(dst_params.addr + delta);
+            dst_params.UpdateParams();
+        }
+    }
+
     // Using flip_vertically alongside crop_input_lines produces skewed output on hardware.
     // We have to emulate this because some games rely on this behaviour to render correctly.
     if (config.flip_vertically && config.crop_input_lines) {
@@ -1347,6 +1370,10 @@ void RasterizerCache<T>::InvalidateRegion(PAddr addr, u32 size, SurfaceId region
         // If the CPU is invalidating this region we want to remove it
         // to (likely) mark the memory pages as uncached
         if (!region_owner_id && size <= 8) {
+            // Citra MMJ skip_cpu_write: leave the cached surface alone on tiny CPU writes.
+            if (mmj_skip_cpu_write) {
+                return;
+            }
             FlushRegion(surface.addr, surface.size, surface_id);
             remove_surfaces.push_back(surface_id);
             return;

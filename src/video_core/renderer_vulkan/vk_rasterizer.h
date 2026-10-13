@@ -64,6 +64,13 @@ public:
     /// Switches the disk resources to the specified title
     void SwitchDiskResources(u64 title_id) override;
 
+protected:
+    void OnMmjCacheHacksChanged() override {
+        res_cache.SetMmjHacks(skip_cpu_write, display_transfer_remap);
+    }
+
+public:
+
 private:
     /// Syncs pipeline state from PICA registers
     void SyncDrawState();

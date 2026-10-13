@@ -16,7 +16,9 @@ class SwitchSetting(
     val defaultValue: Boolean = false,
     override var isEnabled: Boolean = true,
     @StringRes override var disabledMessage: Int =
-        R.string.setting_disabled_description_incompatible_setting
+        R.string.setting_disabled_description_incompatible_setting,
+    /** When non-zero, a confirmation dialog with this message is shown before turning it on. */
+    @StringRes val enableWarningId: Int = 0
 ) : SettingsItem(setting, titleId, descriptionId) {
     override val type = TYPE_SWITCH
 

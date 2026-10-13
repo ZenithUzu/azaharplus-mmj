@@ -225,6 +225,23 @@ class SettingsAdapter(private val fragmentView: SettingsFragmentView, public val
     }
 
     fun onBooleanClick(item: SwitchSetting, position: Int, checked: Boolean) {
+        if (checked && item.enableWarningId != 0) {
+            // Unstable option: explain why it is off by default and let the user back out.
+            dialog = MaterialAlertDialogBuilder(context)
+                .setTitle(R.string.mmj_enable_warning_title)
+                .setMessage(item.enableWarningId)
+                .setPositiveButton(R.string.mmj_enable_anyway) { _, _ ->
+                    applyBooleanClick(item, checked)
+                }
+                .setNegativeButton(android.R.string.cancel) { _, _ -> notifyItemChanged(position) }
+                .setOnCancelListener { notifyItemChanged(position) }
+                .show()
+            return
+        }
+        applyBooleanClick(item, checked)
+    }
+
+    private fun applyBooleanClick(item: SwitchSetting, checked: Boolean) {
         val setting = item.setChecked(checked)
         fragmentView.putSetting(setting)
         fragmentView.onSettingChanged()

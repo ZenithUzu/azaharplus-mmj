@@ -109,6 +109,9 @@ void LogSettings() {
     log_setting("MMJ_disable_clip_coef", values.mmj_disable_clip_coef.GetValue());
     log_setting("MMJ_force_linear_mag_filter", values.mmj_force_linear_mag_filter.GetValue());
     log_setting("MMJ_skip_redundant_y2r", values.mmj_skip_redundant_y2r.GetValue());
+    log_setting("MMJ_cpu_usage_limit", values.mmj_cpu_usage_limit.GetValue());
+    log_setting("MMJ_skip_cpu_write", values.mmj_skip_cpu_write.GetValue());
+    log_setting("MMJ_display_transfer_remap", values.mmj_display_transfer_remap.GetValue());
     log_setting("Renderer_FrameLimit", values.frame_limit.GetValue());
     log_setting("Renderer_VSyncNew", values.use_vsync.GetValue());
     log_setting("Renderer_SkipDuplicateFrames", values.use_skip_duplicate_frames.GetValue());
@@ -232,6 +235,9 @@ void RestoreGlobalState(bool is_powered_on) {
     values.mmj_disable_clip_coef.SetGlobal(true);
     values.mmj_force_linear_mag_filter.SetGlobal(true);
     values.mmj_skip_redundant_y2r.SetGlobal(true);
+    values.mmj_cpu_usage_limit.SetGlobal(true);
+    values.mmj_skip_cpu_write.SetGlobal(true);
+    values.mmj_display_transfer_remap.SetGlobal(true);
     values.frame_limit.SetGlobal(true);
     values.texture_filter.SetGlobal(true);
     values.texture_sampling.SetGlobal(true);

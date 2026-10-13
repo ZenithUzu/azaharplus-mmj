@@ -53,6 +53,9 @@ object SettingKeys {
     external fun mmj_disable_clip_coef(): String
     external fun mmj_force_linear_mag_filter(): String
     external fun mmj_skip_redundant_y2r(): String
+    external fun mmj_cpu_usage_limit(): String
+    external fun mmj_skip_cpu_write(): String
+    external fun mmj_display_transfer_remap(): String
     external fun delay_game_render_thread_us(): String
     external fun simulate_3ds_gpu_timings(): String
     external fun layout_option(): String

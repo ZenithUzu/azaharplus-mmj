@@ -91,6 +91,12 @@ public:
     /// Perform hardware accelerated display transfer according to the provided configuration
     bool AccelerateDisplayTransfer(const Pica::DisplayTransferConfig& config);
 
+    /// Citra MMJ per-game hacks (both off by default).
+    void SetMmjHacks(bool skip_cpu_write_, bool display_transfer_remap_) {
+        mmj_skip_cpu_write = skip_cpu_write_;
+        mmj_display_transfer_remap = display_transfer_remap_;
+    }
+
     /// Perform hardware accelerated memory fill according to the provided configuration
     bool AccelerateFill(const Pica::MemoryFillConfig& config);
 
@@ -233,6 +239,8 @@ private:
     Settings::TextureFilter filter;
     bool dump_textures;
     bool use_custom_textures;
+    bool mmj_skip_cpu_write = false;
+    bool mmj_display_transfer_remap = false;
 };
 
 } // namespace VideoCore
