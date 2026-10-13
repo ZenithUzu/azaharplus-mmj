@@ -3,6 +3,7 @@
 // Refer to the misc/licenses/gplv2.txt file included.
 
 #include <algorithm>
+#include <chrono>
 #include <mutex>
 #include <set>
 #include <span>
@@ -10,6 +11,7 @@
 #include <unordered_map>
 #include <variant>
 #include "common/hash.h"
+#include "common/logging/log.h"
 #include "common/settings.h"
 #include "core/frontend/emu_window.h"
 #include "video_core/pica/shader_setup.h"
@@ -439,10 +441,22 @@ void ShaderProgramManager::ApplyTo(OpenGLState& state, bool accurate_mul) {
         const u64 unique_identifier = impl->current.GetConfigHash();
         OGLProgram& cached_program = impl->program_cache[unique_identifier];
         if (cached_program.handle == 0) {
+            const auto t0 = std::chrono::steady_clock::now();
             cached_program.Create(false,
                                   std::array{impl->current.vs, impl->current.gs, impl->current.fs});
+            const auto t1 = std::chrono::steady_clock::now();
             auto& disk_cache = impl->disk_cache;
             disk_cache.SaveDumpToFile(unique_identifier, cached_program.handle, accurate_mul);
+            const auto t2 = std::chrono::steady_clock::now();
+            // MMJ diagnostics: report shader hitches (link and cache write on the draw thread).
+            using ms = std::chrono::duration<double, std::milli>;
+            const double link_ms = ms(t1 - t0).count();
+            const double save_ms = ms(t2 - t1).count();
+            if (link_ms + save_ms >= 4.0) {
+                LOG_WARNING(Render_OpenGL,
+                            "Shader stall: program {:016x} link={:.1f}ms disk_save={:.1f}ms",
+                            unique_identifier, link_ms, save_ms);
+            }
         }
         state.draw.shader_program = cached_program.handle;
     }
