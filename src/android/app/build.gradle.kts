@@ -66,6 +66,8 @@ android {
         // the Play Store listing, which was originally set up for Lime3DS, to still be used.
         // applicationId = "org.azahar_emu.azahar"
         applicationId = "io.github.lime3ds.android"
+        // Optional: -PappIdSuffix=.mmj installs next to other builds (they are signed with other keys).
+        (project.findProperty("appIdSuffix") as String?)?.let { applicationIdSuffix = it }
 
         minSdk = 28
         targetSdk = 35
