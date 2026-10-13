@@ -47,7 +47,12 @@ class CheatsViewModel : ViewModel() {
     val detailsViewFocusChange get() = _detailsViewFocusChange.asStateFlow()
     private val _detailsViewFocusChange = MutableStateFlow(false)
 
+    /** Pulses when cheats were imported in bulk, so the list can fully refresh. */
+    val cheatsReloadedEvent get() = _cheatsReloadedEvent.asStateFlow()
+    private val _cheatsReloadedEvent = MutableStateFlow(false)
+
     private var titleId: Long = 0
+    val currentTitleId: Long get() = titleId
     lateinit var cheats: Array<Cheat>
     private var cheatsNeedSaving = false
     private var selectedCheatPosition = -1
@@ -137,6 +142,39 @@ class CheatsViewModel : ViewModel() {
     private fun notifyCheatDeleted(position: Int) {
         _cheatDeletedEvent.value = position
         _cheatDeletedEvent.value = null
+    }
+
+    /**
+     * Adds downloaded cheats (never enabled), skipping names that already exist and entries the
+     * Gateway parser rejects.
+     */
+    fun importCheats(
+        entries: List<Fps60Cheats.Entry>,
+        incompatible: Int
+    ): Fps60Cheats.ImportResult {
+        val existing = cheats.map { it.getName() }.toHashSet()
+        var added = 0
+        var duplicates = 0
+        var invalid = incompatible
+        for (entry in entries) {
+            if (entry.name in existing) {
+                duplicates++
+            } else if (Cheat.isValidGatewayCode(entry.code) != 0) {
+                invalid++
+            } else {
+                CheatEngine.addCheat(Cheat.createGatewayCode(entry.name, entry.notes, entry.code))
+                existing += entry.name
+                added++
+            }
+        }
+        if (added > 0) {
+            cheatsNeedSaving = true
+            load()
+            saveIfNeeded()
+            _cheatsReloadedEvent.value = true
+            _cheatsReloadedEvent.value = false
+        }
+        return Fps60Cheats.ImportResult(added, duplicates, invalid)
     }
 
     fun deleteSelectedCheat() {

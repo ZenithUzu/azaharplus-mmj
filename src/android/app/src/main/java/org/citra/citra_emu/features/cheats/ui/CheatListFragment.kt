@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
+import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
@@ -20,9 +21,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import org.citra.citra_emu.features.cheats.model.Fps60Cheats
 import org.citra.citra_emu.R
 import org.citra.citra_emu.databinding.FragmentCheatListBinding
 import org.citra.citra_emu.features.cheats.model.CheatsViewModel
@@ -82,6 +85,18 @@ class CheatListFragment : Fragment() {
             }
             launch {
                 repeatOnLifecycle(Lifecycle.State.CREATED) {
+                    cheatsViewModel.cheatsReloadedEvent.collect { reloaded ->
+                        if (reloaded) {
+                            binding.cheatList.post {
+                                (binding.cheatList.adapter as CheatsAdapter)
+                                    .notifyDataSetChanged()
+                            }
+                        }
+                    }
+                }
+            }
+            launch {
+                repeatOnLifecycle(Lifecycle.State.CREATED) {
                     cheatsViewModel.cheatDeletedEvent.collect { position: Int? ->
                         position?.let {
                             binding.cheatList.apply {
@@ -106,7 +121,62 @@ class CheatListFragment : Fragment() {
             }
         }
 
+        setupFps60Menu()
         setInsets()
+    }
+
+    /** "Download 60 FPS cheats": only offered when the title has a file in the repository. */
+    private fun setupFps60Menu() {
+        val context = requireContext()
+        val titleId = cheatsViewModel.currentTitleId
+        binding.toolbarCheatList.inflateMenu(R.menu.menu_cheat_list)
+        val item = binding.toolbarCheatList.menu.findItem(R.id.menu_download_fps60)
+        item.isVisible = Fps60Cheats.isAvailable(context, titleId)
+        binding.toolbarCheatList.setOnMenuItemClickListener {
+            if (it.itemId == R.id.menu_download_fps60) {
+                confirmFps60Download(titleId)
+                true
+            } else {
+                false
+            }
+        }
+    }
+
+    private fun confirmFps60Download(titleId: Long) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.fps60_download)
+            .setMessage(getString(R.string.fps60_confirm, Fps60Cheats.REPO))
+            .setPositiveButton(R.string.fps60_download_action) { _, _ -> downloadFps60(titleId) }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun downloadFps60(titleId: Long) {
+        val context = requireContext().applicationContext
+        Toast.makeText(context, R.string.fps60_downloading, Toast.LENGTH_SHORT).show()
+        viewLifecycleOwner.lifecycleScope.launch {
+            val downloaded = try {
+                Fps60Cheats.download(context, titleId)
+            } catch (e: Exception) {
+                Toast.makeText(context, R.string.fps60_failed, Toast.LENGTH_LONG).show()
+                return@launch
+            }
+            val result = cheatsViewModel.importCheats(downloaded.entries, downloaded.incompatible)
+            if (isAdded) {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.fps60_download)
+                    .setMessage(
+                        getString(
+                            R.string.fps60_result,
+                            result.added,
+                            result.duplicates,
+                            result.incompatible
+                        )
+                    )
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show()
+            }
+        }
     }
 
     private fun setInsets() {

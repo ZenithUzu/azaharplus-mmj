@@ -45,6 +45,16 @@ Cada hack tiene su ajuste, activado por defecto y con opcion por juego. En Andro
 Apagar un interruptor deja ese juego exactamente como lo trata AzaharPlus sin el port. Los hacks que ya traia Azahar
 (las 15 IDs de ACCURATE_MULTIPLICATION, RIGHT_EYE_DISABLE, etc.) no tienen interruptor.
 
+### Hacks experimentales (apagados por defecto, con aviso al activarlos)
+| Ajuste (`[MMJ]` en config.ini) | Controla | IDs | Origen en MMJ | Motivo de que esté apagado |
+|---|---|---:|---|---|
+| `mmj_cpu_usage_limit` | CPU_USAGE_LIMIT (20 IDs) y CPU_USAGE_LIMIT_HEAVY (11 IDs) | 31 | `core_downcount_hack`: `downcount = slice_length >> shift` por núcleo, con desplazamientos 1,4,2,2 (HEAVY: 2,4,2,2); IDs de la sección `[cpu_usage_limit]` de `config-games.ini` | MMJ lo diseñó sobre su planificador; el comentario de `MAX_SLICE_LENGTH` en `core_timing.h` de Azahar indica que está ajustado para porciones largas y que las cortas obligan a los núcleos a resincronizarse. No hay mediciones. Se omitieron 4 IDs con desplazamientos 1,1,1,1 (The Binding of Isaac: Rebirth, Futuridium EP Deluxe) |
+| `mmj_skip_cpu_write` | SKIP_CPU_WRITE | 3 | `skip_cpu_write` en `gl_rasterizer_cache.cpp` de MMJ (escrituras de CPU de 8 bytes o menos) | La caché de texturas de Azahar se reescribió; la ruta equivalente es `RasterizerCache::InvalidateRegion`. Puede dejar texturas desactualizadas. Sin probar |
+| `mmj_display_transfer_remap` | DISPLAY_TRANSFER_REMAP | 4 | `display_transfer_hack` (4 direcciones fijas, Tales of the Abyss / Pac-Man Party 3D) | Valores fijos sin verificar con los juegos; en MMJ iba junto a un arreglo de un cierre inesperado que (inferido por coincidencia de síntomas) Azahar corrigió en #7381, así que puede ya no hacer falta |
+
+Nota sobre las fuentes: en el código público de MMJ no se encontró el lector nativo de `config-games.ini`; las listas de IDs se
+tomaron de ese archivo (el mismo criterio usado para los demás hacks) y la semántica de cada hack, del código de MMJ.
+
 ## Notas de fidelidad
 - disable_clip_coef: en el vertex shader normal el efecto es identico al de MMJ. En el camino de geometry shader
   (`EmitVtx`) MMJ ademas omite `gl_ClipDistance[0]` (plano fijo z <= 0); aqui ese plano se mantiene.
@@ -61,13 +71,17 @@ Apagar un interruptor deja ese juego exactamente como lo trata AzaharPlus sin el
 `use_fence_sync`, `use_compatible_mode`. Se declaran e inicializan pero ninguna ruta de video_core/core los consulta.
 
 ## No portado, con motivo
-- display_transfer_hack (Tales of the Abyss / Pac-Man Party 3D): remapea direcciones fisicas fijas; no validable sin el juego.
-- core_downcount_hack y use_fmv_hack (`core_ticks_hack`): ajustes de temporizacion de CPU; Azahar usa una sola escala de reloj.
-- skip_cpu_write (Lord of Magna, 3 IDs): depende del rasterizer cache que Azahar reescribio.
-- stream_buffer_hack (Shovel Knight, Gunvolt, 1001 Spikes, Gravity Falls): especifico del stream buffer de OpenGL de MMJ.
+- use_fmv_hack (`core_ticks_hack`, 10 IDs: Mirror of Fate, Luigi's Mansion: Dark Moon, Zombie Panic in Wonderland DX): en MMJ fija un minimo de ticks (16000 con JIT, 0xFFFF sin JIT) en `AddTicks` de Dynarmic y en cada SVC del interprete. AzaharPlus tiene tres backends de CPU (Dynarmic, DynCom, FastInterp) que contabilizan los ticks de otra forma; no hay una equivalencia directa y no se pudo comprobar, asi que no se porto.
+- stream_buffer_hack (Shovel Knight, Gunvolt, 1001 Spikes, Gravity Falls): en MMJ esta activo por defecto y esos juegos lo *desactivan* (solo cambia cuando se invalida el buffer de texturas de OpenGL). El `gl_stream_buffer.cpp` de Azahar usa mapeo persistente y otra logica, sin equivalente directo.
 - disable_shadow_rendering (Luigi's Mansion: Dark Moon): Azahar no tiene ajuste de sombras equivalente.
 - new_3ds_mode (41 IDs): Azahar usa is_new_3ds=true por defecto y lo permite fijar por juego.
 - game_region_*: Azahar selecciona la region automaticamente.
+
+## Cheats de 60 fps
+Ver el README. Detalles: indice `src/android/app/src/main/assets/fps60_index.json` (241 IDs, 257 carpetas; solo IDs y nombres de carpeta,
+commit `041cfa08`); conversor probado con Kotlin 2.0.21 sobre los 257 archivos (1330 cheats, 4 omitidos por usar el opcode `DF`, que el motor
+Gateway no implementa); URLs comprobadas con una muestra de 15 archivos (incluidos nombres con acentos y apostrofes). La descarga y la interfaz
+no se probaron en un dispositivo.
 
 ## Titulos populares
 | Titulo | En MMJ | En esta rama |

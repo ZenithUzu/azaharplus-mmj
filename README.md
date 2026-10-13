@@ -48,6 +48,20 @@ son **independientes y reversibles**; y se dice con honestidad qué está verifi
 **Lo que no buscamos:** reemplazar o competir con Azahar o AzaharPlus, ni enviarles estos cambios como pull request
 (ver [Transparencia sobre el uso de IA](#transparencia-sobre-el-uso-de-ia)).
 
+## Cheats de 60 fps (descarga dentro de la app)
+
+En la pantalla de **Cheats** de un juego aparece, en el menú de tres puntos, **«Descargar cheats de 60 FPS»**, pero **solo si el
+ID de título del juego tiene un archivo** en [Reshiban/60FPS-AR-CHEATS-3DS](https://github.com/Reshiban/60FPS-AR-CHEATS-3DS)
+(241 IDs en el índice; para cualquier otro juego la opción ni se muestra). La app **no incluye ni redistribuye** esos cheats: solo
+lleva un índice de IDs y nombres de carpeta, y descarga el archivo de ese juego desde GitHub, de un commit fijo
+([`041cfa0`](https://github.com/Reshiban/60FPS-AR-CHEATS-3DS/commit/041cfa08a864565e3026896a2f3287579e6b9195)). Ese repositorio
+no declara licencia, por eso no se copian sus archivos aquí.
+
+- Se convierte el formato CTRPF (carpetas y comentarios `{...}`) a cheats Gateway/AR normales; las carpetas pasan a ser prefijo del nombre.
+- Se añaden **desactivados**, sin tocar los que ya tengas, y se omiten los que usan opcodes que el emulador no soporta (4 de 1330 en el commit fijo).
+- Son códigos hechos por terceros para consolas reales: **no están verificados** aquí y algunos (Pokémon) hacen que el juego vaya más rápido.
+- Créditos: base de datos de Reshiban; códigos de Hazerou, lucky, NanashiFinal13 y otros que cada cheat nombra en sus notas.
+
 ## Menú «Ajustes de Citra MMJ» (Android)
 
 En **Ajustes → Ajustes de Citra MMJ** (en inglés, *Citra MMJ hacks*) hay un interruptor por hack, todos **activados por defecto**
@@ -61,6 +75,17 @@ y con opción por juego. Los cambios se aplican al iniciar un juego.
 | Desactivar plano de recorte extra | `DISABLE_CLIP_COEF` | 9 | Star Fox 64, Picross 2 |
 | Filtro lineal al ampliar | `FORCE_LINEAR_MAG_FILTER` | 5 | Attack on Titan |
 | Omitir conversiones YUV redundantes | `SKIP_REDUNDANT_Y2R_CONVERSION` | 2 | Danball Senki |
+
+### Hacks experimentales (desactivados por defecto)
+
+Además hay tres hacks de MMJ que **no se probaron en este fork** y por eso vienen **apagados**. Al encender cada uno la app muestra
+un aviso que explica por qué estaba apagado:
+
+| Interruptor | Hack | IDs de título | Por qué está apagado |
+|---|---|---:|---|
+| Límite de uso de CPU (MMJ) | `CPU_USAGE_LIMIT` / `CPU_USAGE_LIMIT_HEAVY` | 31 | MMJ lo diseñó sobre su propio planificador de CPU; Azahar reparte el tiempo entre núcleos de otra forma y está ajustado para porciones largas, así que el efecto aquí es desconocido |
+| Omitir invalidación por escrituras de CPU (MMJ) | `SKIP_CPU_WRITE` | 3 (Lord of Magna) | Escrito para la caché de texturas de MMJ, que Azahar reescribió; puede dejar gráficos viejos |
+| Remapeo de direcciones de display transfer (MMJ) | `DISPLAY_TRANSFER_REMAP` | 4 (Tales of the Abyss, Pac-Man Party 3D) | Direcciones fijas copiadas de MMJ, sin verificar con esos juegos; iba unido a un arreglo de cierre inesperado que Azahar corrigió después |
 
 Apagar un interruptor deja esos juegos exactamente como los trata AzaharPlus sin el port. Detalle, notas de fidelidad, lo que **no**
 se portó y por qué: **[`docs/MMJ_PORT.md`](docs/MMJ_PORT.md)**.
@@ -117,7 +142,8 @@ Casi todo lo valioso aquí es trabajo de otras personas:
 - **zhangwei**, que mantuvo Citra MMJ de 2023 a 2025 (23 commits, incluido el último) y cuya versión de `config-games.ini` es la
   fuente de datos usada aquí.
 - **Claude (Anthropic)**, la IA que escribió el código y la documentación de los cambios de este fork, y **[axelconde7w7-gif](https://github.com/axelconde7w7-gif)**, quien dirige el proyecto, decide qué se hace y prueba los resultados en dispositivo.
-- Los autores de los *cheats* de 60 fps de [Reshiban/60FPS-AR-CHEATS-3DS](https://github.com/Reshiban/60FPS-AR-CHEATS-3DS) (Hazerou, lucky, NanashiFinal13 y colaboradores): aún **no** están integrados; cuando lo estén (descarga dentro de la app, sin redistribuir sus archivos) se acreditarán aquí y en la app.
+- **[Reshiban](https://github.com/Reshiban/60FPS-AR-CHEATS-3DS)** y los autores de los *cheats* de 60 fps que la app descarga de su repositorio (base de datos de Reshiban, basada en el hilo de GBAtemp de **Hazerou** y en la lista de **lucky**; además NanashiFinal13, Spooky y otros que cada cheat nombra). No se redistribuyen: se descargan bajo demanda.
+- El equipo de **AzaharPlus** por la base de cheats integrada que ya trae la app.
 - Los autores de las bibliotecas externas incluidas (Dynarmic, libzip y otras), con sus propias licencias.
 
 Si eres autor de alguno de estos proyectos y quieres que se corrija o retire algo, abre un issue en este repositorio.
@@ -153,6 +179,12 @@ emulator) that ports the per-game compatibility hacks accumulated in **[Citra MM
 - **Status:** the APK of this branch builds on GitHub Actions and was **tested on one device only** (POCO F7 Pro) with a few games,
   without A/B comparisons per hack; see [`docs/MMJ_PORT.md`](docs/MMJ_PORT.md#pruebas-reportadas). No per-game results yet. No binaries are published; not affiliated with any of the
   projects credited above or with Nintendo.
+- **Experimental hacks (off by default):** three more MMJ hacks (CPU usage limit, skip CPU-write invalidation, display-transfer remap)
+  are included but switched off, because they were not tested here; turning each one on shows a warning explaining why.
+- **60 FPS cheats:** the cheats screen offers an in-app download of the community 60 FPS cheats from
+  [Reshiban/60FPS-AR-CHEATS-3DS](https://github.com/Reshiban/60FPS-AR-CHEATS-3DS), only for games whose title ID has a file there.
+  Nothing is bundled; the file is downloaded on demand from a pinned commit and added switched off. Credits: Reshiban, Hazerou, lucky, NanashiFinal13 and others.
+- **Startup notice:** the app shows a dialog at launch saying it is an unofficial fork made with AI (can be dismissed for good).
 - **Made with AI:** this is an AI-made fork (see the in-app *About → Credits and AI notice*). The changes were written with Claude (Anthropic) under the owner's direction. Azahar's
   [AI policy](https://github.com/azahar-emu/azahar/blob/master/AI-POLICY.md) forbids submitting substantially AI-written code, so
   **this fork is not intended as a pull request to Azahar or AzaharPlus**.

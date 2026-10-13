@@ -42,6 +42,7 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
 import com.google.android.material.color.MaterialColors
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationBarView
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.TimeSource
@@ -86,6 +87,30 @@ class MainActivity :
 
     companion object {
         const val KEY_SETUP_CURRENT_PAGE = "SetupCurrentPage"
+        private const val PREF_HIDE_FORK_NOTICE = "mmj_hide_fork_notice"
+    }
+
+    /** Tells the user at startup that this is an unofficial fork written with AI. */
+    private fun showForkNotice() {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+        if (prefs.getBoolean(PREF_HIDE_FORK_NOTICE, false)) {
+            return
+        }
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.mmj_notice_title)
+            .setMessage(R.string.mmj_notice_message)
+            .setPositiveButton(android.R.string.ok, null)
+            .setNeutralButton(R.string.mmj_notice_credits) { _, _ ->
+                MaterialAlertDialogBuilder(this)
+                    .setTitle(R.string.mmj_credits)
+                    .setMessage(R.string.mmj_credits_full)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show()
+            }
+            .setNegativeButton(R.string.mmj_notice_hide) { _, _ ->
+                prefs.edit().putBoolean(PREF_HIDE_FORK_NOTICE, true).apply()
+            }
+            .show()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -113,6 +138,10 @@ class MainActivity :
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        if (savedInstanceState == null) {
+            showForkNotice()
+        }
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
