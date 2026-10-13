@@ -1,231 +1,233 @@
 <p align="center">
-  <img src="docs/img/azahar-plus-mmj-logo.jpg" alt="Logo de Azahar+ mmj" width="520">
+  <img src="docs/img/azahar-plus-mmj-logo.jpg" alt="Azahar+ mmj logo" width="520">
 </p>
 
 # Azahar+ mmj
 
-> **Azahar+ mmj** es un fork no oficial y experimental de [AzaharPlus](https://github.com/AzaharPlus/AzaharPlus), que a su vez es un fork de
-> [Azahar](https://github.com/azahar-emu/azahar). Añade los arreglos por juego que acumuló **Citra MMJ**, con un menú para
-> activarlos o desactivarlos uno por uno.
->
-> *English summary at the [bottom](#english-summary).*
+**English** · [Español](README.es.md)
 
-> [!IMPORTANT]
-> **🤖 Este es un fork hecho con IA.** Todo el código y la documentación de los cambios de este fork fueron escritos con
-> **Claude (Anthropic)** bajo la dirección del propietario del repositorio. Puede contener errores; no es un proyecto oficial. Los
-> créditos completos están en la sección [Créditos](#créditos) y **dentro de la app** en *Acerca de → Créditos y aviso de IA*.
+Azahar+ mmj is an unofficial Nintendo 3DS emulator for Android (the desktop sources are still in the tree). It is a fork of
+[AzaharPlus](https://github.com/AzaharPlus/AzaharPlus), which is a fork of [Azahar](https://github.com/azahar-emu/azahar). The
+fork exists to carry over the per-game fixes that [Citra MMJ](https://github.com/weihuoya/citra) collected over the years, and to
+let you switch each one on or off from the settings.
 
-> [!WARNING]
-> **Estado: experimental.** El APK de esta rama compila en GitHub Actions y fue **probado en un solo dispositivo** (POCO F7 Pro) con
-> unos pocos juegos, sin comparar cada hack por separado: ver [`docs/MMJ_PORT.md`](docs/MMJ_PORT.md#pruebas-reportadas). No hay
-> resultados documentados juego por juego. No publica binarios y **no está afiliado ni respaldado** por Azahar, AzaharPlus, Citra, Lime3DS, los
-> autores de Citra MMJ ni Nintendo.
+It is not affiliated with, or endorsed by, Azahar, AzaharPlus, Citra, Lime3DS, the Citra MMJ authors or Nintendo.
 
-> [!NOTE]
-> **Dónde está cada cosa.** Este repositorio contiene **dos versiones** del mismo port:
-> - rama **`azaharplus-mmj`** (esta): basada en **AzaharPlus**, con el menú de interruptores;
-> - rama `master`: basada en **Azahar oficial**, sin menú de interruptores.
->
-> (GitHub no permite una segunda copia «fork» de AzaharPlus en la misma cuenta, por eso conviven aquí como ramas.)
+- [Status](#status)
+- [Why this fork exists](#why-this-fork-exists)
+- [What it adds](#what-it-adds)
+- [MMJ hacks](#mmj-hacks)
+- [60 FPS cheats](#60-fps-cheats)
+- [Installing and updating](#installing-and-updating)
+- [Building](#building)
+- [Where the data comes from](#where-the-data-comes-from)
+- [Authorship and AI use](#authorship-and-ai-use)
+- [Credits](#credits)
+- [License](#license)
+- [Reporting problems](#reporting-problems)
 
-## Qué es esto
+## Status
 
-- **Base:** AzaharPlus, rama `AzaharPlus`, commit [`cf90688`](https://github.com/AzaharPlus/AzaharPlus/commit/cf9068844820f819a6eabbeeeb6a70d546e3e85a) (2026-10-08).
-  De ahí vienen sus funciones: compatibilidad con archivos de juego de cualquier fork de Citra, descarga de archivos de sistema,
-  soporte para CPUs sin SSE4.2, Android 9, ZipPass, trucos integrados, generación de amiibo y mejor multiplayer con otros forks de
-  Citra (según su propio [README](docs/UPSTREAM_README.md); aquí no se han verificado una por una).
-- **Lo que añade este fork:** los *hacks* por juego de [Citra MMJ](https://github.com/weihuoya/citra) traducidos a la arquitectura
-  actual (`HackManager`), un menú para controlarlos, un tope de **8x** en la resolución interna (Azahar permite hasta 18x) y un log
-  que indica qué hacks están activos en cada juego.
+Experimental. The APK from the `azaharplus-mmj` branch builds on GitHub Actions and has been run on one device (POCO F7 Pro,
+Snapdragon 8 Gen 3) with a handful of games. There are no per-hack A/B measurements and no game-by-game results yet; what has and
+has not been checked is written down in [`docs/MMJ_PORT.md`](docs/MMJ_PORT.md). Several things below were only compiled, not
+run, and are marked as such.
 
-## Qué buscamos
+This repository has two lines of the same port:
 
-Citra MMJ acumuló durante años conocimiento práctico sobre juegos concretos de 3DS (qué títulos necesitan multiplicación precisa
-en los shaders, cuáles ganan velocidad al saltarse una copia de texturas lenta, etc.), guardado como listas de *title IDs*.
-MMJ dejó de incorporar cambios de Citra en abril de 2020 y no puede fusionarse con el código actual, así que **ese conocimiento
-corre riesgo de perderse**. Este proyecto intenta rescatarlo, documentarlo y mantenerlo sobre una base activa, dejando siempre
-al usuario la opción de apagar cada hack.
+| Branch | Based on | Notes |
+|---|---|---|
+| `azaharplus-mmj` | AzaharPlus (`cf90688`, 2026-10-08) | This one. Has the settings menu, update checker, 60 FPS cheat download. |
+| `master` | Azahar | Older, no settings menu. |
 
-**Principios:** cada hack actúa **solo** sobre los títulos de su lista (cualquier otro juego va igual que en AzaharPlus); todos
-son **independientes y reversibles**; y se dice con honestidad qué está verificado y qué no.
+GitHub only allows one fork of a given repository per account, which is why both live here as branches.
 
-**Lo que no buscamos:** reemplazar o competir con Azahar o AzaharPlus, ni enviarles estos cambios como pull request
-(ver [Transparencia sobre el uso de IA](#transparencia-sobre-el-uso-de-ia)).
+## Why this fork exists
 
-## Cheats de 60 fps (descarga dentro de la app)
+Citra MMJ accumulated practical knowledge about specific 3DS games: which titles need accurate shader multiplication, which ones
+run faster if a slow texture copy is skipped, which ones crash unless a draw is dropped. That knowledge is stored as lists of
+title IDs. MMJ stopped merging upstream Citra changes in April 2020 and cannot be merged into current code, so the lists were at
+risk of being lost with it.
 
-En la pantalla de **Cheats** de un juego hay, arriba de la lista, un apartado de **cheats de 60 FPS** que siempre se ve y muestra el ID
-del juego. El botón **«Descargar cheats de 60 FPS»** aparece **solo si el ID de título del juego tiene un archivo** en [Reshiban/60FPS-AR-CHEATS-3DS](https://github.com/Reshiban/60FPS-AR-CHEATS-3DS)
-(241 IDs en el índice; para cualquier otro juego solo se muestra un aviso con su ID y no hay botón). La app **no incluye ni redistribuye** esos cheats: solo
-lleva un índice de IDs y nombres de carpeta, y descarga el archivo de ese juego desde GitHub, de un commit fijo
-([`041cfa0`](https://github.com/Reshiban/60FPS-AR-CHEATS-3DS/commit/041cfa08a864565e3026896a2f3287579e6b9195)). Ese repositorio
-no declara licencia, por eso no se copian sus archivos aquí.
+This fork re-implements those hacks on top of Azahar's current `HackManager`, keeps the title ID lists, and documents what each
+one does. Three rules apply to all of them:
 
-- Se convierte el formato CTRPF (carpetas y comentarios `{...}`) a cheats Gateway/AR normales; las carpetas pasan a ser prefijo del nombre.
-- Se añaden **desactivados**, sin tocar los que ya tengas, y se omiten los que usan opcodes que el emulador no soporta (4 de 1330 en el commit fijo).
-- Son códigos hechos por terceros para consolas reales: **no están verificados** aquí y algunos (Pokémon) hacen que el juego vaya más rápido.
-- Créditos: base de datos de Reshiban; códigos de Hazerou, lucky, NanashiFinal13 y otros que cada cheat nombra en sus notas.
+- A hack only acts on the titles in its own list. Every other game runs as it does in AzaharPlus.
+- Each hack has its own switch and can be turned off without affecting the others.
+- Anything that has not been verified is labeled as unverified.
 
-## Otras mejoras de este fork
+It is not meant to replace Azahar or AzaharPlus, and it is not offered to either project as a pull request (see
+[Authorship and AI use](#authorship-and-ai-use)).
 
-- **Base de trucos integrada:** se validó la base de AzaharPlus (696 juegos, 12 617 cheats, 74 141 líneas): el formato es correcto (0 líneas
-  inválidas). Se corrigió un defecto del cargador: 198 cheats que repetían nombre con **código distinto** se descartaban en silencio;
-  ahora se conservan como «Nombre (2)». Los 511 repetidos exactos se siguen omitiendo. No se corrigió: 105 cheats usan el opcode `DF`, que el motor
-  no implementa y que simplemente se ignora.
-- **Compartir diagnóstico MMJ** (Ajustes de la pantalla de inicio): comparte un resumen corto del último log (cabecera, hacks activos y
-  estadísticas de tirones de shaders/pipelines) en lugar del log completo.
-- **Nombre:** la app ahora se llama **Azahar+ mmj**; los enlaces de «Soporte», «Sitio web» y «GitHub» de Acerca de apuntan a este
-  repositorio, no a AzaharPlus.
+## What it adds
 
-## Menú «Ajustes de Citra MMJ» (Android)
+On top of what AzaharPlus already provides (game file compatibility with other Citra forks, system file download, ZipPass,
+built-in cheats, amiibo generation and so on, as described in its own [README](docs/UPSTREAM_README.md); none of that has been
+re-verified here):
 
-En **Ajustes → Ajustes de Citra MMJ** (en inglés, *Citra MMJ hacks*) hay un interruptor por hack, todos **activados por defecto**
-y con opción por juego. Los cambios se aplican al iniciar un juego.
+| Feature | What it does | Why it is there |
+|---|---|---|
+| MMJ hack switches | One setting per hack under *Settings → Citra MMJ hacks*, with per-game overrides. Changes apply when a game starts. | So each fix can be tested and disabled on its own. |
+| Experimental hacks | Five more hacks, off by default. Turning one on shows a dialog explaining why it was off. | They were not tested in this fork, so they should not run unless you ask for them. |
+| 60 FPS cheat download | A section at the top of a game's cheat screen. The download button only appears when the game's title ID has a file in the cheat repository. | 60 FPS codes are per game. Offering them for the wrong title makes no sense. |
+| Built-in cheat database fix | 198 cheats that shared a name but had different codes were silently dropped by the loader. They are now kept as `Name (2)`. | The database itself is valid; the loader was discarding data. |
+| MMJ diagnostics | *Share MMJ diagnostics* in the home settings sends a short summary of the last log: header, active hacks and shader/pipeline stall measurements. | A full log is long and hard to read when someone reports a problem. |
+| Stall measurement | OpenGL logs `Shader stall` and Vulkan logs `Pipeline stall` when a draw waits 4 ms or more on a shader or pipeline. | To measure shader-compile stutter before trying to fix it. |
+| Per-game hack log line | Each game start logs `Per-game hacks for <title ID>: ...` with every hack's state. | Makes it easy to confirm which hacks were active. |
+| Release-based updates | The app checks the Releases of this repository only, and a *Updates* entry in the home *Options* tab (the three dots) checks on demand. | The Azahar and AzaharPlus update notices were removed so this build never points users at another project. |
+| Fork notice and credits | A dialog on first launch says this is an unofficial fork made with AI. *About → Credits and AI notice* lists everyone credited below. | Users should know what they are running and who to thank. |
+| Resolution cap | Internal resolution is limited to 8x (Azahar allows up to 18x). | Carried over from the MMJ port. |
+| Name and icon | Renamed to Azahar+ mmj with its own icon. About links point to this repository. | So it is not confused with upstream builds. |
 
-| Interruptor | Hack | IDs de título | Ejemplos |
+## MMJ hacks
+
+Menu path on Android: *Settings → Citra MMJ hacks* (Spanish: *Ajustes de Citra MMJ*). Switches in the first table are on by
+default. Turning a switch off leaves those games exactly as AzaharPlus treats them without the port.
+
+| Switch | Hack | Title IDs | Example games |
 |---|---|---:|---|
-| Multiplicación precisa (lista de MMJ) | `ACCURATE_MULTIPLICATION_MMJ` | 42 | Super Mario 3D Land, Kid Icarus: Uprising, Majora's Mask 3D |
-| Omitir dibujados lentos | `SKIP_SLOW_DRAW` | 4 | Dragon Quest Monsters: Joker 3, New Atelier Rorona |
-| Omitir copias de texturas | `SKIP_TEXTURE_COPY` | 19 | Mario Kart 7, Metroid Prime: Federation Force |
-| Desactivar plano de recorte extra | `DISABLE_CLIP_COEF` | 9 | Star Fox 64, Picross 2 |
-| Filtro lineal al ampliar | `FORCE_LINEAR_MAG_FILTER` | 5 | Attack on Titan |
-| Omitir conversiones YUV redundantes | `SKIP_REDUNDANT_Y2R_CONVERSION` | 2 | Danball Senki |
+| Accurate multiplication (MMJ list) | `ACCURATE_MULTIPLICATION_MMJ` | 42 | Super Mario 3D Land, Kid Icarus: Uprising, Majora's Mask 3D |
+| Skip slow draws | `SKIP_SLOW_DRAW` | 4 | Dragon Quest Monsters: Joker 3, New Atelier Rorona |
+| Skip texture copies | `SKIP_TEXTURE_COPY` | 19 | Mario Kart 7, Metroid Prime: Federation Force |
+| Disable extra clip plane | `DISABLE_CLIP_COEF` | 9 | Star Fox 64, Picross 2 |
+| Linear filter on magnification | `FORCE_LINEAR_MAG_FILTER` | 5 | Attack on Titan |
+| Skip redundant YUV conversions | `SKIP_REDUNDANT_Y2R_CONVERSION` | 2 | Danball Senki |
 
-### Hacks experimentales (desactivados por defecto)
+The hacks live in code shared by the OpenGL and Vulkan renderers (and in the CPU and service layers), so they apply to both
+backends. That is based on reading the code; it has not been checked game by game on each backend.
 
-Además hay cinco hacks de MMJ que **no se probaron en este fork** y por eso vienen **apagados**. Al encender cada uno la app muestra
-un aviso que explica por qué estaba apagado:
+### Experimental hacks (off by default)
 
-| Interruptor | Hack | IDs de título | Por qué está apagado |
+| Switch | Hack | Title IDs | Why it is off |
 |---|---|---:|---|
-| Límite de uso de CPU (MMJ) | `CPU_USAGE_LIMIT` / `CPU_USAGE_LIMIT_HEAVY` | 31 | MMJ lo diseñó sobre su propio planificador de CPU; Azahar reparte el tiempo entre núcleos de otra forma y está ajustado para porciones largas, así que el efecto aquí es desconocido |
-| Omitir invalidación por escrituras de CPU (MMJ) | `SKIP_CPU_WRITE` | 3 (Lord of Magna) | Escrito para la caché de texturas de MMJ, que Azahar reescribió; puede dejar gráficos viejos |
-| Remapeo de direcciones de display transfer (MMJ) | `DISPLAY_TRANSFER_REMAP` | 4 (Tales of the Abyss, Pac-Man Party 3D) | Direcciones fijas copiadas de MMJ, sin verificar con esos juegos; iba unido a un arreglo de cierre inesperado que Azahar corrigió después |
-| Mínimo de ticks de CPU por vaciado, «FMV hack» (MMJ) | `FMV_TICKS` | 10 (Mirror of Fate, Luigi's Mansion: Dark Moon, Zombie Panic in Wonderland DX) | MMJ no documenta qué arregla; AzaharPlus cuenta los ticks distinto en cada backend de CPU (Dynarmic, DynCom y FastInterp están cubiertos) y no se probó |
-| Desactivar sombras (MMJ) | `DISABLE_SHADOW_RENDERING` | 4 (Luigi's Mansion: Dark Moon) | Descarta los dibujos de sombra en OpenGL y Vulkan; el lector de esa lista no está en el código público de MMJ, así que se copió lo que MMJ hace sin soporte de sombras; sin probar |
+| CPU usage limit | `CPU_USAGE_LIMIT`, `CPU_USAGE_LIMIT_HEAVY` | 31 | MMJ built it on its own CPU scheduler. Azahar splits time between cores differently, so the effect here is unknown. |
+| Skip invalidation on CPU writes | `SKIP_CPU_WRITE` | 3 (Lord of Magna) | Written for MMJ's texture cache, which Azahar later rewrote. It can leave stale graphics on screen. |
+| Display transfer address remap | `DISPLAY_TRANSFER_REMAP` | 4 (Tales of the Abyss, Pac-Man Party 3D) | Fixed addresses copied from MMJ and never checked against these games. It was added next to a crash workaround that Azahar has since fixed. |
+| Minimum CPU ticks per flush ("FMV hack") | `FMV_TICKS` | 10 (Mirror of Fate, Luigi's Mansion: Dark Moon, Zombie Panic in Wonderland DX) | MMJ does not document what it fixes. AzaharPlus has three CPU backends that count ticks differently. Dynarmic, DynCom and FastInterp are all covered, none of them tested. |
+| Disable shadow rendering | `DISABLE_SHADOW_RENDERING` | 4 (Luigi's Mansion: Dark Moon) | The code that reads this list is not in MMJ's public source. The implementation copies what MMJ does on GPUs without shadow support, which is to skip the shadow draws. |
 
-Apagar un interruptor deja esos juegos exactamente como los trata AzaharPlus sin el port. Detalle, notas de fidelidad, lo que **no**
-se portó y por qué: **[`docs/MMJ_PORT.md`](docs/MMJ_PORT.md)**.
+Hacks that were not ported, and the reason for each (for example `stream_buffer_hack`, which Azahar already handles the way those
+games need), are in [`docs/MMJ_PORT.md`](docs/MMJ_PORT.md).
 
-## Procedencia: de dónde sale cada dato
+## 60 FPS cheats
 
-GitHub solo permite un repositorio padre por fork (aquí, AzaharPlus), así que la relación con MMJ se documenta con enlaces
-permanentes a sus commits originales:
+Open the cheats screen of a game. At the top there is a 60 FPS section that always shows the game's title ID. The
+download button appears only if that ID has a file in
+[Reshiban/60FPS-AR-CHEATS-3DS](https://github.com/Reshiban/60FPS-AR-CHEATS-3DS) (241 IDs in the bundled index). For any other
+game the section only shows the ID.
 
-| Dato | Primer commit de MMJ donde aparece | Autor | Fecha |
+- The app does not bundle or redistribute those cheats. It ships an index of title IDs and folder names and downloads the game's
+  file from GitHub, pinned to commit
+  [`041cfa0`](https://github.com/Reshiban/60FPS-AR-CHEATS-3DS/commit/041cfa08a864565e3026896a2f3287579e6b9195). That repository
+  declares no license, so none of its files are copied here.
+- The CTRPF format (folders, `{...}` comments) is converted to regular Gateway/AR cheats. Folder names become a prefix on the
+  cheat name.
+- Cheats are added switched off and existing cheats are not touched. Cheats that use opcodes the emulator does not implement are
+  skipped (4 of 1330 at the pinned commit).
+- These are third-party codes written for real consoles and have not been verified here. Some, such as the Pokémon ones, make the
+  game run faster.
+
+## Installing and updating
+
+Every successful build on GitHub Actions publishes a release named `build-<n>`, marked as pre-release, with the APK attached.
+The 10 most recent are kept. Download the APK from the
+[Releases page](https://github.com/axelconde7w7-gif/azaharplus-mmj/releases) and install it.
+
+The APK uses the `.mmj` suffix in its application ID, so it installs next to Azahar or AzaharPlus rather than replacing them.
+
+Inside the app:
+
+- On launch it checks this repository's Releases and offers the download if there is a newer build. This can be turned off in
+  *Settings → General → Check for updates*.
+- *Updates* at the top of the home *Options* tab shows the installed build number and checks immediately, even when the automatic
+  check is off.
+- Local builds (build number 0) never check for updates.
+- Nothing is installed automatically. Android asks for confirmation each time.
+
+To install a new build over the old one, the APK has to be signed with the same key every time. Without one, CI signs with a
+temporary debug key, the signature changes on every build and Android refuses the update, so you would have to uninstall first.
+To fix a key, create a keystore and add these repository secrets under *Settings → Secrets and variables → Actions*:
+
+- `ANDROID_KEYSTORE_BASE64`: the `.jks` file encoded in base64
+- `ANDROID_KEYSTORE_PASS`: the keystore password (it is also used as the key password)
+- `ANDROID_KEY_ALIAS`: the key alias
+
+Keep a safe copy of the keystore. If it is lost, nobody can update over existing installs.
+
+## Building
+
+Full instructions (Android Studio, GitHub Actions, what to look at in each game) are in
+[`docs/ANDROID_TEST.md`](docs/ANDROID_TEST.md), currently in Spanish. In short: open `src/android` in Android Studio, or let the
+workflow in `.github/workflows/android-apk.yml` build an arm64 APK. To check that a build is this fork: internal resolution
+stops at 8x, the Citra MMJ menu exists and each game's log has a `Per-game hacks for <ID>` line.
+
+## Where the data comes from
+
+GitHub allows a single parent per fork (here, AzaharPlus), so the link to MMJ is kept as permanent links to the original
+commits.
+
+| Data | First MMJ commit where it appears | Author | Date |
 |---|---|---|---|
 | `skip_slow_draw` | [`e85a43c`](https://github.com/weihuoya/citra/commit/e85a43cf92e446b4ac4af99a22b53655ea12b92e) | weihuoya | 2020-07-06 |
 | `disable_clip_coef` | [`0467d74`](https://github.com/weihuoya/citra/commit/0467d74465a73aba30b8ab712243f9f14b7bcb2d) | weihuoya | 2020-09-21 |
 | `y2r_perform_hack` | [`965594b`](https://github.com/weihuoya/citra/commit/965594b140bf6c5c3f5caf6a674d5d3a8a44f5a7) | weihuoya | 2020-12-25 |
 | `use_linear_filter` | [`21c231f`](https://github.com/weihuoya/citra/commit/21c231fbc2e1d1523a250330b2543b3c96c0875f) | weihuoya | 2021-01-18 |
 | `skip_texture_copy` | [`3c93fb4`](https://github.com/weihuoya/citra/commit/3c93fb489497dd49b58afa5187e735609b149a53) | weihuoya | 2022-01-20 |
-| listas completas de IDs (`config-games.ini`) | creado en [`79564b5`](https://github.com/weihuoya/citra/commit/79564b5f34fec812c6750b7165099023f83086a7); [versión usada aquí](https://github.com/weihuoya/citra/blob/302b0c3bc4312bc96489c11584a97664894b343f/src/android/app/src/main/assets/config/config-games.ini) | weihuoya / zhangwei | 2022-04-19 / 2025-11-14 |
+| Full ID lists (`config-games.ini`) | created in [`79564b5`](https://github.com/weihuoya/citra/commit/79564b5f34fec812c6750b7165099023f83086a7); [version used here](https://github.com/weihuoya/citra/blob/302b0c3bc4312bc96489c11584a97664894b343f/src/android/app/src/main/assets/config/config-games.ini) | weihuoya / zhangwei | 2022-04-19 / 2025-11-14 |
 
-Los mensajes de MMJ son muy breves (`fx`, `cache`), así que un commit puede agrupar otros cambios: la tabla indica dónde aparece
-**por primera vez** el nombre del ajuste. Historial completo en local: `git remote add mmj https://github.com/weihuoya/citra.git`.
+MMJ commit messages are very short (`fx`, `cache`), so a commit can bundle other changes. The table shows where the setting's name
+first appears. To browse the full history locally: `git remote add mmj https://github.com/weihuoya/citra.git`.
 
-## Compilar y probar
+## Authorship and AI use
 
-- Guía completa (Android Studio, GitHub Actions, qué mirar en cada juego): **[`docs/ANDROID_TEST.md`](docs/ANDROID_TEST.md)**.
-- El APK de este fork usa el sufijo `.mmj` en su ID de aplicación para **instalarse junto a otras versiones** (Azahar, AzaharPlus):
-  van firmadas con claves distintas y no pueden reemplazarse entre sí.
-- Comprobar que el APK es esta versión: la resolución interna no pasa de 8x, existe el menú de Citra MMJ y el log de cada juego
-  incluye una línea `Per-game hacks for <ID>: ...`.
+The code and documentation for this fork's changes were written with Claude (Anthropic), following the direction and decisions of
+the repository owner. Commits carry a `Co-Authored-By` trailer, and the app says so at first launch and under *About → Credits and
+AI notice*.
 
-## Actualizaciones
+Two practical consequences:
 
-Cada compilación correcta en GitHub Actions publica automáticamente un **release** (`build-<n>`, marcado como pre-release) con el
-APK adjunto; se conservan los 10 más recientes. La app, al abrirse, consulta **solo los releases de este repositorio**
-(se puede apagar en *Ajustes → General → Buscar actualizaciones*) y, si hay una compilación más nueva que la instalada, ofrece
-descargarla. Se eliminaron las consultas de actualizaciones a Azahar/AzaharPlus (también en la versión de escritorio). Las
-compilaciones locales (número 0) nunca buscan actualizaciones.
+- Azahar has an [AI policy](https://github.com/azahar-emu/azahar/blob/master/AI-POLICY.md) that forbids submitting code written
+  wholly or substantially by AI. For that reason this fork is not proposed as a pull request to Azahar or AzaharPlus, and nobody
+  should do so on its behalf.
+- AI-written code can be wrong. Read the diff before trusting it, particularly anything under `video_core`.
 
-Además hay un apartado **Actualizaciones** en la pantalla de ajustes de inicio: muestra el build instalado y, al tocarlo,
-busca ahora mismo en los releases de este repositorio (funciona aunque la búsqueda automática esté apagada), te dice si ya
-tienes la última versión o te ofrece descargar el APK nuevo.
+## Credits
 
-Para que una versión nueva se pueda instalar **encima** de la anterior, el APK debe firmarse siempre con la misma clave. Sin ella
-se usa una clave de depuración temporal y Android pedirá desinstalar antes. Para fijarla, crea tu clave y guarda en
-*Settings → Secrets and variables → Actions* los secretos `ANDROID_KEYSTORE_BASE64` (el `.jks` en base64), `ANDROID_KEYSTORE_PASS`
-(la contraseña del almacén, que debe ser también la de la clave) y `ANDROID_KEY_ALIAS`. Guarda una copia segura de la clave:
-si la pierdes, nadie podrá actualizar encima.
+Most of what is useful here is other people's work.
 
-## Transparencia sobre el uso de IA
+- [Azahar Emulator Project](https://github.com/azahar-emu/azahar) and its developers: the base of everything, including the
+  `HackManager` that makes per-title behavior possible.
+- [AzaharPlus](https://github.com/AzaharPlus/AzaharPlus) and its team (their page does not name the individuals): the direct base
+  of this fork, its extra features and the built-in cheat database.
+- Citra Emulator Project and its contributors, who made the emulator Azahar, Lime3DS and Citra MMJ descend from.
+- Lime3DS and its contributors. Azahar continues from it.
+- [weihuoya](https://github.com/weihuoya/citra), author of Citra MMJ between 2019 and 2022 (94 commits of their own since April
+  2020). The hacks, title IDs and per-game observations adapted here come from their work and their testing with real games.
+- zhangwei, who maintained Citra MMJ from 2023 to 2025 (23 commits, including the last). Their version of `config-games.ini` is
+  the data source used here.
+- [Reshiban](https://github.com/Reshiban/60FPS-AR-CHEATS-3DS) and the authors of the 60 FPS cheats the app downloads from that
+  repository: Hazerou (GBAtemp thread), lucky, NanashiFinal13, Spooky and others named in each cheat. They are downloaded on
+  demand, not redistributed.
+- The authors of the bundled libraries (Dynarmic, libzip and others), under their own licenses.
+- Claude (Anthropic) wrote the code and documentation of this fork's changes, and
+  [axelconde7w7-gif](https://github.com/axelconde7w7-gif) directs the project, decides what gets done and tests it on a device.
+- Logo: the flower is Azahar's logo, property of PabloMK7 and angyartanddraw (see
+  `the_azahar_logo_is_the_property_of_PabloMK7_and_angyartanddraw.txt`). It is used here to identify the base of the project and
+  does not imply official endorsement.
 
-El código y la documentación de los cambios de este fork fueron escritos con **Claude (Anthropic)**, siguiendo la dirección y
-las decisiones del propietario del repositorio; los commits lo declaran con un trailer `Co-Authored-By`. Consecuencias:
+If you wrote any of these projects and want something corrected or removed, open an issue here.
 
-- Azahar publica una [política de uso de IA](https://github.com/azahar-emu/azahar/blob/master/AI-POLICY.md) que **prohíbe enviar
-  como contribución código escrito total o sustancialmente por IA**. Por eso **este fork no se propone como pull request ni a
-  Azahar ni a AzaharPlus**, y se pide que nadie lo haga en su nombre.
-- Una IA puede equivocarse: **revisa el diff antes de confiar en él**, sobre todo en `video_core`.
+## License
 
-## Créditos
+Azahar, AzaharPlus, Citra and Citra MMJ are distributed under GPL licenses. Every file keeps its original copyright notice and
+license (mostly GPLv2 or later, some newer files GPLv3 or later). See the file headers, [`LICENSE.txt`](LICENSE.txt) and
+[`misc/licenses/`](misc/licenses/). Changes in this fork are published under the same terms.
 
-Casi todo lo valioso aquí es trabajo de otras personas:
+## Reporting problems
 
-- **Logotipo:** la flor del logo de arriba es el logotipo de Azahar, propiedad de PabloMK7 y angyartanddraw; aquí solo identifica la base del proyecto y **no implica respaldo oficial**.
-- **[Azahar Emulator Project](https://github.com/azahar-emu/azahar)** y quienes lo desarrollan: la base de todo, incluido el
-  `HackManager` que hace posible el enfoque por título. El logotipo de Azahar es propiedad de PabloMK7 y angyartanddraw (ver
-  `the_azahar_logo_is_the_property_of_PabloMK7_and_angyartanddraw.txt`).
-- **[AzaharPlus](https://github.com/AzaharPlus/AzaharPlus)** y su equipo (la página no nombra a las personas responsables): la base
-  directa de este fork y las funciones extra que ofrece.
-- **Citra Emulator Project** y sus colaboradores, creadores del emulador original del que descienden Azahar, Lime3DS y Citra MMJ.
-- **Lime3DS** y sus colaboradores. Azahar ha tomado su relevo (conserva el ID de Play Store de Lime3DS y migra datos de Lime3DS y Citra).
-- **[weihuoya](https://github.com/weihuoya/citra)**, autor de **Citra MMJ** entre 2019 y 2022 (94 commits propios desde abril de
-  2020). Los hacks, los *title IDs* y las observaciones por juego que este fork traduce son fruto **de su trabajo** y de sus
-  pruebas con juegos reales.
-- **zhangwei**, que mantuvo Citra MMJ de 2023 a 2025 (23 commits, incluido el último) y cuya versión de `config-games.ini` es la
-  fuente de datos usada aquí.
-- **Claude (Anthropic)**, la IA que escribió el código y la documentación de los cambios de este fork, y **[axelconde7w7-gif](https://github.com/axelconde7w7-gif)**, quien dirige el proyecto, decide qué se hace y prueba los resultados en dispositivo.
-- **[Reshiban](https://github.com/Reshiban/60FPS-AR-CHEATS-3DS)** y los autores de los *cheats* de 60 fps que la app descarga de su repositorio (base de datos de Reshiban, basada en el hilo de GBAtemp de **Hazerou** y en la lista de **lucky**; además NanashiFinal13, Spooky y otros que cada cheat nombra). No se redistribuyen: se descargan bajo demanda.
-- El equipo de **AzaharPlus** por la base de cheats integrada que ya trae la app.
-- Los autores de las bibliotecas externas incluidas (Dynarmic, libzip y otras), con sus propias licencias.
+Problems with this fork (a hack that breaks a game, a build failure) go in an issue in this repository. Include the game, its title
+ID, the phone and, if possible, the *Share MMJ diagnostics* output or the log. Please do not report problems seen with this fork
+to the Azahar or AzaharPlus repositories.
 
-Si eres autor de alguno de estos proyectos y quieres que se corrija o retire algo, abre un issue en este repositorio.
-
-## Licencia
-
-Azahar, AzaharPlus, Citra y Citra MMJ se distribuyen bajo licencias GPL. Cada archivo conserva su aviso de copyright y su licencia
-original (la mayoría **GPLv2 o posterior**; algunos archivos más recientes, **GPLv3 o posterior**). Consulta las cabeceras de cada
-archivo, [`LICENSE.txt`](LICENSE.txt) y [`misc/licenses/`](misc/licenses/). Los cambios de este fork se publican bajo los mismos términos.
-
-## Reportar problemas
-
-- **Problemas de este fork** (un hack que rompe un juego, un error de compilación): abre un issue **aquí**. Indica juego, ID de
-  título, teléfono y, si puedes, el log.
-- **No** reportes en los repositorios de Azahar ni de AzaharPlus fallos observados con compilaciones de este fork.
-
-## Aviso legal
-
-Este proyecto es un emulador y no incluye juegos, claves ni firmware de Nintendo, ni ayuda a obtenerlos. Úsalo únicamente con
-copias de juegos que hayas obtenido legalmente de tu propia consola. Nintendo y Nintendo 3DS son marcas de Nintendo.
-
----
-
-## English summary
-
-**Azahar+ mmj: unofficial, experimental fork of [AzaharPlus](https://github.com/AzaharPlus/AzaharPlus)** (itself a fork of Azahar, a Nintendo 3DS
-emulator) that ports the per-game compatibility hacks accumulated in **[Citra MMJ](https://github.com/weihuoya/citra)**
-(maintained by *weihuoya* until 2022 and by *zhangwei* from 2023 to 2025) onto the current `HackManager`.
-
-- **Menu:** *Settings → Citra MMJ hacks* (Android) has one switch per hack, all on by default and switchable per game. Each hack
-  only affects the title IDs listed for it; any other game behaves exactly like AzaharPlus.
-- **Also:** internal resolution is capped at 8x, and the log prints which hacks are active when a game starts.
-- **Status:** the APK of this branch builds on GitHub Actions and was **tested on one device only** (POCO F7 Pro) with a few games,
-  without A/B comparisons per hack; see [`docs/MMJ_PORT.md`](docs/MMJ_PORT.md#pruebas-reportadas). No per-game results yet. No binaries are published; not affiliated with any of the
-  projects credited above or with Nintendo.
-- **Experimental hacks (off by default):** five more MMJ hacks (CPU usage limit, skip CPU-write invalidation, display-transfer remap, FMV tick minimum,
-  disable shadow rendering) are included but switched off, because they were not tested here; turning each one on shows a warning explaining why.
-- **60 FPS cheats:** the cheats screen offers an in-app download of the community 60 FPS cheats from
-  [Reshiban/60FPS-AR-CHEATS-3DS](https://github.com/Reshiban/60FPS-AR-CHEATS-3DS), only for games whose title ID has a file there.
-  Nothing is bundled; the file is downloaded on demand from a pinned commit and added switched off. Credits: Reshiban, Hazerou, lucky, NanashiFinal13 and others.
-- **Startup notice:** the app shows a dialog at launch saying it is an unofficial fork made with AI (can be dismissed for good).
-- **Made with AI:** this is an AI-made fork (see the in-app *About → Credits and AI notice*). The changes were written with Claude (Anthropic) under the owner's direction. Azahar's
-  [AI policy](https://github.com/azahar-emu/azahar/blob/master/AI-POLICY.md) forbids submitting substantially AI-written code, so
-  **this fork is not intended as a pull request to Azahar or AzaharPlus**.
-- **Credits:** Azahar Emulator Project, AzaharPlus, Citra, Lime3DS, and above all **weihuoya and zhangwei (Citra MMJ)**, whose
-  per-game research this fork adapts. Provenance links to the original MMJ commits are in the
-  [Procedencia](#procedencia-de-dónde-sale-cada-dato) section.
-- **Details:** [`docs/MMJ_PORT.md`](docs/MMJ_PORT.md), [`docs/ANDROID_TEST.md`](docs/ANDROID_TEST.md), original README in
-  [`docs/UPSTREAM_README.md`](docs/UPSTREAM_README.md).
+This project is an emulator and does not include games, keys or Nintendo firmware, and does not help obtain them. Use it only
+with copies of games you legally obtained from your own console. Nintendo and Nintendo 3DS are trademarks of Nintendo.
