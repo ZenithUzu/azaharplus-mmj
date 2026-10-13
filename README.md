@@ -134,7 +134,7 @@ Los mensajes de MMJ son muy breves (`fx`, `cache`), así que un commit puede agr
 
 Cada compilación correcta en GitHub Actions publica automáticamente un **release** (`build-<n>`, marcado como pre-release) con el
 APK adjunto; se conservan los 10 más recientes. La app, al abrirse, consulta **solo los releases de este repositorio**
-(se puede apagar en *Ajustes → Varios → Buscar actualizaciones*) y, si hay una compilación más nueva que la instalada, ofrece
+(se puede apagar en *Ajustes → General → Buscar actualizaciones*) y, si hay una compilación más nueva que la instalada, ofrece
 descargarla. Se eliminaron las consultas de actualizaciones a Azahar/AzaharPlus (también en la versión de escritorio). Las
 compilaciones locales (número 0) nunca buscan actualizaciones.
 
