@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <limits>
 #include <memory>
 #include <span>
 #include <boost/serialization/access.hpp>
@@ -110,6 +111,7 @@ protected:
 private:
     void FlushResidualStretcherAudio();
     void OutputCallback(s16* buffer, std::size_t num_frames);
+    void DrainFifoBacklog(std::size_t num_frames);
 
     Core::System& system;
 
@@ -118,6 +120,8 @@ private:
     std::atomic<bool> flushing_time_stretcher = false;
     Common::RingBuffer<s16, 0x2000, 2> fifo;
     std::array<s16, 2> last_frame{};
+    std::size_t fifo_low_fill = std::numeric_limits<std::size_t>::max();
+    std::size_t backlog_window_frames = 0;
     TimeStretcher time_stretcher;
     std::unique_ptr<Sink> sink;
 
