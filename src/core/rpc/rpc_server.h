@@ -53,6 +53,7 @@ private:
     void HandleTakeScreenshot(std::unique_ptr<Packet> packet, u32 res_scale, ScreenshotFlags flags);
     void HandleReadScreenshot(Packet& packet, u32 offset, u32 data_size);
     void HandleGetPerfStats(Packet& packet, PerfStatsMode mode);
+    void HandleSaveLoadState(Packet& packet, bool load, u32 slot);
     bool ValidatePacket(const PacketHeader& packet_header);
     static bool IsCoreRequest(PacketType packet_type);
     void HandleSingleRequest(std::unique_ptr<Packet> request);

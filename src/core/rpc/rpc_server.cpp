@@ -16,6 +16,7 @@
 #include "core/memory.h"
 #include "core/rpc/packet.h"
 #include "core/rpc/rpc_server.h"
+#include "core/savestate.h"
 #include "video_core/gpu.h"
 #include "video_core/renderer_base.h"
 
@@ -300,6 +301,19 @@ void RPCServer::HandleGetPerfStats(Packet& packet, PerfStatsMode mode) {
     packet.SendReply();
 }
 
+void RPCServer::HandleSaveLoadState(Packet& packet, bool load, u32 slot) {
+    u32 accepted = 0;
+    if (system.IsPoweredOn() && slot < Core::SaveStateSlotCount) {
+        const auto signal = load ? Core::System::Signal::Load : Core::System::Signal::Save;
+        accepted = system.SendSignal(signal, slot) ? 1 : 0;
+    }
+
+    std::memcpy(packet.GetPacketData().data(), &accepted, sizeof(accepted));
+    packet.SetPacketDataSize(sizeof(accepted));
+    packet.SendReply();
+}
+
+
 bool RPCServer::ValidatePacket(const PacketHeader& packet_header) {
     if (packet_header.version == CURRENT_VERSION) {
         switch (packet_header.packet_type) {
@@ -310,6 +324,8 @@ bool RPCServer::ValidatePacket(const PacketHeader& packet_header) {
         case PacketType::TakeScreenshot:
         case PacketType::ReadScreenshot:
         case PacketType::GetPerfStats:
+        case PacketType::SaveState:
+        case PacketType::LoadState:
             if (packet_header.packet_size >= (sizeof(u32) * 2)) {
                 return true;
             }
@@ -376,6 +392,12 @@ void RPCServer::DispatchRequest(std::unique_ptr<Packet> request_packet) {
         break;
     case PacketType::GetPerfStats:
         HandleGetPerfStats(*request_packet, (PerfStatsMode)arg1);
+        success = true;
+        break;
+    case PacketType::SaveState:
+    case PacketType::LoadState:
+        HandleSaveLoadState(*request_packet,
+                            request_packet->GetPacketType() == PacketType::LoadState, arg1);
         success = true;
         break;
     default:
