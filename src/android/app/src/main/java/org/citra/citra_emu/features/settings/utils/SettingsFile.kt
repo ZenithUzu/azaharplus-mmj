@@ -226,7 +226,7 @@ object SettingsFile {
             ?: if (create) root?.createDirectory("GameSettings") else null
         val filename = "${gameId.uppercase()}.ini"
         return configDirectory?.findFile(filename)
-            ?: if (create) configDirectory?.createFile("text/plain", filename) else null
+            ?: if (create) configDirectory?.createFile("application/octet-stream", filename) else null
     }
 
     private fun sectionFromLine(line: String, isCustomGame: Boolean): SettingSection {

@@ -413,6 +413,8 @@ void GPU::ApplyPerProgramSettings(u64 program_ID) {
         mmj(Settings::values.mmj_disable_clip_coef, HackType::DISABLE_CLIP_COEF);
     const bool force_linear_mag_filter =
         mmj(Settings::values.mmj_force_linear_mag_filter, HackType::FORCE_LINEAR_MAG_FILTER);
+    const bool skip_redundant_y2r =
+        mmj(Settings::values.mmj_skip_redundant_y2r, HackType::SKIP_REDUNDANT_Y2R_CONVERSION);
     impl->pica.skip_slow_draw = skip_slow_draw;
     impl->rasterizer->SetSkipTextureCopy(skip_texture_copy);
     impl->rasterizer->SetDisableClipCoef(disable_clip_coef);
@@ -431,9 +433,10 @@ void GPU::ApplyPerProgramSettings(u64 program_ID) {
     LOG_INFO(HW_GPU,
              "Per-game hacks for {:016X}: accurate_mul={} skip_slow_draw={} skip_texture_copy={} "
              "disable_clip_coef={} force_linear_mag_filter={} skip_cpu_write={} "
-             "display_transfer_remap={} skip_shadow_draw={}",
+             "display_transfer_remap={} skip_shadow_draw={} skip_redundant_y2r={}",
              program_ID, use_accurate_mul, skip_slow_draw, skip_texture_copy, disable_clip_coef,
-             force_linear_mag_filter, skip_cpu_write, display_transfer_remap, skip_shadow_draw);
+             force_linear_mag_filter, skip_cpu_write, display_transfer_remap, skip_shadow_draw,
+             skip_redundant_y2r);
 }
 
 void GPU::SubmitCmdList(u32 index) {

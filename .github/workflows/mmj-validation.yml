@@ -42,7 +42,7 @@ jobs:
           distribution: temurin
           java-version: '17'
       - name: Install Android CMake
-        run: sdkmanager 'cmake;3.30.3'
+        run: echo y | "${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager" 'cmake;3.30.3'
       - name: Compile arm64 APK
         working-directory: src/android
         run: |

@@ -1176,6 +1176,7 @@
     <!-- Citra MMJ hacks -->
     <string name="preferences_mmj">Citra MMJ hacks</string>
     <string name="preferences_mmj_description">Per-game fixes ported from Citra MMJ</string>
+    <string name="mmj_game_overrides_info">Changes here apply only to this game. Unchanged switches follow the global settings. Set a switch to its global value to restore that behavior. Restart the game to apply changes.</string>
     <string name="mmj_hacks_info">Each hack only affects the games listed for it. Turn one off if a game runs worse than without it. Changes apply the next time a game starts.</string>
     <string name="mmj_accurate_mul">Accurate multiplication (MMJ list)</string>
     <string name="mmj_accurate_mul_description">Forces accurate shader multiplication for 42 title IDs that Citra MMJ lists as needing it, such as Kid Icarus: Uprising and Super Mario 3D Land. May cost a little performance.</string>

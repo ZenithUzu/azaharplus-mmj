@@ -30,6 +30,8 @@ Experimental. The APK from the `azaharplus-mmj` branch builds on GitHub Actions 
 handful of games. There are no per-hack A/B measurements and no game-by-game results yet; what has and has not been checked is
 written down in [`docs/MMJ_PORT.md`](docs/MMJ_PORT.md). Several things below were only compiled, not run, and are marked as such.
 
+November integration: see [`docs/INTEGRATION_2026_11.md`](docs/INTEGRATION_2026_11.md) for the 28 Azahar backports, completed MMJ CPU profiles, Android per-game override fixes and reproducible validation.
+
 This repository has two lines of the same port:
 
 | Branch | Based on | Notes |
@@ -97,7 +99,7 @@ backends. That is based on reading the code; it has not been checked game by gam
 
 | Switch | Hack | Title IDs | Why it is off |
 |---|---|---:|---|
-| CPU usage limit | `CPU_USAGE_LIMIT`, `CPU_USAGE_LIMIT_HEAVY` | 31 | MMJ built it on its own CPU scheduler. Azahar splits time between cores differently, so the effect here is unknown. |
+| CPU usage limit | `CPU_USAGE_LIMIT`, `CPU_USAGE_LIMIT_HEAVY`, `CPU_USAGE_LIMIT_UNIFORM` | 35 | MMJ built it on its own CPU scheduler. Azahar splits time between cores differently, so the effect here is unknown. |
 | Skip invalidation on CPU writes | `SKIP_CPU_WRITE` | 3 (Lord of Magna) | Written for MMJ's texture cache, which Azahar later rewrote. It can leave stale graphics on screen. |
 | Display transfer address remap | `DISPLAY_TRANSFER_REMAP` | 4 (Tales of the Abyss, Pac-Man Party 3D) | Fixed addresses copied from MMJ and never checked against these games. It was added next to a crash workaround that Azahar has since fixed. |
 | Minimum CPU ticks per flush ("FMV hack") | `FMV_TICKS` | 10 (Mirror of Fate, Luigi's Mansion: Dark Moon, Zombie Panic in Wonderland DX) | MMJ does not document what it fixes. AzaharPlus has three CPU backends that count ticks differently. Dynarmic, DynCom and FastInterp are all covered, none of them tested. |
