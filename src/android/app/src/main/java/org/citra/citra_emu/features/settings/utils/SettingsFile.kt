@@ -21,6 +21,7 @@ import org.citra.citra_emu.features.settings.model.IntListSetting
 import org.citra.citra_emu.features.settings.model.IntSetting
 import org.citra.citra_emu.features.settings.model.ScaledFloatSetting
 import org.citra.citra_emu.features.settings.model.SettingSection
+import org.citra.citra_emu.features.settings.model.Settings
 import org.citra.citra_emu.features.settings.model.Settings.SettingsSectionMap
 import org.citra.citra_emu.features.settings.model.StringSetting
 import org.citra.citra_emu.features.settings.ui.SettingsActivityView
@@ -64,7 +65,7 @@ object SettingsFile {
                 if (line!!.startsWith("[") && line!!.endsWith("]")) {
                     current = sectionFromLine(line!!, isCustomGame)
                     sections[current.name] = current
-                } else if (current != null) {
+                } else if (current != null && (!isCustomGame || current.name == Settings.SECTION_MMJ)) {
                     val setting = settingFromLine(line!!)
                     if (setting != null) {
                         current.putSetting(setting)
@@ -105,7 +106,43 @@ object SettingsFile {
     fun readCustomGameSettings(
         gameId: String,
         view: SettingsActivityView?
-    ): HashMap<String, SettingSection?> = readFile(getCustomGameSettingsFile(gameId), true, view)
+    ): HashMap<String, SettingSection?> {
+        val file = getCustomGameSettingsFile(gameId) ?: return SettingsSectionMap()
+        return readFile(file, true, view)
+    }
+
+    fun saveMmjGameSettings(
+        gameId: String,
+        changes: List<BooleanSetting>,
+        globalValues: Map<String, Boolean>,
+        view: SettingsActivityView
+    ) {
+        if (changes.isEmpty()) return
+        try {
+            val ini = getCustomGameSettingsFile(gameId, create = true)
+                ?: throw IOException("Cannot create game settings")
+            val resolver = CitraApplication.appContext.contentResolver
+            val writer = resolver.openInputStream(ini.uri).use { Wini(requireNotNull(it)) }
+            for (setting in changes) {
+                if (setting.boolean == globalValues[setting.key]) {
+                    // Matching the global value restores inheritance for this switch.
+                    writer[setting.section]?.remove(setting.key)
+                } else {
+                    writer.put(setting.section, setting.key, setting.valueAsString)
+                }
+            }
+            resolver.openOutputStream(ini.uri, "wt").use { output ->
+                requireNotNull(output)
+                writer.store(output)
+            }
+        } catch (e: Exception) {
+            Log.error("[SettingsFile] Cannot save MMJ overrides for $gameId: ${e.message}")
+            view.showToastMessage(
+                CitraApplication.appContext.getString(R.string.error_saving, gameId, e.message),
+                false
+            )
+        }
+    }
 
     /**
      * Saves a Settings HashMap to a given .ini file on disk. If unsuccessful, outputs an error
@@ -182,10 +219,14 @@ object SettingsFile {
         return configDirectory!!.findFile("$fileName.ini")!!
     }
 
-    private fun getCustomGameSettingsFile(gameId: String): DocumentFile {
+    private fun getCustomGameSettingsFile(gameId: String, create: Boolean = false): DocumentFile? {
+        require(gameId.matches(Regex("[0-9a-fA-F]{16}")))
         val root = DocumentFile.fromTreeUri(CitraApplication.appContext, Uri.parse(userDirectory))
-        val configDirectory = root!!.findFile("GameSettings")
-        return configDirectory!!.findFile("$gameId.ini")!!
+        val configDirectory = root?.findFile("GameSettings")
+            ?: if (create) root?.createDirectory("GameSettings") else null
+        val filename = "${gameId.uppercase()}.ini"
+        return configDirectory?.findFile(filename)
+            ?: if (create) configDirectory?.createFile("text/plain", filename) else null
     }
 
     private fun sectionFromLine(line: String, isCustomGame: Boolean): SettingSection {

@@ -76,6 +76,7 @@ class SettingsFragmentPresenter(private val fragmentView: SettingsFragmentView) 
     }
 
     fun putSetting(setting: AbstractSetting) {
+        settings.recordMmjChange(setting)
         if (setting.section == null || setting.key == null) {
             return
         }
@@ -131,6 +132,11 @@ class SettingsFragmentPresenter(private val fragmentView: SettingsFragmentView) 
             }
         }
         settingsList = sl
+        if (gameId.isNotEmpty() && menuTag == Settings.SECTION_MMJ) {
+            settingsActivity.setToolbarTitle(
+                "${settingsActivity.getString(R.string.preferences_mmj)}: $gameId"
+            )
+        }
         fragmentView.showSettingsList(settingsList!!)
     }
 

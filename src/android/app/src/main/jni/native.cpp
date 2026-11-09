@@ -339,6 +339,7 @@ static Core::System::ResultStatus RunCitra(const std::string& filepath) {
         app_loader->ReadProgramId(program_id);
         system.RegisterAppLoaderEarly(app_loader);
     }
+    Config::ApplyMmjGameSettings(program_id);
     system.ApplySettings();
     Settings::LogSettings();
 
@@ -1093,6 +1094,7 @@ void Java_org_citra_citra_1emu_NativeLibrary_reloadSettings([[maybe_unused]] JNI
     if (system.IsPoweredOn()) {
         u64 program_id{};
         system.GetAppLoader().ReadProgramId(program_id);
+        Config::ApplyMmjGameSettings(program_id);
     }
 
     if (multiplayer) {
