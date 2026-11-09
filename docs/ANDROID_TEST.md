@@ -30,8 +30,9 @@ Si un juego va peor con un hack, apaga su interruptor. Si quieres quitarlo del t
 ## Compilar el APK en GitHub Actions (sin Android Studio)
 
 El repositorio incluye `.github/workflows/android-apk.yml`, que compila un APK de **arm64-v8a** con el sufijo `.mmj` (se
-instala junto a otras versiones). Los secretos de firma son opcionales (ver el README); sin ellos el APK
-queda firmado con la clave de depuracion de Gradle.
+instala junto a otras versiones). Para publicar actualizaciones se exige la clave original de `build1`
+y se verifica su certificado (ver el README). Los APK de validacion del PR tienen firma de prueba y no
+son actualizaciones compatibles con la instalacion existente.
 
 1. En el repositorio, abre la pestana **Actions** y, si GitHub lo pide, activa los workflows.
 2. Elige **android-apk** > **Run workflow** (tambien corre solo al subir a la rama `azaharplus-mmj`).

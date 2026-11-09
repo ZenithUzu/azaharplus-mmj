@@ -143,16 +143,18 @@ Inside the app:
 - Local builds (build number 0) never check for updates.
 - Nothing is installed automatically. Android asks for confirmation each time.
 
-To install a new build over the old one, the APK has to be signed with the same key every time. Without one, CI signs with a
-temporary debug key, the signature changes on every build and Android refuses the update with a "package conflicts" or "app not
-installed" message. When that happens, uninstall the old app first (back up your data folder); the update dialog says the same.
-To fix a key, create a keystore and add these repository secrets under *Settings → Secrets and variables → Actions*:
+To update the existing app, every APK must use the **original signing key**. The release workflow now refuses to publish
+without that key and verifies that the APK certificate matches `build1`. A newly generated key cannot update an existing install.
+Configure the original keystore using these repository secrets under *Settings → Secrets and variables → Actions*:
 
 - `ANDROID_KEYSTORE_BASE64`: the `.jks` file encoded in base64
 - `ANDROID_KEYSTORE_PASS`: the keystore password (it is also used as the key password)
 - `ANDROID_KEY_ALIAS`: the key alias
 
 Keep a safe copy of the keystore. If it is lost, nobody can update over existing installs.
+The original `build1` was signed with a temporary CI debug key. Its certificate can be read from the APK, but its private key
+cannot be recovered from that certificate. Until the original keystore is available, release publication is blocked. PR validation
+APKs use a test key and must not be treated as compatible updates to `build1`.
 
 ## Building
 

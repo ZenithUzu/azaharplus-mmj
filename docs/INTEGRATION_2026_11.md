@@ -90,10 +90,22 @@ Its APK is a test artifact; it does not publish or delete releases.
 
 ## Runtime verification still required
 
-No Android device was connected during this audit. No game ROMs, keys or firmware
-were supplied, and no FPS gains or compatibility results are asserted here. The
-existing experimental hacks retain that status, especially CPU timing, FMV timing,
-CPU-write invalidation skipping, address remapping and shadow removal.
+A device was subsequently connected and the owner identified Pokemon Ultra Sun as
+the first test title. However, the installed APK is byte-for-byte the original
+`build1` (SHA-256 `518a4075c3b8d735e576c821ac0454b9e076c2e77ad26449fa6ab02f1e016160`).
+Its signing certificate SHA-256 is
+`32bf0bafed6c6006adf302bbe090208778cebeff49e033fe2623c11231beeb3c`.
+The available local debug keystore has a different certificate. The release notes
+confirm that `build1` used a temporary CI key. No matching original private signing
+key has been located, so no installation, uninstallation, replacement package or
+device-data modification was performed.
+
+The release workflow now requires the original keystore and verifies the certificate
+before uploading/publishing an APK. A missing or different key blocks publication.
+This prevents publishing another update that Android would reject, but cannot recover
+a lost private key. No new FPS gains or game compatibility results are asserted.
+The experimental CPU timing, FMV timing, CPU-write invalidation skipping, address
+remapping and shadow removal hacks still need device tests with a compatible APK.
 
 For each affected game, compare the same scene, save, backend, resolution, driver and
 device with one hack off/on. Record frame times, visual differences, audio behavior,

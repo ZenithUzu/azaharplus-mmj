@@ -532,8 +532,8 @@ System::ResultStatus System::Load(Frontend::EmuWindow& emu_window, const std::st
     for (u32 i = 0; i < cpu_cores.size() && i < shifts.size(); ++i) {
         timing->GetTimer(i)->SetDowncountHack(shifts[i]);
     }
-    LOG_INFO(Core, "MMJ cpu usage limit for {:016X} (shifts {},{},{},{})", title_id,
-             shifts[0], shifts[1], shifts[2], shifts[3]);
+    LOG_INFO(Core, "MMJ cpu usage limit for {:016X} (shifts {},{},{},{})", title_id, shifts[0],
+             shifts[1], shifts[2], shifts[3]);
 
     // Citra MMJ "FMV hack" (off by default, see the MMJ settings menu): MMJ charges at least
     // 16000 ticks per flush with the JIT and 0xFFFF with the interpreters.

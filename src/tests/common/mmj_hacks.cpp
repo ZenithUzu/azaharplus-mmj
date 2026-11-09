@@ -64,6 +64,8 @@ TEST_CASE("MMJ title tables contain unique forced overrides", "[common][mmj]") {
         }
         REQUIRE(titles.size() == count);
         REQUIRE_FALSE(hack_manager.OverrideBooleanSetting(type, 0, false));
+        // The owner's first runtime target: MMJ has no active overrides for Ultra Sun.
+        REQUIRE_FALSE(hack_manager.OverrideBooleanSetting(type, 0x00040000001B5000, false));
     }
 }
 
@@ -71,8 +73,8 @@ TEST_CASE("MMJ does not replace upstream accurate multiplication", "[common][mmj
     constexpr u64 ocarina = 0x0004000000033500;
     constexpr u64 majoras_mask = 0x0004000000125500;
     REQUIRE(hack_manager.OverrideBooleanSetting(HackType::ACCURATE_MULTIPLICATION, ocarina, false));
-    REQUIRE_FALSE(hack_manager.OverrideBooleanSetting(HackType::ACCURATE_MULTIPLICATION_MMJ,
-                                                     ocarina, false));
-    REQUIRE(hack_manager.OverrideBooleanSetting(HackType::ACCURATE_MULTIPLICATION_MMJ,
-                                               majoras_mask, false));
+    REQUIRE_FALSE(
+        hack_manager.OverrideBooleanSetting(HackType::ACCURATE_MULTIPLICATION_MMJ, ocarina, false));
+    REQUIRE(hack_manager.OverrideBooleanSetting(HackType::ACCURATE_MULTIPLICATION_MMJ, majoras_mask,
+                                                false));
 }
