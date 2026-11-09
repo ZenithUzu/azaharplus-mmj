@@ -143,18 +143,25 @@ Inside the app:
 - Local builds (build number 0) never check for updates.
 - Nothing is installed automatically. Android asks for confirmation each time.
 
-To update the existing app, every APK must use the **original signing key**. The release workflow now refuses to publish
-without that key and verifies that the APK certificate matches `build1`. A newly generated key cannot update an existing install.
-Configure the original keystore using these repository secrets under *Settings → Secrets and variables → Actions*:
+Release builds now use the fork's **fixed development key** in `src/android/keystore/mmj-development.keystore` when no private
+signing secrets are configured. Actions and local release builds use the same file, rather than generating a new debug key on each
+machine. CI checks the certificate against the committed SHA-256 fingerprint. No secrets are required for this development key;
+it is intentionally public. Keep the key unchanged so future builds can update one another.
+
+**Legacy `build1` is different:** it used a temporary CI key. Both a newly generated Actions APK and the local APK were checked
+and have different certificates from that installed version. The fixed development key starts a new signing baseline and cannot
+update `build1` in place. A one-time migration is necessary before updates with the new fixed key can install over one another.
+The package name stays the same; no app is removed or replaced automatically.
+
+To supply a private keystore instead, configure these repository secrets under *Settings → Secrets and variables → Actions*:
 
 - `ANDROID_KEYSTORE_BASE64`: the `.jks` file encoded in base64
 - `ANDROID_KEYSTORE_PASS`: the keystore password (it is also used as the key password)
 - `ANDROID_KEY_ALIAS`: the key alias
 
-Keep a safe copy of the keystore. If it is lost, nobody can update over existing installs.
-The original `build1` was signed with a temporary CI debug key. Its certificate can be read from the APK, but its private key
-cannot be recovered from that certificate. Until the original keystore is available, release publication is blocked. PR validation
-APKs use a test key and must not be treated as compatible updates to `build1`.
+Also set the repository variable `ANDROID_SIGNING_CERT_SHA256` to the private certificate's lowercase SHA-256 digest without
+colons. Without that variable, private signing expects the original `build1` certificate. Keep a safe backup of any private key.
+Changing keys does not make a new APK compatible with an already installed app signed with another key.
 
 ## Building
 

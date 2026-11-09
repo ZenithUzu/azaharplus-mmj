@@ -100,10 +100,23 @@ confirm that `build1` used a temporary CI key. No matching original private sign
 key has been located, so no installation, uninstallation, replacement package or
 device-data modification was performed.
 
-The release workflow now requires the original keystore and verifies the certificate
-before uploading/publishing an APK. A missing or different key blocks publication.
-This prevents publishing another update that Android would reject, but cannot recover
-a lost private key. No new FPS gains or game compatibility results are asserted.
+The original Actions job logs were subsequently inspected: the signing secrets were
+empty and it explicitly reported a throw-away debug key. A new APK from Actions run
+`42712610494` was downloaded and verified; its certificate starts with `12c7acae` and
+does not match `build1` either. The generic runner signing path therefore does not
+preserve that old identity.
+
+Following the owner's acceptance of development signing, a dedicated **fixed public
+development key** is bundled in `src/android/keystore`. Its certificate SHA-256 is
+`cf14c1c48473065a2c29049709104e3398828685ce9662084e5d1856879737f4`.
+Release builds on Actions and locally now select that same key by default. Both PR
+validation and publication verify the resulting certificate. A private signing key
+can still be supplied explicitly, with its expected certificate pinned separately.
+
+This fixes signing consistency for future builds, but starts a new baseline: it
+cannot update the existing `build1` installation in place. No migration, installation,
+uninstallation or app-data change is performed automatically. No new FPS gains or
+game compatibility results are asserted.
 The experimental CPU timing, FMV timing, CPU-write invalidation skipping, address
 remapping and shadow removal hacks still need device tests with a compatible APK.
 

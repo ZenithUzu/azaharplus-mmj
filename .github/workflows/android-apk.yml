@@ -2,9 +2,8 @@
 # published as the only GitHub release ("build<n>", counting from 1), which is what the in-app
 # update check looks at. Older releases and their tags are removed after each publish.
 #
-# Repository secrets for the ORIGINAL signing key are required for publishing updates:
-# ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASS, ANDROID_KEY_ALIAS.
-# The resulting APK must match the existing build1 certificate; never publish a replacement key.
+# Uses the fork's fixed public development key unless all private signing secrets are supplied.
+# Every APK certificate is checked before publication. The new fixed key cannot update build1.
 name: android-apk
 
 on:
@@ -29,7 +28,7 @@ jobs:
       CCACHE_COMPILERCHECK: content
       CCACHE_SLOPPINESS: time_macros
       # Public certificate fingerprint of the existing build1 / installed application.
-      EXPECTED_SIGNER_SHA256: 32bf0bafed6c6006adf302bbe090208778cebeff49e033fe2623c11231beeb3c
+      LEGACY_SIGNER_SHA256: 32bf0bafed6c6006adf302bbe090208778cebeff49e033fe2623c11231beeb3c
     steps:
       - uses: actions/checkout@v6
         with:
@@ -62,21 +61,28 @@ jobs:
           sudo apt-get install -y ccache
       - name: Install CMake for the Android SDK
         run: echo "y" | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager "cmake;3.30.3"
-      - name: Require original signing key
+      - name: Select persistent signing key
         id: signing
         env:
           KS_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
           KS_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          PRIVATE_SIGNER_SHA256: ${{ vars.ANDROID_SIGNING_CERT_SHA256 }}
         run: |
           if [ -n "$KS_B64" ] && [ -n "$KS_PASS" ] && [ -n "$KS_ALIAS" ]; then
             echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
             echo "ANDROID_KEYSTORE_FILE=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
             echo "ANDROID_KEYSTORE_PASS=$KS_PASS" >> "$GITHUB_ENV"
             echo "ANDROID_KEY_ALIAS=$KS_ALIAS" >> "$GITHUB_ENV"
-          else
-            echo "::error::Original signing key is required. Refusing to publish an APK that cannot update the existing installation."
+            echo "EXPECTED_SIGNER_SHA256=${PRIVATE_SIGNER_SHA256:-$LEGACY_SIGNER_SHA256}" >> "$GITHUB_ENV"
+            echo "source=private" >> "$GITHUB_OUTPUT"
+          elif [ -n "$KS_B64$KS_PASS$KS_ALIAS" ]; then
+            echo "::error::Private signing configuration is incomplete. Supply all three secrets or none."
             exit 1
+          else
+            echo "EXPECTED_SIGNER_SHA256=$(tr -d '\r\n' < src/android/keystore/mmj-development.sha256)" >> "$GITHUB_ENV"
+            echo "source=development" >> "$GITHUB_OUTPUT"
+            echo "Using the fork's persistent development key. This signing identity cannot update legacy build1."
           fi
       - name: Build (arm64-v8a, vanilla)
         working-directory: src/android
@@ -93,7 +99,7 @@ jobs:
             ACTUAL=$(printf '%s\n' "$CERTS" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p' | tr '[:upper:]' '[:lower:]')
             COUNT=$(printf '%s\n' "$CERTS" | grep -c '^Signer #[0-9]* certificate SHA-256 digest:')
             if [ "$COUNT" != 1 ] || [ "$ACTUAL" != "$EXPECTED_SIGNER_SHA256" ]; then
-              echo "::error::APK certificate does not match build1. Refusing to publish an incompatible update."
+              echo "::error::APK certificate does not match the selected persistent signing key."
               exit 1
             fi
           done
@@ -106,6 +112,7 @@ jobs:
       - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
+          SIGNING_SOURCE: ${{ steps.signing.outputs.source }}
         run: |
           N=${{ steps.ver.outputs.n }}
           SHORT=$(git rev-parse --short HEAD)
@@ -122,6 +129,10 @@ jobs:
             echo
             cat docs/RELEASE_NOTES.md
             echo
+            if [ "$SIGNING_SOURCE" = development ]; then
+              echo "Signing: fixed public development key, reused for future builds."
+              echo "Legacy build1 used a different temporary key; this APK cannot update that installation. A one-time migration is required before future in-place updates can work."
+            fi
             echo "No games, keys or firmware are included. Not affiliated with Azahar, AzaharPlus, Citra, Citra MMJ or Nintendo."
           } > notes.md
           gh release create "build${N}" "$APK" --target "$GITHUB_SHA" \

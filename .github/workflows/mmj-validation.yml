@@ -48,6 +48,17 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew assembleVanillaRelease -Pabi=arm64-v8a -PappIdSuffix=.mmj
+      - name: Verify persistent development signature
+        run: |
+          EXPECTED=$(tr -d '\r\n' < src/android/keystore/mmj-development.sha256)
+          SIGNER="${ANDROID_SDK_ROOT}/build-tools/35.0.0/apksigner"
+          for apk in src/android/app/build/outputs/apk/vanilla/release/*.apk; do
+            CERTS=$("$SIGNER" verify --print-certs "$apk")
+            ACTUAL=$(printf '%s\n' "$CERTS" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p')
+            COUNT=$(printf '%s\n' "$CERTS" | grep -c '^Signer #[0-9]* certificate SHA-256 digest:')
+            test "$COUNT" = 1
+            test "$ACTUAL" = "$EXPECTED"
+          done
       - uses: actions/upload-artifact@v4
         with:
           name: mmj-validation-arm64

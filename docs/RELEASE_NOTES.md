@@ -3,4 +3,5 @@
 - Completed the MMJ CPU-usage profiles for all 35 original title IDs, including The Binding of Isaac: Rebirth and Futuridium EP Deluxe. This experimental option remains off by default.
 - Fixed clip-plane state updates when MMJ settings change. Added Y2R state to the per-game diagnostics log.
 - Added native regression tests, original-MMJ title-list verification and Android APK validation for pull requests.
+- Fixed signing consistency: release builds now reuse a dedicated development key on Actions and locally. Future builds signed with it can update one another. Legacy build1 used a different temporary key and requires a one-time migration; this does not make an in-place update from build1 possible.
 - No new FPS or game compatibility claims: experimental hacks still need on-device comparisons. See docs/INTEGRATION_2026_11.md for the exact scope and remaining work.
