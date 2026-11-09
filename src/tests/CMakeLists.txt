@@ -1,6 +1,7 @@
 add_executable(tests
     common/bit_field.cpp
     common/file_util.cpp
+    common/mmj_hacks.cpp
     common/param_package.cpp
     common/slot_vector.cpp
     core/core_timing.cpp

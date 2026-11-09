@@ -513,6 +513,25 @@ HackManager hack_manager = {
              // clang-format on
          }},
 
+        // Citra MMJ cpu_usage_limit, time-slice shifts 1,1,1,1 (config-games.ini).
+        // These New 3DS titles use the same experimental switch as the other profiles.
+        {HackType::CPU_USAGE_LIMIT_UNIFORM,
+         HackEntry{
+             .mode = HackAllowMode::FORCE,
+             // clang-format off
+             .affected_title_ids =
+                 {
+                     // The Binding of Isaac: Rebirth (USA, JPN, EUR)
+                     0x000400000F700800,
+                     0x000400000F701700,
+                     0x000400000F700900,
+
+                     // Futuridium EP Deluxe
+                     0x000400000F705C00,
+                 },
+             // clang-format on
+         }},
+
         // Citra MMJ skip_cpu_write (config-games.ini). Off by default.
         {HackType::SKIP_CPU_WRITE,
          HackEntry{

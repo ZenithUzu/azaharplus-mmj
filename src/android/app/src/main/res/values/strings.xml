@@ -1196,7 +1196,7 @@
     <string name="mmj_enable_warning_title">Turn on an untested hack?</string>
     <string name="mmj_enable_anyway">Turn on anyway</string>
     <string name="mmj_cpu_usage_limit">CPU usage limit (MMJ)</string>
-    <string name="mmj_cpu_usage_limit_description">In 31 title IDs (Mario Tennis Open, Mario Golf: World Tour, Luigi\'s Mansion: Dark Moon, The Alliance Alive, Lord of Magna and others), shrinks the time slice of each emulated CPU core, as Citra MMJ does. Lowers CPU load.</string>
+    <string name="mmj_cpu_usage_limit_description">In 35 title IDs (The Binding of Isaac: Rebirth, Futuridium EP Deluxe, Mario Tennis Open, Mario Golf: World Tour, Luigi\'s Mansion: Dark Moon, The Alliance Alive, Lord of Magna and others), shrinks the time slice of each emulated CPU core, as Citra MMJ does. Lowers CPU load.</string>
     <string name="mmj_cpu_usage_limit_warning">Why it is off: Citra MMJ built this option on its own CPU scheduler. Azahar schedules cores differently and is tuned for long time slices (its source notes that short slices make cores spend time re-syncing), so the effect here has not been tested. It can make the game slower or unstable. Turn it on only for the listed games, and turn it off if anything gets worse. Takes effect when a game starts.</string>
     <string name="mmj_skip_cpu_write">Skip cache invalidation on CPU writes (MMJ)</string>
     <string name="mmj_skip_cpu_write_description">In 3 title IDs (Lord of Magna: Maiden Heaven), ignores very small CPU writes (8 bytes or less) over cached textures instead of flushing them. Fewer stalls.</string>

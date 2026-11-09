@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <array>
 #include <map>
 #include <vector>
 #include "common/common_types.h"
@@ -25,6 +26,9 @@ struct HackEntry {
 
 struct HackManager {
     const HackEntry* GetHack(const HackType& type, u64 title_id);
+
+    /// MMJ per-core slice shifts, or all zeroes when disabled/not listed.
+    std::array<u32, 4> GetMmjCpuUsageLimitShifts(u64 title_id, bool enabled);
 
     HackAllowMode GetHackAllowMode(const HackType& type, u64 title_id,
                                    HackAllowMode default_mode = HackAllowMode::ALLOW) {

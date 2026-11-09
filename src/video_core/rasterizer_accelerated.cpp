@@ -151,10 +151,11 @@ void RasterizerAccelerated::SyncDrawUniforms() {
     vs_data_dirty = is_flipped != prev_flipped;
 
     // Sync clip plane uniforms
-    if (dirty.CheckClipping()) {
+    const bool enable_clip1 = regs.rasterizer.clip_enable != 0 && !disable_clip_coef;
+    if (dirty.CheckClipping() || vs_data.enable_clip1 != enable_clip1) {
         const auto raw_clip_coef = regs.rasterizer.GetClipCoef();
         // Per-title hack (ported from Citra MMJ): keep the user clip plane disabled.
-        vs_data.enable_clip1 = regs.rasterizer.clip_enable != 0 && !disable_clip_coef;
+        vs_data.enable_clip1 = enable_clip1;
         vs_data.clip_coef = {raw_clip_coef.x.ToFloat32(), raw_clip_coef.y.ToFloat32(),
                              raw_clip_coef.z.ToFloat32(), raw_clip_coef.w.ToFloat32()};
         vs_data_dirty = true;
