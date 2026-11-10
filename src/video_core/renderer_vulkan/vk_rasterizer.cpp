@@ -162,7 +162,7 @@ void RasterizerVulkan::LoadDefaultDiskResources(
     }
 
     pipeline_cache.SetProgramID(program_id);
-    pipeline_cache.SetAccurateMul(accurate_mul);
+    pipeline_cache.SetAccurateMul(mmj_settings.accurate_mul);
     pipeline_cache.LoadCache(stop_loading, callback);
 
     if (callback) {
@@ -557,7 +557,7 @@ bool RasterizerVulkan::Draw(bool accelerate, bool is_indexed) {
     MICROPROFILE_SCOPE(Vulkan_Drawing);
 
     // Citra MMJ disable_shadow_rendering: drop shadow draws (and any software-path batch).
-    if (skip_shadow_draw && regs.framebuffer.IsShadowRendering()) {
+    if (mmj_settings.SkipShadowDraw(regs.framebuffer.IsShadowRendering())) {
         vertex_batch.clear();
         return true;
     }
@@ -700,7 +700,7 @@ void RasterizerVulkan::SyncTextureUnits(const Framebuffer* framebuffer) {
             switch (texture.config.type.Value()) {
             case TextureType::Shadow2D: {
                 Surface& surface = res_cache.GetTextureSurface(texture);
-                Sampler& sampler = res_cache.GetSampler(texture.config, force_linear_mag_filter);
+                Sampler& sampler = res_cache.GetSampler(texture.config);
                 surface.flags |= VideoCore::SurfaceFlagBits::ShadowSource;
                 update_queue.AddImageSampler(texture_set, texture_index, 0, surface.StorageView(),
                                              sampler.Handle());
@@ -721,7 +721,7 @@ void RasterizerVulkan::SyncTextureUnits(const Framebuffer* framebuffer) {
 
         // Bind the texture provided by the rasterizer cache
         Surface& surface = res_cache.GetTextureSurface(texture);
-        Sampler& sampler = res_cache.GetSampler(texture.config, force_linear_mag_filter);
+        Sampler& sampler = res_cache.GetSampler(texture.config);
         const vk::ImageView color_view = framebuffer->ImageView(SurfaceType::Color);
         const bool is_feedback_loop = color_view == surface.FramebufferView();
         const vk::ImageView texture_view =
@@ -780,7 +780,7 @@ void RasterizerVulkan::BindShadowCube(const Pica::TexturingRegs::FullTextureConf
         CubeFace::NegativeY, CubeFace::PositiveZ, CubeFace::NegativeZ,
     };
 
-    Sampler& sampler = res_cache.GetSampler(texture.config, force_linear_mag_filter);
+    Sampler& sampler = res_cache.GetSampler(texture.config);
 
     for (CubeFace face : faces) {
         const u32 binding = static_cast<u32>(face);
@@ -810,7 +810,7 @@ void RasterizerVulkan::BindTextureCube(const Pica::TexturingRegs::FullTextureCon
     };
 
     Surface& surface = res_cache.GetTextureCube(config);
-    Sampler& sampler = res_cache.GetSampler(texture.config, force_linear_mag_filter);
+    Sampler& sampler = res_cache.GetSampler(texture.config);
     update_queue.AddImageSampler(texture_set, 0, 0, surface.ImageView(), sampler.Handle());
 }
 
@@ -840,7 +840,7 @@ bool RasterizerVulkan::AccelerateDisplayTransfer(const Pica::DisplayTransferConf
 }
 
 bool RasterizerVulkan::AccelerateTextureCopy(const Pica::DisplayTransferConfig& config) {
-    return res_cache.AccelerateTextureCopy(config, skip_texture_copy);
+    return res_cache.AccelerateTextureCopy(config);
 }
 
 bool RasterizerVulkan::AccelerateFill(const Pica::MemoryFillConfig& config) {
@@ -1078,7 +1078,7 @@ void RasterizerVulkan::SwitchDiskResources(u64 title_id) {
         switch_disk_resources_callback(VideoCore::LoadCallbackStage::Prepare, 0, 0, "");
     }
 
-    pipeline_cache.SetAccurateMul(accurate_mul);
+    pipeline_cache.SetAccurateMul(mmj_settings.accurate_mul);
     pipeline_cache.SwitchCache(title_id, stop_loading, switch_disk_resources_callback);
 
     if (switch_disk_resources_callback) {

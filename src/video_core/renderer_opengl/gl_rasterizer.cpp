@@ -185,7 +185,7 @@ void RasterizerOpenGL::LoadDefaultDiskResources(
     curr_shader_manager = shader_managers.emplace_back(std::make_shared<ShaderProgramManager>(
         render_window, driver, program_id, !driver.IsOpenGLES()));
 
-    curr_shader_manager->LoadDiskCache(stop_loading, callback, accurate_mul);
+    curr_shader_manager->LoadDiskCache(stop_loading, callback, mmj_settings.accurate_mul);
 }
 
 void RasterizerOpenGL::SwitchDiskResources(u64 title_id) {
@@ -215,7 +215,8 @@ void RasterizerOpenGL::SwitchDiskResources(u64 title_id) {
         }
 
         std::atomic_bool stop_loading;
-        new_manager->LoadDiskCache(stop_loading, switch_disk_resources_callback, accurate_mul);
+        new_manager->LoadDiskCache(stop_loading, switch_disk_resources_callback,
+                                   mmj_settings.accurate_mul);
 
         if (switch_disk_resources_callback) {
             switch_disk_resources_callback(VideoCore::LoadCallbackStage::Complete, 0, 0, "");
@@ -258,7 +259,7 @@ void RasterizerOpenGL::SyncDrawState() {
     SyncDrawUniforms();
 
     // SyncClipEnabled();
-    state.clip_distance[1] = regs.rasterizer.clip_enable != 0;
+    state.clip_distance[1] = mmj_settings.ClipPlaneEnabled(regs.rasterizer.clip_enable != 0);
     // SyncCullMode();
     state.cull.enabled = regs.rasterizer.cull_mode != Pica::RasterizerRegs::CullMode::KeepAll &&
                          regs.rasterizer.cull_mode != Pica::RasterizerRegs::CullMode::KeepAll2;
@@ -443,7 +444,8 @@ void RasterizerOpenGL::SetupVertexArray(u8* array_ptr, GLintptr buffer_offset,
 
 bool RasterizerOpenGL::SetupVertexShader() {
     MICROPROFILE_SCOPE(OpenGL_VS);
-    return curr_shader_manager->UseProgrammableVertexShader(regs, pica.vs_setup, accurate_mul);
+    return curr_shader_manager->UseProgrammableVertexShader(regs, pica.vs_setup,
+                                                            mmj_settings.accurate_mul);
 }
 
 bool RasterizerOpenGL::SetupGeometryShader() {
@@ -513,7 +515,7 @@ bool RasterizerOpenGL::AccelerateDrawBatchInternal(bool is_indexed) {
                      vertex_array_info.vs_input_index_max);
     vertex_buffer.Unmap(vertex_array_info.vs_input_size);
 
-    curr_shader_manager->ApplyTo(state, accurate_mul);
+    curr_shader_manager->ApplyTo(state, mmj_settings.accurate_mul);
     state.Apply();
 
     if (is_indexed) {
@@ -555,7 +557,7 @@ bool RasterizerOpenGL::Draw(bool accelerate, bool is_indexed) {
     const DebugScope scope(runtime, Common::Vec4f{}, "RasterizerOpenGL::Draw");
 
     // Citra MMJ disable_shadow_rendering: drop shadow draws (and any software-path batch).
-    if (skip_shadow_draw && regs.framebuffer.IsShadowRendering()) {
+    if (mmj_settings.SkipShadowDraw(regs.framebuffer.IsShadowRendering())) {
         vertex_batch.clear();
         return true;
     }
@@ -650,7 +652,7 @@ bool RasterizerOpenGL::Draw(bool accelerate, bool is_indexed) {
         state.draw.vertex_buffer = vertex_buffer.GetHandle();
         curr_shader_manager->UseTrivialVertexShader();
         curr_shader_manager->UseTrivialGeometryShader();
-        curr_shader_manager->ApplyTo(state, accurate_mul);
+        curr_shader_manager->ApplyTo(state, mmj_settings.accurate_mul);
         state.Apply();
 
         std::size_t max_vertices = 3 * (VERTEX_BUFFER_SIZE / (3 * sizeof(HardwareVertex)));
@@ -732,7 +734,7 @@ void RasterizerOpenGL::SyncTextureUnits(const Framebuffer* framebuffer) {
         }
 
         // Sync texture unit sampler
-        Sampler& sampler = res_cache.GetSampler(texture.config, force_linear_mag_filter);
+        Sampler& sampler = res_cache.GetSampler(texture.config);
         state.texture_units[texture_index].sampler = sampler.Handle();
 
         // Bind the texture provided by the rasterizer cache
@@ -783,7 +785,7 @@ void RasterizerOpenGL::BindTextureCube(const Pica::TexturingRegs::FullTextureCon
     };
 
     Surface& surface = res_cache.GetTextureCube(config);
-    Sampler& sampler = res_cache.GetSampler(texture.config, force_linear_mag_filter);
+    Sampler& sampler = res_cache.GetSampler(texture.config);
     state.texture_units[0].target = GL_TEXTURE_CUBE_MAP;
     state.texture_units[0].texture_2d = surface.Handle();
     state.texture_units[0].sampler = sampler.Handle();
@@ -856,7 +858,7 @@ bool RasterizerOpenGL::AccelerateDisplayTransfer(const Pica::DisplayTransferConf
 }
 
 bool RasterizerOpenGL::AccelerateTextureCopy(const Pica::DisplayTransferConfig& config) {
-    return res_cache.AccelerateTextureCopy(config, skip_texture_copy);
+    return res_cache.AccelerateTextureCopy(config);
 }
 
 bool RasterizerOpenGL::AccelerateFill(const Pica::MemoryFillConfig& config) {

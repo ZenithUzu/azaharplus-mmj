@@ -1,5 +1,7 @@
 # Azahar+ mmj: port de hacks de Citra MMJ a AzaharPlus
 
+Conexion de los hacks graficos con OpenGL y Vulkan: ver [MMJ_RENDERERS.md](MMJ_RENDERERS.md).
+
 Actualizacion de noviembre de 2026: ver [INTEGRATION_2026_11.md](INTEGRATION_2026_11.md) para los backports, las correcciones de ajustes por juego y las pruebas nuevas.
 
 Base: AzaharPlus rama `AzaharPlus` @ `cf90688` (2026-10-08). Origen: weihuoya/citra (MMJ) @ `302b0c3` (2025-11-14).

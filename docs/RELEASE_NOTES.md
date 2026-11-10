@@ -4,4 +4,5 @@
 - Fixed clip-plane state updates when MMJ settings change. Added Y2R state to the per-game diagnostics log.
 - Added native regression tests, original-MMJ title-list verification and Android APK validation for pull requests.
 - Fixed signing consistency: release builds now reuse a dedicated development key on Actions and locally. Future builds signed with it can update one another. Legacy build1 used a different temporary key and requires a one-time migration; this does not make an in-place update from build1 possible.
+- Unified MMJ graphics state across OpenGL and Vulkan, including texture-copy, sampler and cache policies. Fixed Vulkan shader-state synchronization and renderer recreation with disk caching off, OpenGL clip state, and dirty-region ownership when ignoring tiny CPU writes. Added regression coverage for profile transitions and both renderer connections; visual/performance tests still require games on each backend.
 - No new FPS or game compatibility claims: experimental hacks still need on-device comparisons. See docs/INTEGRATION_2026_11.md for the exact scope and remaining work.

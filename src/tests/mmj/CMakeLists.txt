@@ -10,6 +10,8 @@ add_subdirectory(../../../externals/catch2 catch2)
 
 add_executable(mmj_hacks_tests
     ../common/mmj_hacks.cpp
+    ../video_core/mmj_gpu_settings.cpp
+    ../../../src/video_core/mmj_gpu_settings.cpp
     ../../../src/common/hacks/hack_manager.cpp
     ../../../src/common/hacks/hack_list.cpp
 )

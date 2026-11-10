@@ -15,6 +15,7 @@
 #include "video_core/gpu.h"
 #include "video_core/gpu_debugger.h"
 #include "video_core/gpu_impl.h"
+#include "video_core/mmj_gpu_settings.h"
 #include "video_core/pica/pica_core.h"
 #include "video_core/pica/regs_lcd.h"
 #include "video_core/renderer_base.h"
@@ -378,65 +379,34 @@ GraphicsDebugger& GPU::Debugger() {
 
 void GPU::ApplyPerProgramSettings(u64 program_ID) {
     auto& hacks = Common::Hacks::hack_manager;
-    using Common::Hacks::HackAllowMode;
     using Common::Hacks::HackType;
+    auto settings = ResolveMmjGpuSettings(
+        hacks, program_ID,
+        {
+            .accurate_mul = Settings::values.shaders_accurate_mul.GetValue(),
+            .mmj_accurate_mul = Settings::values.mmj_accurate_mul.GetValue(),
+            .skip_slow_draw = Settings::values.mmj_skip_slow_draw.GetValue(),
+            .skip_texture_copy = Settings::values.mmj_skip_texture_copy.GetValue(),
+            .disable_clip_coef = Settings::values.mmj_disable_clip_coef.GetValue(),
+            .force_linear_mag_filter = Settings::values.mmj_force_linear_mag_filter.GetValue(),
+            .skip_cpu_write = Settings::values.mmj_skip_cpu_write.GetValue(),
+            .display_transfer_remap = Settings::values.mmj_display_transfer_remap.GetValue(),
+            .skip_shadow_draw = Settings::values.mmj_disable_shadow_rendering.GetValue(),
+        },
+        Settings::values.graphics_api.GetValue() != Settings::GraphicsAPI::Software);
+    impl->rasterizer->ApplyMmjSettings(settings, program_ID);
+    impl->pica.skip_slow_draw = settings.skip_slow_draw;
 
-    auto hack = hacks.GetHack(HackType::ACCURATE_MULTIPLICATION, program_ID);
-    bool use_accurate_mul = Settings::values.shaders_accurate_mul.GetValue();
-    if (hack) {
-        switch (hack->mode) {
-        case HackAllowMode::DISALLOW:
-            use_accurate_mul = false;
-            break;
-        case HackAllowMode::FORCE:
-            use_accurate_mul = true;
-            break;
-        case HackAllowMode::ALLOW:
-        default:
-            break;
-        }
-    }
-
-    // Citra MMJ hacks. Each can be switched off from the MMJ settings menu.
-    const auto mmj = [&](const auto& enabled, HackType type) {
-        return enabled.GetValue() && hacks.OverrideBooleanSetting(type, program_ID, false);
-    };
-    if (mmj(Settings::values.mmj_accurate_mul, HackType::ACCURATE_MULTIPLICATION_MMJ)) {
-        use_accurate_mul = true;
-    }
-    impl->rasterizer->SetAccurateMul(use_accurate_mul);
-
-    const bool skip_slow_draw = mmj(Settings::values.mmj_skip_slow_draw, HackType::SKIP_SLOW_DRAW);
-    const bool skip_texture_copy =
-        mmj(Settings::values.mmj_skip_texture_copy, HackType::SKIP_TEXTURE_COPY);
-    const bool disable_clip_coef =
-        mmj(Settings::values.mmj_disable_clip_coef, HackType::DISABLE_CLIP_COEF);
-    const bool force_linear_mag_filter =
-        mmj(Settings::values.mmj_force_linear_mag_filter, HackType::FORCE_LINEAR_MAG_FILTER);
     const bool skip_redundant_y2r =
-        mmj(Settings::values.mmj_skip_redundant_y2r, HackType::SKIP_REDUNDANT_Y2R_CONVERSION);
-    impl->pica.skip_slow_draw = skip_slow_draw;
-    impl->rasterizer->SetSkipTextureCopy(skip_texture_copy);
-    impl->rasterizer->SetDisableClipCoef(disable_clip_coef);
-    impl->rasterizer->SetForceLinearMagFilter(force_linear_mag_filter);
-
-    // Unstable MMJ hacks: off by default, the user enables them after a warning in the menu.
-    const bool skip_cpu_write = mmj(Settings::values.mmj_skip_cpu_write, HackType::SKIP_CPU_WRITE);
-    const bool display_transfer_remap =
-        mmj(Settings::values.mmj_display_transfer_remap, HackType::DISPLAY_TRANSFER_REMAP);
-    impl->rasterizer->SetMmjCacheHacks(skip_cpu_write, display_transfer_remap);
-    const bool skip_shadow_draw =
-        mmj(Settings::values.mmj_disable_shadow_rendering, HackType::DISABLE_SHADOW_RENDERING);
-    impl->rasterizer->SetSkipShadowDraw(skip_shadow_draw);
-
-    // One line per game start, so it is easy to check in the log which per-game hacks are active.
+        Settings::values.mmj_skip_redundant_y2r.GetValue() &&
+        hacks.OverrideBooleanSetting(HackType::SKIP_REDUNDANT_Y2R_CONVERSION, program_ID, false);
     LOG_INFO(HW_GPU,
              "Per-game hacks for {:016X}: accurate_mul={} skip_slow_draw={} skip_texture_copy={} "
              "disable_clip_coef={} force_linear_mag_filter={} skip_cpu_write={} "
              "display_transfer_remap={} skip_shadow_draw={} skip_redundant_y2r={}",
-             program_ID, use_accurate_mul, skip_slow_draw, skip_texture_copy, disable_clip_coef,
-             force_linear_mag_filter, skip_cpu_write, display_transfer_remap, skip_shadow_draw,
-             skip_redundant_y2r);
+             program_ID, settings.accurate_mul, settings.skip_slow_draw, settings.skip_texture_copy,
+             settings.disable_clip_coef, settings.force_linear_mag_filter, settings.skip_cpu_write,
+             settings.display_transfer_remap, settings.skip_shadow_draw, skip_redundant_y2r);
 }
 
 void GPU::SubmitCmdList(u32 index) {
@@ -560,9 +530,9 @@ void GPU::RecreateRenderer(Frontend::EmuWindow& emu_window, Frontend::EmuWindow*
     u64 program_id{};
     impl->system.GetAppLoader().ReadProgramId(program_id);
     ApplyPerProgramSettings(program_id);
-    if (Settings::values.use_disk_shader_cache) {
-        impl->renderer->Rasterizer()->LoadDefaultDiskResources(false, nullptr);
-    }
+    // Vulkan still needs its in-memory shader cache when disk persistence is off.
+    // Each backend handles the disk-cache setting internally.
+    impl->rasterizer->LoadDefaultDiskResources(false, nullptr);
 
     // Mark ALL GPU registers as dirty so current state gets uploaded to new renderer
     impl->pica.dirty_regs.SetAllDirty();

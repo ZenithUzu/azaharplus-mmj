@@ -45,12 +45,12 @@ public:
     void SwitchDiskResources(u64 title_id) override;
 
 protected:
-    void OnMmjCacheHacksChanged() override {
-        res_cache.SetMmjHacks(skip_cpu_write, display_transfer_remap);
+    void OnMmjSettingsChanged() override {
+        RasterizerAccelerated::OnMmjSettingsChanged();
+        res_cache.SetMmjSettings(mmj_settings);
     }
 
 public:
-
     void DrawTriangles() override;
     void FlushAll() override;
     void FlushRegion(PAddr addr, u32 size) override;

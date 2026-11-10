@@ -13,6 +13,8 @@ add_library(video_core STATIC EXCLUDE_FROM_ALL
     gpu.h
     gpu_debugger.h
     gpu_impl.h
+    mmj_gpu_settings.cpp
+    mmj_gpu_settings.h
     pica_types.h
     precompiled_headers.h
     rasterizer_accelerated.cpp
