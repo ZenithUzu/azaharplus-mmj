@@ -3,12 +3,14 @@
 // Refer to the LICENSE.txt file included.
 
 #include <array>
+#include <unordered_map>
 #include <vector>
 #include <catch2/catch_message.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include "common/hacks/hack_manager.h"
 #include "video_core/mmj_gpu_settings.h"
 #include "video_core/rasterizer_interface.h"
+#include "video_core/shader/vertex_shader_cache_key.h"
 
 using namespace VideoCore;
 using Common::Hacks::hack_manager;
@@ -42,6 +44,21 @@ protected:
     }
 };
 } // namespace
+
+TEST_CASE("Vertex shader caches cannot alias the two multiplication modes", "[video_core][mmj]") {
+    for (const u64 config : {0ULL, 1ULL, 0x123456789ABCDEF0ULL, 0xFFFFFFFFFFFFFFFFULL}) {
+        const u64 fast = VertexShaderCacheKey(config, false);
+        const u64 accurate = VertexShaderCacheKey(config, true);
+        REQUIRE(fast != accurate);
+        REQUIRE(fast == config);
+        std::unordered_map<u64, bool> compiled_modes;
+        compiled_modes.emplace(fast, false);
+        compiled_modes.emplace(accurate, true);
+        REQUIRE(compiled_modes.size() == 2);
+        REQUIRE_FALSE(compiled_modes.at(VertexShaderCacheKey(config, false)));
+        REQUIRE(compiled_modes.at(VertexShaderCacheKey(config, true)));
+    }
+}
 
 TEST_CASE("MMJ GPU resolution gates each real title list independently", "[video_core][mmj]") {
     struct Mapping {

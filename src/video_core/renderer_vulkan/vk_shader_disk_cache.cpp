@@ -16,6 +16,7 @@
 #include "video_core/shader/generator/glsl_shader_gen.h"
 #include "video_core/shader/generator/shader_gen.h"
 #include "video_core/shader/generator/spv_fs_shader_gen.h"
+#include "video_core/shader/vertex_shader_cache_key.h"
 
 #define MALFORMED_DISK_CACHE                                                                       \
     do {                                                                                           \
@@ -59,6 +60,8 @@ static VideoCore::DiskResourceLoadCallback MakeThrottledCallback(
 void ShaderDiskCache::Init(const std::atomic_bool& stop_loading,
                            const VideoCore::DiskResourceLoadCallback& callback) {
 
+    disk_accurate_mul = parent.profile.enable_accurate_mul != 0;
+
     if (!Settings::values.use_disk_shader_cache)
         return;
 
@@ -95,8 +98,13 @@ std::optional<std::pair<u64, Shader* const>> ShaderDiskCache::UseProgrammableVer
     }
 
     const auto config_hash = config.Hash();
+    const bool accurate_mul = parent.profile.enable_accurate_mul != 0;
+    const u64 cache_key = VideoCore::VertexShaderCacheKey(config_hash, accurate_mul);
+    // Raw config-to-program links must match the file's original shader profile.
+    // SPIR-V entries are content-addressed and may safely be shared between modes.
+    const bool persist_shader = accurate_mul == disk_accurate_mul;
 
-    const auto [iter_config, new_config] = programmable_vertex_map.try_emplace(config_hash);
+    const auto [iter_config, new_config] = programmable_vertex_map.try_emplace(cache_key);
     if (new_config) {
 
         LOG_NEW_OBJECT(Render_Vulkan, "New VS config {:016X}", config_hash);
@@ -108,7 +116,7 @@ std::optional<std::pair<u64, Shader* const>> ShaderDiskCache::UseProgrammableVer
 
         if (program.empty()) {
             LOG_ERROR(Render_Vulkan, "Failed to retrieve programmable vertex shader");
-            programmable_vertex_map.erase(config_hash);
+            programmable_vertex_map.erase(cache_key);
             return {};
         }
 
@@ -132,7 +140,9 @@ std::optional<std::pair<u64, Shader* const>> ShaderDiskCache::UseProgrammableVer
             });
         }
 
-        AppendVSConfigProgram(vs_cache, config, setup, config_hash, spirv_id);
+        if (persist_shader) {
+            AppendVSConfigProgram(vs_cache, config, setup, config_hash, spirv_id);
+        }
 
         iter_config->second = &shader;
     }
@@ -143,7 +153,7 @@ std::optional<std::pair<u64, Shader* const>> ShaderDiskCache::UseProgrammableVer
         return {};
     }
 
-    return std::make_pair(config_hash, shader);
+    return std::make_pair(cache_key, shader);
 }
 
 std::optional<std::pair<u64, Shader* const>> ShaderDiskCache::UseFragmentShader(
@@ -255,7 +265,8 @@ GraphicsPipeline* ShaderDiskCache::GetPipeline(const PipelineInfo& info) {
             *parent.pipeline_layout, parent.current_shaders, &parent.pipeline_workers);
     }
 
-    if (known_graphic_pipelines.emplace(hash).second) {
+    if (known_graphic_pipelines.emplace(hash).second &&
+        (parent.profile.enable_accurate_mul != 0) == disk_accurate_mul) {
         LOG_NEW_OBJECT(Render_Vulkan, "New Pipeline {:016X}", hash);
 
         PLConfigEntry entry{
@@ -744,7 +755,9 @@ bool ShaderDiskCache::InitVSCache(const std::atomic_bool& stop_loading,
 
         LOG_DEBUG(Render_Vulkan, "Linking {:016X}.", curr.Id());
 
-        auto [iter_config, new_config] = programmable_vertex_map.try_emplace(curr.Id());
+        const u64 cache_key =
+            VideoCore::VertexShaderCacheKey(curr.Id(), parent.profile.enable_accurate_mul != 0);
+        auto [iter_config, new_config] = programmable_vertex_map.try_emplace(cache_key);
         if (new_config) {
             // New config entry, usually always taken unless there is duplicate entries on the cache
             // for some reason.
@@ -1327,7 +1340,10 @@ bool ShaderDiskCache::InitGSCache(const std::atomic_bool& stop_loading,
 bool ShaderDiskCache::InitPLCache(const std::atomic_bool& stop_loading,
                                   const VideoCore::DiskResourceLoadCallback& callback) {
 
-    auto cleanup_on_error = [&]() { graphics_pipelines.clear(); };
+    auto cleanup_on_error = [&]() {
+        graphics_pipelines.clear();
+        known_graphic_pipelines.clear();
+    };
 
     LOG_INFO(Render_Vulkan, "Loading PL disk shader cache for title {:016X}", title_id);
 

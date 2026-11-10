@@ -23,6 +23,7 @@
 #include "video_core/shader/generator/glsl_fs_shader_gen.h"
 #include "video_core/shader/generator/glsl_shader_gen.h"
 #include "video_core/shader/generator/profile.h"
+#include "video_core/shader/vertex_shader_cache_key.h"
 
 using namespace Pica::Shader::Generator;
 using Pica::Shader::FSConfig;
@@ -204,7 +205,7 @@ public:
                                                             const ExtraConfigType& extra,
                                                             const Pica::ShaderSetup& setup) {
         std::optional<std::string> result{};
-        const size_t key_hash = key.Hash();
+        const u64 key_hash = VideoCore::VertexShaderCacheKey(key.Hash(), extra.sanitize_mul != 0);
         auto map_it = shader_map.find(key_hash);
         if (map_it == shader_map.end()) {
             auto program = Common::HashableString(CodeGenerator(setup, key, extra));
@@ -231,20 +232,24 @@ public:
         return {key_hash, map_it->second->GetHandle(), std::nullopt};
     }
 
-    void Inject(const KeyConfigType& key, std::string decomp, OGLProgram&& program) {
+    void Inject(const KeyConfigType& key, bool accurate_mul, std::string decomp,
+                OGLProgram&& program) {
         OGLShaderStage stage{separable};
         stage.Inject(std::move(program));
         auto decomp_hash = Common::HashableString(std::move(decomp));
         const auto iter = shader_cache.emplace(decomp_hash.Hash(), std::move(stage)).first;
         OGLShaderStage& cached_shader = iter->second;
-        shader_map.insert_or_assign(key.Hash(), &cached_shader);
+        shader_map.insert_or_assign(VideoCore::VertexShaderCacheKey(key.Hash(), accurate_mul),
+                                    &cached_shader);
     }
 
-    void Inject(const KeyConfigType& key, std::string decomp, OGLShaderStage&& stage) {
+    void Inject(const KeyConfigType& key, bool accurate_mul, std::string decomp,
+                OGLShaderStage&& stage) {
         auto decomp_hash = Common::HashableString(std::move(decomp));
         const auto iter = shader_cache.emplace(decomp_hash.Hash(), std::move(stage)).first;
         OGLShaderStage& cached_shader = iter->second;
-        shader_map.insert_or_assign(key.Hash(), &cached_shader);
+        shader_map.insert_or_assign(VideoCore::VertexShaderCacheKey(key.Hash(), accurate_mul),
+                                    &cached_shader);
     }
 
 private:
@@ -545,8 +550,8 @@ void ShaderProgramManager::LoadDiskCache(const std::atomic_bool& stop_loading,
                 if (raw.GetProgramType() == ProgramType::VS) {
                     auto [conf, setup] = BuildVSConfigFromRaw(raw, driver, accurate_mul);
                     std::scoped_lock lock(mutex);
-                    impl->programmable_vertex_shaders.Inject(conf, decomp->second.code,
-                                                             std::move(shader));
+                    impl->programmable_vertex_shaders.Inject(
+                        conf, accurate_mul, decomp->second.code, std::move(shader));
                 } else if (raw.GetProgramType() == ProgramType::FS) {
                     // TODO: Support UserConfig in disk shader cache
                     const FSConfig conf(raw.GetRawShaderConfig());
@@ -658,7 +663,8 @@ void ShaderProgramManager::LoadDiskCache(const std::atomic_bool& stop_loading,
                 handle = stage.GetHandle();
                 sanitize_mul = accurate_mul;
                 std::scoped_lock lock(mutex);
-                impl->programmable_vertex_shaders.Inject(conf, code, std::move(stage));
+                impl->programmable_vertex_shaders.Inject(conf, accurate_mul, code,
+                                                         std::move(stage));
             } else if (raw.GetProgramType() == ProgramType::FS) {
                 // TODO: Support UserConfig in disk shader cache
                 const FSConfig fs_config{raw.GetRawShaderConfig()};

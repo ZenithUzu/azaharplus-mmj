@@ -34,6 +34,11 @@ with either OpenGL or Vulkan.
   at every call site.
 - Vulkan's accurate-multiplication shader profile is synchronized immediately. It no
   longer depends solely on loading a disk cache to receive the current value.
+- Both OpenGL and Vulkan runtime vertex-shader cache keys distinguish precise and
+  non-precise multiplication. Preloaded OpenGL shaders use the same key convention.
+  Vulkan retains raw disk configuration IDs, links them to the correct runtime mode,
+  and does not persist another mode's config links under the existing file header.
+  Its pipeline-record format is versioned so older pipeline IDs are rebuilt safely.
 - Recreating a renderer initializes its shader resources even when **disk** caching
   is disabled. Vulkan still requires its in-memory shader cache in that case; each
   backend already handles the disk-persistence preference internally.
