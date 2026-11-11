@@ -76,6 +76,7 @@ class SettingsFragmentPresenter(private val fragmentView: SettingsFragmentView) 
     }
 
     fun putSetting(setting: AbstractSetting) {
+        settings.recordMmjChange(setting)
         if (setting.section == null || setting.key == null) {
             return
         }
@@ -131,6 +132,11 @@ class SettingsFragmentPresenter(private val fragmentView: SettingsFragmentView) 
             }
         }
         settingsList = sl
+        if (gameId.isNotEmpty() && menuTag == Settings.SECTION_MMJ) {
+            settingsActivity.setToolbarTitle(
+                "${settingsActivity.getString(R.string.preferences_mmj)}: $gameId"
+            )
+        }
         fragmentView.showSettingsList(settingsList!!)
     }
 
@@ -1889,7 +1895,11 @@ class SettingsFragmentPresenter(private val fragmentView: SettingsFragmentView) 
     private fun addMmjSettings(sl: ArrayList<SettingsItem>) {
         settingsActivity.setToolbarTitle(settingsActivity.getString(R.string.preferences_mmj))
         sl.apply {
-            add(HeaderSetting(R.string.mmj_hacks_info))
+            add(
+                HeaderSetting(
+                    if (gameId.isEmpty()) R.string.mmj_hacks_info else R.string.mmj_game_overrides_info
+                )
+            )
             add(
                 SwitchSetting(
                     BooleanSetting.MMJ_ACCURATE_MUL,

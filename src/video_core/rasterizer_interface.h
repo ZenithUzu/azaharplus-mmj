@@ -6,7 +6,9 @@
 
 #include <atomic>
 #include <functional>
+#include <string>
 #include "common/common_types.h"
+#include "video_core/mmj_gpu_settings.h"
 
 namespace Pica {
 struct OutputVertex;
@@ -86,44 +88,30 @@ public:
         switch_disk_resources_callback = callback;
     }
 
-    void SetAccurateMul(bool accurate_mul_) {
-        accurate_mul = accurate_mul_;
+    void ApplyMmjSettings(const MmjGpuSettings& settings, u64 title_id = 0) {
+        if (mmj_settings == settings && mmj_title_id == title_id) {
+            return;
+        }
+        // Submit any pending software-vertex batch using its original game's state.
+        DrawTriangles();
+        mmj_settings = settings;
+        mmj_title_id = title_id;
+        OnMmjSettingsChanged();
     }
 
-    void SetSkipTextureCopy(bool skip_texture_copy_) {
-        skip_texture_copy = skip_texture_copy_;
+    const MmjGpuSettings& GetMmjSettings() const {
+        return mmj_settings;
     }
 
-    void SetDisableClipCoef(bool disable_clip_coef_) {
-        disable_clip_coef = disable_clip_coef_;
-    }
-
-    void SetForceLinearMagFilter(bool force_linear_mag_filter_) {
-        force_linear_mag_filter = force_linear_mag_filter_;
-    }
-
-    /// Citra MMJ disable_shadow_rendering: draws that render shadows are dropped.
-    void SetSkipShadowDraw(bool skip_shadow_draw_) {
-        skip_shadow_draw = skip_shadow_draw_;
-    }
-
-    /// Citra MMJ cache hacks (skip_cpu_write, display_transfer_hack).
-    void SetMmjCacheHacks(bool skip_cpu_write_, bool display_transfer_remap_) {
-        skip_cpu_write = skip_cpu_write_;
-        display_transfer_remap = display_transfer_remap_;
-        OnMmjCacheHacksChanged();
+    u64 GetMmjTitleId() const {
+        return mmj_title_id;
     }
 
 protected:
-    bool accurate_mul = false;
-    bool skip_texture_copy = false;
-    bool disable_clip_coef = false;
-    bool force_linear_mag_filter = false;
-    bool skip_cpu_write = false;
-    bool display_transfer_remap = false;
-    bool skip_shadow_draw = false;
+    MmjGpuSettings mmj_settings{};
+    u64 mmj_title_id{};
 
-    virtual void OnMmjCacheHacksChanged() {}
+    virtual void OnMmjSettingsChanged() {}
 
     // Rasterizer gets destroyed on reboot, so make the callback
     // static until a better solution is found.

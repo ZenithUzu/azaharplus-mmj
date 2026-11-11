@@ -219,6 +219,16 @@
                 android:text="@string/delete_shader_cache" />
         </LinearLayout>
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/mmj_game_settings"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/preferences_mmj"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/horizontal_layout_3" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

@@ -1,5 +1,9 @@
 # Azahar+ mmj: port de hacks de Citra MMJ a AzaharPlus
 
+Conexion de los hacks graficos con OpenGL y Vulkan: ver [MMJ_RENDERERS.md](MMJ_RENDERERS.md).
+
+Actualizacion de noviembre de 2026: ver [INTEGRATION_2026_11.md](INTEGRATION_2026_11.md) para los backports, las correcciones de ajustes por juego y las pruebas nuevas.
+
 Base: AzaharPlus rama `AzaharPlus` @ `cf90688` (2026-10-08). Origen: weihuoya/citra (MMJ) @ `302b0c3` (2025-11-14).
 El mismo port se hizo antes sobre Azahar oficial (rama `master` de este repositorio); aqui se reaplico
 sobre AzaharPlus (los 10 parches de codigo aplicaron sin conflictos) y se anadieron los interruptores.
@@ -48,7 +52,7 @@ Apagar un interruptor deja ese juego exactamente como lo trata AzaharPlus sin el
 ### Hacks experimentales (apagados por defecto, con aviso al activarlos)
 | Ajuste (`[MMJ]` en config.ini) | Controla | IDs | Origen en MMJ | Motivo de que esté apagado |
 |---|---|---:|---|---|
-| `mmj_cpu_usage_limit` | CPU_USAGE_LIMIT (20 IDs) y CPU_USAGE_LIMIT_HEAVY (11 IDs) | 31 | `core_downcount_hack`: `downcount = slice_length >> shift` por núcleo, con desplazamientos 1,4,2,2 (HEAVY: 2,4,2,2); IDs de la sección `[cpu_usage_limit]` de `config-games.ini` | MMJ lo diseñó sobre su planificador; el comentario de `MAX_SLICE_LENGTH` en `core_timing.h` de Azahar indica que está ajustado para porciones largas y que las cortas obligan a los núcleos a resincronizarse. No hay mediciones. Se omitieron 4 IDs con desplazamientos 1,1,1,1 (The Binding of Isaac: Rebirth, Futuridium EP Deluxe) |
+| `mmj_cpu_usage_limit` | CPU_USAGE_LIMIT (20 IDs) y CPU_USAGE_LIMIT_HEAVY (11 IDs) | 35 | `core_downcount_hack`: `downcount = slice_length >> shift` por núcleo, con desplazamientos 1,4,2,2 (HEAVY: 2,4,2,2); IDs de la sección `[cpu_usage_limit]` de `config-games.ini` | MMJ lo diseñó sobre su planificador; el comentario de `MAX_SLICE_LENGTH` en `core_timing.h` de Azahar indica que está ajustado para porciones largas y que las cortas obligan a los núcleos a resincronizarse. No hay mediciones. Ahora se incluyen tambien los 4 IDs con desplazamientos 1,1,1,1 (The Binding of Isaac: Rebirth, Futuridium EP Deluxe) |
 | `mmj_skip_cpu_write` | SKIP_CPU_WRITE | 3 | `skip_cpu_write` en `gl_rasterizer_cache.cpp` de MMJ (escrituras de CPU de 8 bytes o menos) | La caché de texturas de Azahar se reescribió; la ruta equivalente es `RasterizerCache::InvalidateRegion`. Puede dejar texturas desactualizadas. Sin probar |
 | `mmj_display_transfer_remap` | DISPLAY_TRANSFER_REMAP | 4 | `display_transfer_hack` (4 direcciones fijas, Tales of the Abyss / Pac-Man Party 3D) | Valores fijos sin verificar con los juegos; en MMJ iba junto a un arreglo de un cierre inesperado que (inferido por coincidencia de síntomas) Azahar corrigió en #7381, así que puede ya no hacer falta |
 | `mmj_fmv_hack` | FMV_TICKS | 10 | `use_fmv_hack` → `core_ticks_hack`: `ticks = max(ticks, 16000)` en el `AddTicks` de Dynarmic y `max(num_instrs, 0xFFFF)` en cada SWI del intérprete (código de MMJ en `arm_dynarmic.cpp`, `arm_dyncom_interpreter.cpp`, `settings.cpp`). Aquí: `Timer::SetMinTicks`, leído por Dynarmic (16000 con JIT), DynCom y FastInterp (0xFFFF sin JIT) | MMJ no documenta qué arregla; AzaharPlus tiene tres backends de CPU y cobrar más ticks adelanta el reloj del juego, lo que puede desincronizar audio o temporizadores. Sin probar |

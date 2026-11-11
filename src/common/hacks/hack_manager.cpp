@@ -6,6 +6,22 @@
 #include "hack_manager.h"
 
 namespace Common::Hacks {
+std::array<u32, 4> HackManager::GetMmjCpuUsageLimitShifts(u64 title_id, bool enabled) {
+    if (!enabled) {
+        return {};
+    }
+    if (OverrideBooleanSetting(HackType::CPU_USAGE_LIMIT_UNIFORM, title_id, false)) {
+        return {1, 1, 1, 1};
+    }
+    if (OverrideBooleanSetting(HackType::CPU_USAGE_LIMIT_HEAVY, title_id, false)) {
+        return {2, 4, 2, 2};
+    }
+    if (OverrideBooleanSetting(HackType::CPU_USAGE_LIMIT, title_id, false)) {
+        return {1, 4, 2, 2};
+    }
+    return {};
+}
+
 const HackEntry* HackManager::GetHack(const HackType& type, u64 title_id) {
     auto range = entries.equal_range(type);
 

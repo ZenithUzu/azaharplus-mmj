@@ -3,6 +3,7 @@
 // Refer to the LICENSE.txt file included.
 
 #include <algorithm>
+#include <chrono>
 #include <codecvt>
 #include <thread>
 #include <dlfcn.h>
@@ -35,6 +36,7 @@
 #include "common/scope_exit.h"
 #include "common/settings.h"
 #include "common/string_util.h"
+#include "common/thread.h"
 #include "core/core.h"
 #include "core/frontend/applets/default_applets.h"
 #include "core/frontend/camera/factory.h"
@@ -123,6 +125,9 @@ std::condition_variable_any surface_cv;
 
 std::string inserted_cartridge;
 
+// OpenGL only: presents each frame as soon as the emulation thread has drawn it.
+std::jthread present_thread;
+
 // Android Multiplayer which can be initialized with parameters
 std::unique_ptr<AndroidMultiplayer> multiplayer{nullptr};
 std::shared_ptr<Network::AnnounceMultiplayerSession> announce_multiplayer_session;
@@ -167,7 +172,33 @@ static void LoadDiskCacheProgress(VideoCore::LoadCallbackStage stage, int progre
 
 static Camera::NDK::Factory* g_ndk_factory{};
 
+static void PresentLoop(std::stop_token stop_token) {
+    Common::SetCurrentThreadName("GLPresent");
+    while (!stop_token.stop_requested()) {
+        if (!window->WaitForFrame(std::chrono::milliseconds(100))) {
+            continue;
+        }
+        std::scoped_lock lock(surface_mutex);
+        if (stop_run || pause_emulation) {
+            continue;
+        }
+        window->TryPresenting();
+        if (secondary_window) {
+            secondary_window->TryPresenting();
+        }
+    }
+    window->DonePresenting();
+    if (secondary_window) {
+        secondary_window->DonePresenting();
+    }
+}
+
 static void TryShutdown() {
+    if (present_thread.joinable()) {
+        present_thread.request_stop();
+        present_thread.join();
+    }
+
     std::scoped_lock surface_lock(surface_mutex);
 
     if (!window) {
@@ -198,6 +229,12 @@ static bool CheckMicPermission() {
                                                                IDCache::GetRequestMicPermission());
 }
 
+static void WaitForEmulationSurfaces(std::unique_lock<std::recursive_mutex>& surface_lock) {
+    surface_cv.wait_for(surface_lock, std::chrono::seconds(2),
+                        [] { return s_secondary_surface != nullptr; });
+    surface_cv.wait(surface_lock, [] { return s_surface != nullptr; });
+}
+
 static Core::System::ResultStatus RunCitra(const std::string& filepath) {
     // Citra core only supports a single running instance
     std::scoped_lock lock(running_mutex);
@@ -222,6 +259,8 @@ static Core::System::ResultStatus RunCitra(const std::string& filepath) {
     // surfaceChanged/surfaceDestroyed callback from the UI thread cannot release or replace
     // s_surface/s_secondary_surface while they're still being used.
     std::unique_lock<std::recursive_mutex> surface_lock(surface_mutex);
+
+    WaitForEmulationSurfaces(surface_lock);
 
     // We also need to lock the surface mutex when System::Init() is called.
     // This is because save state saving and loading may call System::Init
@@ -250,10 +289,12 @@ static Core::System::ResultStatus RunCitra(const std::string& filepath) {
 
     const auto graphics_api = Settings::GetWorkingGraphicsAPI();
     EGLContext* shared_context;
+    bool opengl_windows = false;
     switch (graphics_api) {
 #ifdef ENABLE_OPENGL
     case Settings::GraphicsAPI::OpenGL:
         window = std::make_unique<EmuWindow_Android_OpenGL>(system, s_surface, false);
+        opengl_windows = true;
         shared_context = window->GetEGLContext();
         secondary_window = std::make_unique<EmuWindow_Android_OpenGL>(system, s_secondary_surface,
                                                                       true, shared_context);
@@ -272,6 +313,7 @@ static Core::System::ResultStatus RunCitra(const std::string& filepath) {
                      graphics_api);
 #ifdef ENABLE_OPENGL
         window = std::make_unique<EmuWindow_Android_OpenGL>(system, s_surface, false);
+        opengl_windows = true;
         shared_context = window->GetEGLContext();
         secondary_window = std::make_unique<EmuWindow_Android_OpenGL>(system, s_secondary_surface,
                                                                       true, shared_context);
@@ -297,6 +339,7 @@ static Core::System::ResultStatus RunCitra(const std::string& filepath) {
         app_loader->ReadProgramId(program_id);
         system.RegisterAppLoaderEarly(app_loader);
     }
+    Config::ApplyMmjGameSettings(program_id);
     system.ApplySettings();
     Settings::LogSettings();
 
@@ -349,6 +392,10 @@ static Core::System::ResultStatus RunCitra(const std::string& filepath) {
     LoadDiskCacheProgress(VideoCore::LoadCallbackStage::Complete, 0, 0, "");
 
     SCOPE_EXIT({ TryShutdown(); });
+
+    if (opengl_windows) {
+        present_thread = std::jthread(PresentLoop);
+    }
 
     system.RegisterCoreLoopThreadId();
 
@@ -469,6 +516,7 @@ void Java_org_citra_citra_1emu_NativeLibrary_secondarySurfaceChanged(JNIEnv* env
     if (!s_secondary_surface) {
         return;
     }
+    surface_cv.notify_all();
 
     bool notify = false;
     if (secondary_window) {
@@ -513,19 +561,6 @@ void Java_org_citra_citra_1emu_NativeLibrary_surfaceDestroyed([[maybe_unused]] J
         if (window) {
             window->OnSurfaceChanged(s_surface);
         }
-    }
-}
-
-void Java_org_citra_citra_1emu_NativeLibrary_doFrame([[maybe_unused]] JNIEnv* env,
-                                                     [[maybe_unused]] jobject obj) {
-    if (stop_run || pause_emulation) {
-        return;
-    }
-    if (window) {
-        window->TryPresenting();
-    }
-    if (secondary_window) {
-        secondary_window->TryPresenting();
     }
 }
 
@@ -853,17 +888,21 @@ jint Java_org_citra_citra_1emu_NativeLibrary_clearStreetPassConfig(JNIEnv *env, 
 }
 
 [[maybe_unused]] bool SupportsCustomDriver() {
-    return android_get_device_api_level() >= 28 && CheckKgslPresent();
+    return android_get_device_api_level() >= 28;
 }
 
 jboolean JNICALL Java_org_citra_citra_1emu_utils_GpuDriverHelper_supportsCustomDriverLoading(
     JNIEnv* env, jobject instance) {
 #ifdef CITRA_ARCH_arm64
-    // If the KGSL device exists custom drivers can be loaded using adrenotools
     return SupportsCustomDriver();
 #else
     return false;
 #endif
+}
+
+jboolean JNICALL Java_org_citra_citra_1emu_utils_GpuDriverHelper_isAdrenoGpu(JNIEnv* env,
+                                                                             jobject instance) {
+    return CheckKgslPresent();
 }
 
 // TODO(xperia64): ensure these cannot be called in an invalid state (e.g. after StopEmulation)
@@ -1055,6 +1094,7 @@ void Java_org_citra_citra_1emu_NativeLibrary_reloadSettings([[maybe_unused]] JNI
     if (system.IsPoweredOn()) {
         u64 program_id{};
         system.GetAppLoader().ReadProgramId(program_id);
+        Config::ApplyMmjGameSettings(program_id);
     }
 
     if (multiplayer) {

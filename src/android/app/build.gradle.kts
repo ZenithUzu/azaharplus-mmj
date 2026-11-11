@@ -102,6 +102,15 @@ android {
     }
 
     val keystoreFile = System.getenv("ANDROID_KEYSTORE_FILE")
+    // Public development key dedicated to this fork. Keep it fixed across runners and PCs.
+    signingConfigs {
+        create("mmjDevelopment") {
+            storeFile = rootProject.file("keystore/mmj-development.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
     if (keystoreFile != null) {
         signingConfigs {
             create("release") {
@@ -120,7 +129,7 @@ android {
             signingConfig = if (keystoreFile != null) {
                 signingConfigs.getByName("release")
             } else {
-                signingConfigs.getByName("debug")
+                signingConfigs.getByName("mmjDevelopment")
             }
             isMinifyEnabled = true
             isShrinkResources = true

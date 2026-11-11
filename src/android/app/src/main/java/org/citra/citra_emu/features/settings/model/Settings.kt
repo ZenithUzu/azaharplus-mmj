@@ -13,6 +13,8 @@ import org.citra.citra_emu.features.settings.utils.SettingsFile
 
 class Settings {
     private var gameId: String? = null
+    private var globalMmj = emptyMap<String, Boolean>()
+    private val changedMmj = mutableSetOf<String>()
 
     var isLoaded = false
 
@@ -40,7 +42,14 @@ class Settings {
 
     fun loadSettings(view: SettingsActivityView? = null) {
         sections = SettingsSectionMap()
+        changedMmj.clear()
+        // Enum instances are shared between screens. A previous game's overrides must not leak.
+        BooleanSetting.entries.filter { it.section == SECTION_MMJ }.forEach {
+            it.boolean = it.defaultValue
+        }
         loadCitraSettings(view)
+        globalMmj = BooleanSetting.entries.filter { it.section == SECTION_MMJ }
+            .associate { it.key to it.boolean }
         if (!TextUtils.isEmpty(gameId)) {
             loadCustomGameSettings(gameId!!, view)
         }
@@ -88,12 +97,19 @@ class Settings {
                 SettingsFile.saveFile(fileName, iniSections, view)
             }
         } else {
-            // TODO: Implement per game settings
+            val changes = BooleanSetting.entries.filter { it.key in changedMmj }
+            SettingsFile.saveMmjGameSettings(gameId!!, changes, globalMmj, view)
         }
     }
 
     fun saveSetting(setting: AbstractSetting, filename: String) {
         SettingsFile.saveFile(filename, setting)
+    }
+
+    fun recordMmjChange(setting: AbstractSetting) {
+        if (setting.section == SECTION_MMJ) {
+            setting.key?.let { changedMmj.add(it) }
+        }
     }
 
     companion object {

@@ -2,9 +2,8 @@
 # published as the only GitHub release ("build<n>", counting from 1), which is what the in-app
 # update check looks at. Older releases and their tags are removed after each publish.
 #
-# Optional repository secrets for a FIXED signing key (needed so a new build can be installed over
-# the previous one): ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASS, ANDROID_KEY_ALIAS.
-# Without them the APK is signed with a throw-away debug key and cannot update an older install.
+# Uses the fork's fixed public development key unless all private signing secrets are supplied.
+# Every APK certificate is checked before publication. The new fixed key cannot update build1.
 name: android-apk
 
 on:
@@ -28,6 +27,8 @@ jobs:
       CCACHE_DIR: ${{ github.workspace }}/.ccache
       CCACHE_COMPILERCHECK: content
       CCACHE_SLOPPINESS: time_macros
+      # Public certificate fingerprint of the existing build1 / installed application.
+      LEGACY_SIGNER_SHA256: 32bf0bafed6c6006adf302bbe090208778cebeff49e033fe2623c11231beeb3c
     steps:
       - uses: actions/checkout@v6
         with:
@@ -44,14 +45,6 @@ jobs:
           N=$(( ${LAST:-0} + 1 ))
           echo "n=$N" >> "$GITHUB_OUTPUT"
           echo "Build number: $N"
-          # Drop leftover tags without a release (they would be reused by the release step).
-          RELTAGS=$(gh api "repos/${{ github.repository }}/releases?per_page=100" --paginate --jq '.[].tag_name')
-          git ls-remote --tags origin | sed -nE 's#.*refs/tags/(build-?[0-9]+)$#\1#p' | while read -r tag; do
-            if ! echo "$RELTAGS" | grep -qx "$tag"; then
-              echo "Deleting orphan tag $tag"
-              git push origin ":refs/tags/$tag" || true
-            fi
-          done
       - name: Cache
         uses: actions/cache@v5
         with:
@@ -68,22 +61,28 @@ jobs:
           sudo apt-get install -y ccache
       - name: Install CMake for the Android SDK
         run: echo "y" | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager "cmake;3.30.3"
-      - name: Prepare signing key (optional)
+      - name: Select persistent signing key
         id: signing
         env:
           KS_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
           KS_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          PRIVATE_SIGNER_SHA256: ${{ vars.ANDROID_SIGNING_CERT_SHA256 }}
         run: |
           if [ -n "$KS_B64" ] && [ -n "$KS_PASS" ] && [ -n "$KS_ALIAS" ]; then
             echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
             echo "ANDROID_KEYSTORE_FILE=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
             echo "ANDROID_KEYSTORE_PASS=$KS_PASS" >> "$GITHUB_ENV"
             echo "ANDROID_KEY_ALIAS=$KS_ALIAS" >> "$GITHUB_ENV"
-            echo "fixed=true" >> "$GITHUB_OUTPUT"
+            echo "EXPECTED_SIGNER_SHA256=${PRIVATE_SIGNER_SHA256:-$LEGACY_SIGNER_SHA256}" >> "$GITHUB_ENV"
+            echo "source=private" >> "$GITHUB_OUTPUT"
+          elif [ -n "$KS_B64$KS_PASS$KS_ALIAS" ]; then
+            echo "::error::Private signing configuration is incomplete. Supply all three secrets or none."
+            exit 1
           else
-            echo "fixed=false" >> "$GITHUB_OUTPUT"
-            echo "::warning::No signing secrets: using a throw-away debug key (updates over an older install will fail)."
+            echo "EXPECTED_SIGNER_SHA256=$(tr -d '\r\n' < src/android/keystore/mmj-development.sha256)" >> "$GITHUB_ENV"
+            echo "source=development" >> "$GITHUB_OUTPUT"
+            echo "Using the fork's persistent development key. This signing identity cannot update legacy build1."
           fi
       - name: Build (arm64-v8a, vanilla)
         working-directory: src/android
@@ -92,6 +91,18 @@ jobs:
           chmod +x ./gradlew
           JAVA_HOME=$JAVA_HOME_17_X64 ./gradlew assembleVanillaRelease -Pabi=arm64-v8a -PappIdSuffix=.mmj -PmmjBuild=${{ steps.ver.outputs.n }}
           ccache -s
+      - name: Verify update signing certificate
+        run: |
+          SIGNER="${ANDROID_SDK_ROOT}/build-tools/35.0.0/apksigner"
+          for apk in src/android/app/build/outputs/apk/vanilla/release/*.apk; do
+            CERTS=$("$SIGNER" verify --print-certs "$apk")
+            ACTUAL=$(printf '%s\n' "$CERTS" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p' | tr '[:upper:]' '[:lower:]')
+            COUNT=$(printf '%s\n' "$CERTS" | grep -c '^Signer #[0-9]* certificate SHA-256 digest:')
+            if [ "$COUNT" != 1 ] || [ "$ACTUAL" != "$EXPECTED_SIGNER_SHA256" ]; then
+              echo "::error::APK certificate does not match the selected persistent signing key."
+              exit 1
+            fi
+          done
       - name: Upload APK
         uses: actions/upload-artifact@v7
         with:
@@ -101,7 +112,7 @@ jobs:
       - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
-          FIXED_KEY: ${{ steps.signing.outputs.fixed }}
+          SIGNING_SOURCE: ${{ steps.signing.outputs.source }}
         run: |
           N=${{ steps.ver.outputs.n }}
           SHORT=$(git rev-parse --short HEAD)
@@ -118,8 +129,9 @@ jobs:
             echo
             cat docs/RELEASE_NOTES.md
             echo
-            if [ "$FIXED_KEY" != "true" ]; then
-              echo "> This build is signed with a temporary key. If Android reports a package conflict or refuses to install it over an older copy, uninstall the old app first (back up your data folder)."
+            if [ "$SIGNING_SOURCE" = development ]; then
+              echo "Signing: fixed public development key, reused for future builds."
+              echo "Legacy build1 used a different temporary key; this APK cannot update that installation. A one-time migration is required before future in-place updates can work."
             fi
             echo "No games, keys or firmware are included. Not affiliated with Azahar, AzaharPlus, Citra, Citra MMJ or Nintendo."
           } > notes.md

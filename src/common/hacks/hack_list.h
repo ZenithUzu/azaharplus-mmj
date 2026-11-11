@@ -29,6 +29,7 @@ enum class HackType : int {
     DISPLAY_TRANSFER_REMAP,
     FMV_TICKS,
     DISABLE_SHADOW_RENDERING,
+    CPU_USAGE_LIMIT_UNIFORM,
 };
 
 class UserHackData {};

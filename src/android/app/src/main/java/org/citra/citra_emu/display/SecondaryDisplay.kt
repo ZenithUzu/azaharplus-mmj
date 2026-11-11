@@ -164,12 +164,10 @@ class SecondaryDisplayPresentation(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        window?.setFlags(
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-        )
+        val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+        window?.setFlags(flags, flags)
 
         // Initialize SurfaceView
         surfaceView = SurfaceView(context)
@@ -194,7 +192,12 @@ class SecondaryDisplayPresentation(
             }
         })
 
-        this.surfaceView.setOnTouchListener { _, event ->
+        this.surfaceView.setOnTouchListener { view, event ->
+            // Deliver the touch events as they arrive instead of batching them to the next
+            // frame.
+            if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+                view.requestUnbufferedDispatch(event)
+            }
 
             val pointerIndex = event.actionIndex
             val pointerId = event.getPointerId(pointerIndex)

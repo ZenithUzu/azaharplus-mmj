@@ -301,6 +301,7 @@ void QtConfig::ReadAudioValues() {
     if (global) {
         ReadBasicSetting(Settings::values.output_type);
         ReadBasicSetting(Settings::values.output_device);
+        ReadBasicSetting(Settings::values.bypass_audio_effects);
         ReadBasicSetting(Settings::values.input_type);
         ReadBasicSetting(Settings::values.input_device);
     }
@@ -962,6 +963,7 @@ void QtConfig::SaveAudioValues() {
     if (global) {
         WriteBasicSetting(Settings::values.output_type);
         WriteBasicSetting(Settings::values.output_device);
+        WriteBasicSetting(Settings::values.bypass_audio_effects);
         WriteBasicSetting(Settings::values.input_type);
         WriteBasicSetting(Settings::values.input_device);
     }

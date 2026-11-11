@@ -24,6 +24,9 @@ public:
 
     void Reload();
 
+    /// Apply Android GameSettings/<title ID>.ini overrides for MMJ switches only.
+    static void ApplyMmjGameSettings(u64 program_id);
+
 private:
     /**
      * Applies a value read from the android_config to a Setting.

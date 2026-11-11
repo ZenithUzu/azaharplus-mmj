@@ -141,6 +141,12 @@ RasterizerAccelerated::VertexArrayInfo RasterizerAccelerated::AnalyzeVertexArray
     return {vertex_min, vertex_max, vs_input_size};
 }
 
+void RasterizerAccelerated::OnMmjSettingsChanged() {
+    pica.dirty_regs.SetAllDirty();
+    vs_data_dirty = true;
+    fs_data_dirty = true;
+}
+
 void RasterizerAccelerated::SyncDrawUniforms() {
     auto& dirty = pica.dirty_regs;
 
@@ -148,13 +154,14 @@ void RasterizerAccelerated::SyncDrawUniforms() {
     // that we don't depend on. So avoid the dirty table and check manually
     const bool is_flipped = regs.framebuffer.framebuffer.IsFlipped();
     const bool prev_flipped = std::exchange(vs_data.flip_viewport, is_flipped);
-    vs_data_dirty = is_flipped != prev_flipped;
+    vs_data_dirty |= is_flipped != prev_flipped;
 
     // Sync clip plane uniforms
-    if (dirty.CheckClipping()) {
+    const bool enable_clip1 = mmj_settings.ClipPlaneEnabled(regs.rasterizer.clip_enable != 0);
+    if (dirty.CheckClipping() || vs_data.enable_clip1 != enable_clip1) {
         const auto raw_clip_coef = regs.rasterizer.GetClipCoef();
         // Per-title hack (ported from Citra MMJ): keep the user clip plane disabled.
-        vs_data.enable_clip1 = regs.rasterizer.clip_enable != 0 && !disable_clip_coef;
+        vs_data.enable_clip1 = enable_clip1;
         vs_data.clip_coef = {raw_clip_coef.x.ToFloat32(), raw_clip_coef.y.ToFloat32(),
                              raw_clip_coef.z.ToFloat32(), raw_clip_coef.w.ToFloat32()};
         vs_data_dirty = true;

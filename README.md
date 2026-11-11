@@ -30,6 +30,8 @@ Experimental. The APK from the `azaharplus-mmj` branch builds on GitHub Actions 
 handful of games. There are no per-hack A/B measurements and no game-by-game results yet; what has and has not been checked is
 written down in [`docs/MMJ_PORT.md`](docs/MMJ_PORT.md). Several things below were only compiled, not run, and are marked as such.
 
+November integration: see [`docs/INTEGRATION_2026_11.md`](docs/INTEGRATION_2026_11.md) for the 28 Azahar backports, completed MMJ CPU profiles, Android per-game override fixes and reproducible validation.
+
 This repository has two lines of the same port:
 
 | Branch | Based on | Notes |
@@ -97,7 +99,7 @@ backends. That is based on reading the code; it has not been checked game by gam
 
 | Switch | Hack | Title IDs | Why it is off |
 |---|---|---:|---|
-| CPU usage limit | `CPU_USAGE_LIMIT`, `CPU_USAGE_LIMIT_HEAVY` | 31 | MMJ built it on its own CPU scheduler. Azahar splits time between cores differently, so the effect here is unknown. |
+| CPU usage limit | `CPU_USAGE_LIMIT`, `CPU_USAGE_LIMIT_HEAVY`, `CPU_USAGE_LIMIT_UNIFORM` | 35 | MMJ built it on its own CPU scheduler. Azahar splits time between cores differently, so the effect here is unknown. |
 | Skip invalidation on CPU writes | `SKIP_CPU_WRITE` | 3 (Lord of Magna) | Written for MMJ's texture cache, which Azahar later rewrote. It can leave stale graphics on screen. |
 | Display transfer address remap | `DISPLAY_TRANSFER_REMAP` | 4 (Tales of the Abyss, Pac-Man Party 3D) | Fixed addresses copied from MMJ and never checked against these games. It was added next to a crash workaround that Azahar has since fixed. |
 | Minimum CPU ticks per flush ("FMV hack") | `FMV_TICKS` | 10 (Mirror of Fate, Luigi's Mansion: Dark Moon, Zombie Panic in Wonderland DX) | MMJ does not document what it fixes. AzaharPlus has three CPU backends that count ticks differently. Dynarmic, DynCom and FastInterp are all covered, none of them tested. |
@@ -141,16 +143,25 @@ Inside the app:
 - Local builds (build number 0) never check for updates.
 - Nothing is installed automatically. Android asks for confirmation each time.
 
-To install a new build over the old one, the APK has to be signed with the same key every time. Without one, CI signs with a
-temporary debug key, the signature changes on every build and Android refuses the update with a "package conflicts" or "app not
-installed" message. When that happens, uninstall the old app first (back up your data folder); the update dialog says the same.
-To fix a key, create a keystore and add these repository secrets under *Settings → Secrets and variables → Actions*:
+Release builds now use the fork's **fixed development key** in `src/android/keystore/mmj-development.keystore` when no private
+signing secrets are configured. Actions and local release builds use the same file, rather than generating a new debug key on each
+machine. CI checks the certificate against the committed SHA-256 fingerprint. No secrets are required for this development key;
+it is intentionally public. Keep the key unchanged so future builds can update one another.
+
+**Legacy `build1` is different:** it used a temporary CI key. Both a newly generated Actions APK and the local APK were checked
+and have different certificates from that installed version. The fixed development key starts a new signing baseline and cannot
+update `build1` in place. A one-time migration is necessary before updates with the new fixed key can install over one another.
+The package name stays the same; no app is removed or replaced automatically.
+
+To supply a private keystore instead, configure these repository secrets under *Settings → Secrets and variables → Actions*:
 
 - `ANDROID_KEYSTORE_BASE64`: the `.jks` file encoded in base64
 - `ANDROID_KEYSTORE_PASS`: the keystore password (it is also used as the key password)
 - `ANDROID_KEY_ALIAS`: the key alias
 
-Keep a safe copy of the keystore. If it is lost, nobody can update over existing installs.
+Also set the repository variable `ANDROID_SIGNING_CERT_SHA256` to the private certificate's lowercase SHA-256 digest without
+colons. Without that variable, private signing expects the original `build1` certificate. Keep a safe backup of any private key.
+Changing keys does not make a new APK compatible with an already installed app signed with another key.
 
 ## Building
 

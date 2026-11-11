@@ -25,6 +25,53 @@
 #include "jni/default_ini.h"
 #include "jni/input_manager.h"
 
+static auto MmjSettings() {
+    return std::array{
+        &Settings::values.mmj_accurate_mul,
+        &Settings::values.mmj_skip_slow_draw,
+        &Settings::values.mmj_skip_texture_copy,
+        &Settings::values.mmj_disable_clip_coef,
+        &Settings::values.mmj_force_linear_mag_filter,
+        &Settings::values.mmj_skip_redundant_y2r,
+        &Settings::values.mmj_cpu_usage_limit,
+        &Settings::values.mmj_skip_cpu_write,
+        &Settings::values.mmj_display_transfer_remap,
+        &Settings::values.mmj_fmv_hack,
+        &Settings::values.mmj_disable_shadow_rendering,
+    };
+}
+
+void Config::ApplyMmjGameSettings(u64 program_id) {
+    for (auto* setting : MmjSettings()) {
+        setting->SetGlobal(true);
+    }
+    if (program_id == 0) {
+        return;
+    }
+    std::ostringstream filename;
+    filename << FileUtil::GetUserPath(FileUtil::UserPath::UserDir) << "GameSettings/"
+             << std::uppercase << std::hex << std::setw(16) << std::setfill('0') << program_id
+             << ".ini";
+    std::string contents;
+    FileUtil::ReadFileToString(true, filename.str(), contents);
+    if (contents.empty()) {
+        return;
+    }
+    INIReader overrides(contents.c_str(), contents.size());
+    if (overrides.ParseError() < 0) {
+        return;
+    }
+    for (auto* setting : MmjSettings()) {
+        const auto& key = setting->GetLabel();
+        if (!overrides.Get("MMJ", key, "").empty()) {
+            const bool value = overrides.GetBoolean("MMJ", key, setting->GetValue());
+            setting->SetGlobal(false);
+            setting->SetValue(value);
+            LOG_INFO(Config, "MMJ override for {:016X}: {}={}", program_id, key, value);
+        }
+    }
+}
+
 Config::Config() {
     // TODO: Don't hardcode the path; let the frontend decide where to put the config files.
     android_config_loc = FileUtil::GetUserPath(FileUtil::UserPath::ConfigDir) + "config.ini";
@@ -155,17 +202,10 @@ void Config::ReadValues() {
     ReadSetting("Renderer", Settings::values.use_skip_duplicate_frames);
     ReadSetting("Renderer", Settings::values.texture_filter);
     ReadSetting("Renderer", Settings::values.texture_sampling);
-    ReadSetting("MMJ", Settings::values.mmj_accurate_mul);
-    ReadSetting("MMJ", Settings::values.mmj_skip_slow_draw);
-    ReadSetting("MMJ", Settings::values.mmj_skip_texture_copy);
-    ReadSetting("MMJ", Settings::values.mmj_disable_clip_coef);
-    ReadSetting("MMJ", Settings::values.mmj_force_linear_mag_filter);
-    ReadSetting("MMJ", Settings::values.mmj_skip_redundant_y2r);
-    ReadSetting("MMJ", Settings::values.mmj_cpu_usage_limit);
-    ReadSetting("MMJ", Settings::values.mmj_skip_cpu_write);
-    ReadSetting("MMJ", Settings::values.mmj_display_transfer_remap);
-    ReadSetting("MMJ", Settings::values.mmj_fmv_hack);
-    ReadSetting("MMJ", Settings::values.mmj_disable_shadow_rendering);
+    for (auto* setting : MmjSettings()) {
+        setting->SetGlobal(true);
+        ReadSetting("MMJ", *setting);
+    }
     ReadSetting("Renderer", Settings::values.turbo_limit);
     // Workaround to map Android setting for enabling the frame limiter to the format Citra expects
     if (android_config->GetBoolean("Renderer", "use_frame_limit", true)) {

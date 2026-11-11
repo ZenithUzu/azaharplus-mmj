@@ -1,6 +1,6 @@
 // Copyright 2023-2026 Citra Emulator Project / Azahar Emulator Project
-// Licensed under GPLv2 or any later version
-// Refer to the misc/licenses/gplv2.txt file included.
+// Licensed under GPLv3 or any later version
+// Refer to the LICENSE.txt file included.
 
 #include "common/alignment.h"
 #include "common/literals.h"
@@ -12,6 +12,7 @@
 #include "core/loader/loader.h"
 #include "core/memory.h"
 #include "video_core/pica/pica_core.h"
+#include "video_core/renderer_vulkan/pica_to_vk.h"
 #include "video_core/renderer_vulkan/renderer_vulkan.h"
 #include "video_core/renderer_vulkan/vk_instance.h"
 #include "video_core/renderer_vulkan/vk_rasterizer.h"
@@ -130,7 +131,7 @@ RasterizerVulkan::RasterizerVulkan(Memory::MemorySystem& memory, Pica::PicaCore&
         instance.IsNullDescriptorSupported() ? vk::ImageView{} : null_surface.StorageView();
 
     // Prepare texture and utility descriptor sets.
-    for (u32 i = 0; i < 3; i++) {
+    for (u32 i = 0; i < 4; i++) {
         update_queue.AddImageSampler(texture_set, i, 0, null_surface_view, null_sampler.Handle());
     }
 
@@ -161,7 +162,7 @@ void RasterizerVulkan::LoadDefaultDiskResources(
     }
 
     pipeline_cache.SetProgramID(program_id);
-    pipeline_cache.SetAccurateMul(accurate_mul);
+    pipeline_cache.SetAccurateMul(mmj_settings.accurate_mul);
     pipeline_cache.LoadCache(stop_loading, callback);
 
     if (callback) {
@@ -193,6 +194,11 @@ void RasterizerVulkan::SyncDrawState() {
     pipeline_info.state.blending.dst_alpha_blend_factor.Assign(
         regs.framebuffer.output_merger.alpha_blending.factor_dest_a);
     // SyncBlendColor();
+    const auto blend_color = PicaToVK::ColorRGBA8(regs.framebuffer.output_merger.blend_const.raw);
+    if (fs_data.blend_color != blend_color) {
+        fs_data.blend_color = blend_color;
+        fs_data_dirty = true;
+    }
     pipeline_info.dynamic_info.blend_color = regs.framebuffer.output_merger.blend_const.raw;
     // SyncLogicOp();
     // SyncColorWriteMask();
@@ -202,6 +208,12 @@ void RasterizerVulkan::SyncDrawState() {
                                ? (regs.framebuffer.output_merger.depth_color_mask >> 8) & 0xF
                                : 0;
     pipeline_info.state.blending.color_write_mask = color_mask;
+
+    bool rgb_blend_emulation = false;
+    bool alpha_blend_emulation = false;
+    pipeline_cache.QueryBlendEmulation(regs, rgb_blend_emulation, alpha_blend_emulation);
+    pipeline_info.state.blending.rgb_blend_emulation.Assign(rgb_blend_emulation);
+    pipeline_info.state.blending.alpha_blend_emulation.Assign(alpha_blend_emulation);
 
     // SyncStencilTest();
     const auto& stencil_test = regs.framebuffer.output_merger.stencil_test;
@@ -545,7 +557,7 @@ bool RasterizerVulkan::Draw(bool accelerate, bool is_indexed) {
     MICROPROFILE_SCOPE(Vulkan_Drawing);
 
     // Citra MMJ disable_shadow_rendering: drop shadow draws (and any software-path batch).
-    if (skip_shadow_draw && regs.framebuffer.IsShadowRendering()) {
+    if (mmj_settings.SkipShadowDraw(regs.framebuffer.IsShadowRendering())) {
         vertex_batch.clear();
         return true;
     }
@@ -688,7 +700,7 @@ void RasterizerVulkan::SyncTextureUnits(const Framebuffer* framebuffer) {
             switch (texture.config.type.Value()) {
             case TextureType::Shadow2D: {
                 Surface& surface = res_cache.GetTextureSurface(texture);
-                Sampler& sampler = res_cache.GetSampler(texture.config, force_linear_mag_filter);
+                Sampler& sampler = res_cache.GetSampler(texture.config);
                 surface.flags |= VideoCore::SurfaceFlagBits::ShadowSource;
                 update_queue.AddImageSampler(texture_set, texture_index, 0, surface.StorageView(),
                                              sampler.Handle());
@@ -709,12 +721,21 @@ void RasterizerVulkan::SyncTextureUnits(const Framebuffer* framebuffer) {
 
         // Bind the texture provided by the rasterizer cache
         Surface& surface = res_cache.GetTextureSurface(texture);
-        Sampler& sampler = res_cache.GetSampler(texture.config, force_linear_mag_filter);
+        Sampler& sampler = res_cache.GetSampler(texture.config);
         const vk::ImageView color_view = framebuffer->ImageView(SurfaceType::Color);
         const bool is_feedback_loop = color_view == surface.FramebufferView();
         const vk::ImageView texture_view =
             is_feedback_loop ? surface.CopyImageView() : surface.ImageView();
         update_queue.AddImageSampler(texture_set, texture_index, 0, texture_view, sampler.Handle());
+    }
+
+    if ((pipeline_info.state.blending.rgb_blend_emulation ||
+         pipeline_info.state.blending.alpha_blend_emulation) &&
+        framebuffer->color_id) {
+        const Sampler& null_sampler = res_cache.GetSampler(VideoCore::NULL_SAMPLER_ID);
+        Surface& color_surface = res_cache.GetSurface(framebuffer->color_id);
+        update_queue.AddImageSampler(texture_set, 3, 0, color_surface.CopyImageView(),
+                                     null_sampler.Handle());
     }
 }
 
@@ -759,7 +780,7 @@ void RasterizerVulkan::BindShadowCube(const Pica::TexturingRegs::FullTextureConf
         CubeFace::NegativeY, CubeFace::PositiveZ, CubeFace::NegativeZ,
     };
 
-    Sampler& sampler = res_cache.GetSampler(texture.config, force_linear_mag_filter);
+    Sampler& sampler = res_cache.GetSampler(texture.config);
 
     for (CubeFace face : faces) {
         const u32 binding = static_cast<u32>(face);
@@ -789,7 +810,7 @@ void RasterizerVulkan::BindTextureCube(const Pica::TexturingRegs::FullTextureCon
     };
 
     Surface& surface = res_cache.GetTextureCube(config);
-    Sampler& sampler = res_cache.GetSampler(texture.config, force_linear_mag_filter);
+    Sampler& sampler = res_cache.GetSampler(texture.config);
     update_queue.AddImageSampler(texture_set, 0, 0, surface.ImageView(), sampler.Handle());
 }
 
@@ -819,7 +840,7 @@ bool RasterizerVulkan::AccelerateDisplayTransfer(const Pica::DisplayTransferConf
 }
 
 bool RasterizerVulkan::AccelerateTextureCopy(const Pica::DisplayTransferConfig& config) {
-    return res_cache.AccelerateTextureCopy(config, skip_texture_copy);
+    return res_cache.AccelerateTextureCopy(config);
 }
 
 bool RasterizerVulkan::AccelerateFill(const Pica::MemoryFillConfig& config) {
@@ -944,7 +965,7 @@ void RasterizerVulkan::SyncAndUploadLUTs() {
         sizeof(Common::Vec4f) * 256 +     // proctex
         sizeof(Common::Vec4f) * 256;      // proctex diff
 
-    if (!pica.proctex.lut_dirty) {
+    if (!pica.proctex.table_dirty) {
         return;
     }
 
@@ -983,7 +1004,7 @@ void RasterizerVulkan::SyncAndUploadLUTs() {
     }
 
     // Sync the proctex lut
-    if (pica.proctex.lut_dirty) {
+    if (pica.proctex.color_lut_dirty) {
         Common::Vec4f* new_data = reinterpret_cast<Common::Vec4f*>(buffer + bytes_used);
         for (u32 i = 0; i < proctex.color_table.size(); i++) {
             new_data[i] = proctex.color_table[i].ToVector() / 255.0f;
@@ -995,7 +1016,7 @@ void RasterizerVulkan::SyncAndUploadLUTs() {
     }
 
     // Sync the proctex difference lut
-    if (pica.proctex.diff_lut_dirty) {
+    if (pica.proctex.color_diff_lut_dirty) {
         Common::Vec4f* new_data = reinterpret_cast<Common::Vec4f*>(buffer + bytes_used);
         for (u32 i = 0; i < proctex.color_diff_table.size(); i++) {
             new_data[i] = proctex.color_diff_table[i].ToVector() / 255.0f;
@@ -1057,7 +1078,7 @@ void RasterizerVulkan::SwitchDiskResources(u64 title_id) {
         switch_disk_resources_callback(VideoCore::LoadCallbackStage::Prepare, 0, 0, "");
     }
 
-    pipeline_cache.SetAccurateMul(accurate_mul);
+    pipeline_cache.SetAccurateMul(mmj_settings.accurate_mul);
     pipeline_cache.SwitchCache(title_id, stop_loading, switch_disk_resources_callback);
 
     if (switch_disk_resources_callback) {

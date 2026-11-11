@@ -527,21 +527,13 @@ System::ResultStatus System::Load(Frontend::EmuWindow& emu_window, const std::st
     cheat_engine.Connect(process->process_id);
 
     // Citra MMJ "cpu usage limit" (off by default, see the MMJ settings menu).
-    if (Settings::values.mmj_cpu_usage_limit.GetValue()) {
-        using Common::Hacks::HackType;
-        auto& hacks = Common::Hacks::hack_manager;
-        const bool light = hacks.OverrideBooleanSetting(HackType::CPU_USAGE_LIMIT, title_id, false);
-        const bool heavy =
-            hacks.OverrideBooleanSetting(HackType::CPU_USAGE_LIMIT_HEAVY, title_id, false);
-        if (light || heavy) {
-            const std::array<u32, 4> shifts = {heavy ? 2u : 1u, 4u, 2u, 2u};
-            for (u32 i = 0; i < cpu_cores.size() && i < shifts.size(); ++i) {
-                timing->GetTimer(i)->SetDowncountHack(shifts[i]);
-            }
-            LOG_INFO(Core, "MMJ cpu usage limit active for {:016X} (shifts {},{},{},{})", title_id,
-                     shifts[0], shifts[1], shifts[2], shifts[3]);
-        }
+    const auto shifts = Common::Hacks::hack_manager.GetMmjCpuUsageLimitShifts(
+        title_id, Settings::values.mmj_cpu_usage_limit.GetValue());
+    for (u32 i = 0; i < cpu_cores.size() && i < shifts.size(); ++i) {
+        timing->GetTimer(i)->SetDowncountHack(shifts[i]);
     }
+    LOG_INFO(Core, "MMJ cpu usage limit for {:016X} (shifts {},{},{},{})", title_id, shifts[0],
+             shifts[1], shifts[2], shifts[3]);
 
     // Citra MMJ "FMV hack" (off by default, see the MMJ settings menu): MMJ charges at least
     // 16000 ticks per flush with the JIT and 0xFFFF with the interpreters.

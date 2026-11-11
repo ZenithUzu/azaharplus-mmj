@@ -65,12 +65,14 @@ public:
     void SwitchDiskResources(u64 title_id) override;
 
 protected:
-    void OnMmjCacheHacksChanged() override {
-        res_cache.SetMmjHacks(skip_cpu_write, display_transfer_remap);
+    void OnMmjSettingsChanged() override {
+        RasterizerAccelerated::OnMmjSettingsChanged();
+        res_cache.SetMmjSettings(mmj_settings);
+        // This must also happen when the disk shader cache is disabled or recreated.
+        pipeline_cache.SetAccurateMul(mmj_settings.accurate_mul);
     }
 
 public:
-
 private:
     /// Syncs pipeline state from PICA registers
     void SyncDrawState();

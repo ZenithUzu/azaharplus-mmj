@@ -13,6 +13,7 @@
 #include <boost/icl/interval_map.hpp>
 #include <tsl/robin_map.h>
 
+#include "video_core/mmj_gpu_settings.h"
 #include "video_core/rasterizer_cache/framebuffer_base.h"
 #include "video_core/rasterizer_cache/sampler_params.h"
 #include "video_core/rasterizer_cache/surface_params.h"
@@ -85,16 +86,14 @@ public:
     void TickFrame();
 
     /// Perform hardware accelerated texture copy according to the provided configuration
-    bool AccelerateTextureCopy(const Pica::DisplayTransferConfig& config,
-                               bool skip_if_no_source = false);
+    bool AccelerateTextureCopy(const Pica::DisplayTransferConfig& config);
 
     /// Perform hardware accelerated display transfer according to the provided configuration
     bool AccelerateDisplayTransfer(const Pica::DisplayTransferConfig& config);
 
-    /// Citra MMJ per-game hacks (both off by default).
-    void SetMmjHacks(bool skip_cpu_write_, bool display_transfer_remap_) {
-        mmj_skip_cpu_write = skip_cpu_write_;
-        mmj_display_transfer_remap = display_transfer_remap_;
+    /// Receive the same complete per-title profile as the owning rasterizer.
+    void SetMmjSettings(const MmjGpuSettings& settings) {
+        mmj_settings = settings;
     }
 
     /// Perform hardware accelerated memory fill according to the provided configuration
@@ -104,8 +103,7 @@ public:
     Surface& GetSurface(SurfaceId surface_id);
 
     /// Returns a reference to the sampler object matching the provided configuration
-    Sampler& GetSampler(const Pica::TexturingRegs::TextureConfig& config,
-                        bool force_linear_mag_filter = false);
+    Sampler& GetSampler(const Pica::TexturingRegs::TextureConfig& config);
     Sampler& GetSampler(SamplerId sampler_id);
 
     /// Copy one surface's region to another
@@ -239,8 +237,7 @@ private:
     Settings::TextureFilter filter;
     bool dump_textures;
     bool use_custom_textures;
-    bool mmj_skip_cpu_write = false;
-    bool mmj_display_transfer_remap = false;
+    MmjGpuSettings mmj_settings{};
 };
 
 } // namespace VideoCore

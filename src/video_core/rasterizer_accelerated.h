@@ -28,6 +28,8 @@ public:
                      const Pica::OutputVertex& v2) override;
 
 protected:
+    void OnMmjSettingsChanged() override;
+
     /// Sync vertex and framgent uniforms from PICA registers
     void SyncDrawUniforms();
 

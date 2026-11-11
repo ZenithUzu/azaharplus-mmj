@@ -31,6 +31,8 @@
     <string name="driver_already_installed">Driver already installed</string>
     <string name="custom_driver_not_supported">Custom drivers not supported</string>
     <string name="custom_driver_not_supported_description">Custom driver loading isn\'t currently supported for this device.\nCheck this option again in the future to see if support was added!</string>
+    <string name="custom_driver_non_adreno_warning">Non Adreno GPU detected</string>
+    <string name="custom_driver_non_adreno_warning_description">Most custom drivers are built for Qualcomm Adreno GPUs, only install a driver made for your GPU. If a driver fails to load, Azahar will fall back to the system driver. If applications crash, select \"System GPU driver\".</string>
     <string name="share_log_not_found">No log file found</string>
     <string name="select_games_folder">Select Applications Folder</string>
     <string name="select_games_folder_description">Allows Azahar to populate the application list</string>
@@ -859,12 +861,14 @@
     <string name="opengles" translatable="false">OpenGLES</string>
     <string name="vulkan" translatable="false">Vulkan</string>
 
-    <!-- Texture filter names -->
-    <string name="anime4k" translatable="false">Anime4K</string>
+    <!-- Texture filters -->
+    <string name="anime4k">Anime4K (OpenGL only)</string>
     <string name="bicubic" translatable="false">Bicubic</string>
     <string name="scaleforce" translatable="false">ScaleForce</string>
     <string name="xbrz" translatable="false">xBRZ</string>
     <string name="mmpx" translatable="false">MMPX</string>
+    <string name="incompatible_texture_filter">Incompatible texture filter</string>
+    <string name="incompatible_texture_filter_description">The selected texture filter (Anime4K) is not compatible with the Vulkan renderer.\nThe texture filter will be set to None.\nProceed?</string>
 
     <!-- Texture Sampling names -->
     <string name="game_controlled">Game Controlled</string>
@@ -1172,6 +1176,7 @@
     <!-- Citra MMJ hacks -->
     <string name="preferences_mmj">Citra MMJ hacks</string>
     <string name="preferences_mmj_description">Per-game fixes ported from Citra MMJ</string>
+    <string name="mmj_game_overrides_info">Changes here apply only to this game. Unchanged switches follow the global settings. Set a switch to its global value to restore that behavior. Restart the game to apply changes.</string>
     <string name="mmj_hacks_info">Each hack only affects the games listed for it. Turn one off if a game runs worse than without it. Changes apply the next time a game starts.</string>
     <string name="mmj_accurate_mul">Accurate multiplication (MMJ list)</string>
     <string name="mmj_accurate_mul_description">Forces accurate shader multiplication for 42 title IDs that Citra MMJ lists as needing it, such as Kid Icarus: Uprising and Super Mario 3D Land. May cost a little performance.</string>
@@ -1194,7 +1199,7 @@
     <string name="mmj_enable_warning_title">Turn on an untested hack?</string>
     <string name="mmj_enable_anyway">Turn on anyway</string>
     <string name="mmj_cpu_usage_limit">CPU usage limit (MMJ)</string>
-    <string name="mmj_cpu_usage_limit_description">In 31 title IDs (Mario Tennis Open, Mario Golf: World Tour, Luigi\'s Mansion: Dark Moon, The Alliance Alive, Lord of Magna and others), shrinks the time slice of each emulated CPU core, as Citra MMJ does. Lowers CPU load.</string>
+    <string name="mmj_cpu_usage_limit_description">In 35 title IDs (The Binding of Isaac: Rebirth, Futuridium EP Deluxe, Mario Tennis Open, Mario Golf: World Tour, Luigi\'s Mansion: Dark Moon, The Alliance Alive, Lord of Magna and others), shrinks the time slice of each emulated CPU core, as Citra MMJ does. Lowers CPU load.</string>
     <string name="mmj_cpu_usage_limit_warning">Why it is off: Citra MMJ built this option on its own CPU scheduler. Azahar schedules cores differently and is tuned for long time slices (its source notes that short slices make cores spend time re-syncing), so the effect here has not been tested. It can make the game slower or unstable. Turn it on only for the listed games, and turn it off if anything gets worse. Takes effect when a game starts.</string>
     <string name="mmj_skip_cpu_write">Skip cache invalidation on CPU writes (MMJ)</string>
     <string name="mmj_skip_cpu_write_description">In 3 title IDs (Lord of Magna: Maiden Heaven), ignores very small CPU writes (8 bytes or less) over cached textures instead of flushing them. Fewer stalls.</string>

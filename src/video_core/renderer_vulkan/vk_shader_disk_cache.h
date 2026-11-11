@@ -142,7 +142,8 @@ private:
     static_assert(sizeof(GSConfigEntry) == 48);
 
     struct PLConfigEntry {
-        static constexpr u8 EXPECTED_VERSION = 0;
+        // Runtime vertex-shader IDs now include the multiplication mode.
+        static constexpr u8 EXPECTED_VERSION = 1;
 
         u64 version; // Surprise tool that can help us later
 
@@ -344,6 +345,7 @@ private:
 
     PipelineCache& parent;
     u64 title_id;
+    bool disk_accurate_mul{};
 
     std::unordered_map<u64, Shader> programmable_vertex_cache;
     std::unordered_map<u64, Shader*> programmable_vertex_map;
