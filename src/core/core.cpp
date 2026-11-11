@@ -40,6 +40,7 @@
 #include "core/hle/kernel/kernel.h"
 #include "core/hle/kernel/process.h"
 #include "core/hle/kernel/thread.h"
+#include "core/hle/service/am/am.h"
 #include "core/hle/service/apt/applet_manager.h"
 #include "core/hle/service/apt/apt.h"
 #include "core/hle/service/cam/cam.h"
@@ -493,8 +494,6 @@ System::ResultStatus System::Load(Frontend::EmuWindow& emu_window, const std::st
         kernel->RestoreIPCRecorder(std::move(restore_ipc_recorder));
     }
 
-    LoadAMTitles();
-
     std::shared_ptr<Kernel::Process> process;
     const Loader::ResultStatus load_result{app_loader->Load(process)};
     if (Loader::ResultStatus::Success != load_result) {
@@ -601,23 +600,10 @@ void System::Reschedule() {
 }
 
 void System::LoadAMTitles() {
-    auto am = Service::AM::GetModule(*this);
-    if (!am) {
-        return;
+    // This fork has no ROM bundle support, so only the installed title lists need refreshing.
+    if (auto am = Service::AM::GetModule(*this)) {
+        am->ScanForAllTitles();
     }
-    bool bundle_registered = false;
-    if (!GetCartridge().empty()) {
-        auto tar = FileUtil::TarArchive::OpenTarArchive(GetCartridge());
-        if (tar) {
-            tar.reset();
-            am->GetBundleCIAHandler()->RegisterBundle(GetCartridge());
-            bundle_registered = true;
-        }
-    }
-    if (!bundle_registered) {
-        app_loader->LoadBundle();
-    }
-    am->ScanForAllTitles();
 }
 
 System::ResultStatus System::Init(Frontend::EmuWindow& emu_window,

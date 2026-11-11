@@ -1161,6 +1161,11 @@ public:
         force_new_device_id = true;
     }
 
+    /**
+     * Scans all storage mediums for titles for listing.
+     */
+    void ScanForAllTitles();
+
 private:
     void ScanForTickets();
 
@@ -1173,11 +1178,6 @@ private:
     void ScanForTitles(Service::FS::MediaType media_type);
 
     void ScanForTitlesImpl(Service::FS::MediaType media_type);
-
-    /**
-     * Scans all storage mediums for titles for listing.
-     */
-    void ScanForAllTitles();
 
     Core::System& system;
     bool cia_installing = false;

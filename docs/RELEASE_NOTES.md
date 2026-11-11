@@ -1,8 +1,5 @@
-- Integrated 28 Azahar changes: shader JIT optimizations, lower input/audio latency, GPU frame pacing, Vulkan/cached-texture corrections, Android startup/input fixes and core service fixes. The AzaharPlus base is unchanged; this is a selective backport, not a full upgrade to Azahar master.
-- Fixed Android MMJ per-game settings: open a game's details and choose **Citra MMJ hacks**. Changed switches are saved for that game and loaded before emulation starts. Unchanged switches follow the global settings; setting a switch to its global value restores inheritance. Restart the game after changes.
-- Completed the MMJ CPU-usage profiles for all 35 original title IDs, including The Binding of Isaac: Rebirth and Futuridium EP Deluxe. This experimental option remains off by default.
-- Fixed clip-plane state updates when MMJ settings change. Added Y2R state to the per-game diagnostics log.
-- Added native regression tests, original-MMJ title-list verification and Android APK validation for pull requests.
-- Fixed signing consistency: release builds now reuse a dedicated development key on Actions and locally. Future builds signed with it can update one another. Legacy build1 used a different temporary key and requires a one-time migration; this does not make an in-place update from build1 possible.
-- Unified MMJ graphics state across OpenGL and Vulkan, including texture-copy, sampler and cache policies. Fixed Vulkan shader-state synchronization and renderer recreation with disk caching off, OpenGL clip state, and dirty-region ownership when ignoring tiny CPU writes. Added regression coverage for profile transitions and both renderer connections; visual/performance tests still require games on each backend.
-- No new FPS or game compatibility claims: experimental hacks still need on-device comparisons. See docs/INTEGRATION_2026_11.md for the exact scope and remaining work.
+- Brought in more fixes from Azahar's 2127 development line: GSP accuracy fixes, savestates now work with LLE modules (and are reloaded with the installed title list), joystick hat input fix, frame dumping fixes, a crash fix for displays that cannot present, and fixes when a game is started directly (for example from a shortcut).
+- CSND audio support: games that play sound through CSND instead of the DSP now produce that audio.
+- Configurable battery state (fixed level and charging state, or the system's own), plus the remaining battery functions games query.
+- Look mode for motion emulation.
+- Not included yet, because they need adaptation to AzaharPlus and this fork: ROM bundles, MSAA, free camera, encrypted-content signature checks, the shader-cache reset prompt and Azahar's new Android settings and input screens.
